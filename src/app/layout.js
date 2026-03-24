@@ -31,7 +31,7 @@ export const metadata = {
   authors: [{ name: "MicroSave Consulting" }],
   creator: "MicroSave Consulting",
   publisher: "MicroSave Consulting",
-  metadataBase: new URL("https://yoursite.com"), // ← update when deployed
+  metadataBase: new URL("https://yoursite.com"),
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -42,7 +42,7 @@ export const metadata = {
       "Explore a global repository of Digital ID use cases across Africa, Oceania, and beyond.",
     images: [
       {
-        url: "/images/og-image.png", // ← add an og image to public/images/
+        url: "/images/og-image.png",
         width: 1200,
         height: 630,
         alt: "MSC Digital ID Use Cases",
@@ -90,10 +90,11 @@ export default function RootLayout({ children }) {
           fontFamily: '"Albert Sans", system-ui, sans-serif',
           margin: 0,
           padding: 0,
+          overflow: "auto",
         }}
       >
-        <div>
-          <Header />
+        <Header />
+        <div style={{ paddingTop: "91px" }}>
           <main>{children}</main>
           <Footer />
         </div>

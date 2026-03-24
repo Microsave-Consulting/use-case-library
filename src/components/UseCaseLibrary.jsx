@@ -1,72 +1,32 @@
 "use client";
 // src/components/UseCaseLibrary.jsx
-import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useCallback,
+} from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import populationData from "country-json/src/country-by-population.json";
-import countries from "i18n-iso-countries";
-import enLocale from "i18n-iso-countries/langs/en.json";
+import FilterBar from "./FilterBar";
+import SectorSidebar from "./SectorSidebar";
+import UseCaseCard from "./UseCaseCard";
 
-countries.registerLocale(enLocale);
+const FONT =
+  '"Albert Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
 
-// ─── pill palette per index ────────────────────────────────────────────────────
-const PILL_STYLES = [
-  {
-    bg: "#EEF2FC",
-    border: "#ABB5D0",
-    selBg: "#EEF2FC",
-    selBorder: "#ABB5D0",
-    selColor: "#284181",
-  },
-  {
-    bg: "#EEF2FC",
-    border: "#ABB5D0",
-    selBg: "#EEF2FC",
-    selBorder: "#ABB5D0",
-    selColor: "#284181",
-  },
-  {
-    bg: "#EEF2FC",
-    border: "#ABB5D0",
-    selBg: "#EEF2FC",
-    selBorder: "#ABB5D0",
-    selColor: "#284181",
-  },
-  {
-    bg: "#EEF2FC",
-    border: "#ABB5D0",
-    selBg: "#EEF2FC",
-    selBorder: "#ABB5D0",
-    selColor: "#284181",
-  },
-  {
-    bg: "#EEF2FC",
-    border: "#ABB5D0",
-    selBg: "#EEF2FC",
-    selBorder: "#ABB5D0",
-    selColor: "#284181",
-  },
-  {
-    bg: "#EEF2FC",
-    border: "#ABB5D0",
-    selBg: "#EEF2FC",
-    selBorder: "#ABB5D0",
-    selColor: "#284181",
-  },
-  {
-    bg: "#EEF2FC",
-    border: "#ABB5D0",
-    selBg: "#EEF2FC",
-    selBorder: "#ABB5D0",
-    selColor: "#284181",
-  },
-  {
-    bg: "#EEF2FC",
-    border: "#ABB5D0",
-    selBg: "#EEF2FC",
-    selBorder: "#ABB5D0",
-    selColor: "#284181",
-  },
-];
+function getColumns(width) {
+  if (width >= 1200) return 4;
+  if (width >= 860) return 3;
+  if (width >= 540) return 2;
+  return 1;
+}
+function getPreviewLimit(cols) {
+  return cols * 2;
+}
+function getPageSize(cols) {
+  return cols * 4;
+}
 
 function splitValues(value) {
   if (!value) return [];
@@ -75,832 +35,673 @@ function splitValues(value) {
     .map((v) => v.trim())
     .filter((v) => v.length > 0);
 }
-
-function toAbsAssetUrl(maybeRelativeUrl) {
-  if (!maybeRelativeUrl) return null;
-  const s = String(maybeRelativeUrl).trim();
-  if (!s) return null;
-  if (/^https?:\/\//i.test(s)) return s;
-  if (/^data:/i.test(s)) return s;
-  return "/" + s.replace(/^\//, "");
-}
-
-const POPULATION_MAP = (() => {
-  const map = new Map();
-  populationData.forEach((row) => {
-    if (!row || !row.country) return;
-    map.set(String(row.country).toLowerCase(), Number(row.population));
-  });
-  return map;
-})();
-
-const COUNTRY_ALIASES = { rawanda: "rwanda" };
-
-function normalizeCountryName(name) {
-  if (!name) return null;
-  const trimmed = name.trim();
-  const key = trimmed.toLowerCase();
-  if (COUNTRY_ALIASES[key]) return COUNTRY_ALIASES[key];
-  return trimmed;
-}
-
-function normalizeCountryLabelForMatch(label) {
-  if (!label) return "";
-  let s = String(label).trim().toLowerCase();
-  s = s.replace(/[^a-z0-9\s]/g, " ");
-  s = s.replace(/\s+/g, " ").trim();
-  return s;
-}
-
 function normalizeLabelForMatch(label) {
   if (!label) return "";
-  let s = String(label).trim().toLowerCase();
-  s = s.replace(/[^a-z0-9\s]/g, " ");
-  s = s.replace(/\s+/g, " ").trim();
-  return s;
+  return String(label)
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+function getModeValues(uc) {
+  const raw = uc.ModeofAccess;
+  if (!raw) return [];
+  if (Array.isArray(raw))
+    return raw.map((v) => String(v).trim()).filter(Boolean);
+  return splitValues(raw);
 }
 
-// ─── FilterBubble ──────────────────────────────────────────────────────────────
-function FilterBubble({
-  id,
-  label,
-  options,
-  selectedValues,
-  onChange,
-  pillIndex,
+/* ══════════════════════════════════════════════════
+   Pagination
+══════════════════════════════════════════════════ */
+function Pagination({ currentPage, totalPages, onPageChange }) {
+  if (totalPages <= 1) return null;
+  const pages = [];
+  if (totalPages <= 7) {
+    for (let i = 1; i <= totalPages; i++) pages.push(i);
+  } else {
+    const left = Math.max(2, currentPage - 1);
+    const right = Math.min(totalPages - 1, currentPage + 1);
+    pages.push(1);
+    if (left > 2) pages.push("ellipsis-left");
+    for (let i = left; i <= right; i++) pages.push(i);
+    if (right < totalPages - 1) pages.push("ellipsis-right");
+    pages.push(totalPages);
+  }
+  return (
+    <>
+      <style>{`
+        .pg-wrap{display:flex;align-items:center;justify-content:center;gap:6px;padding:20px 0 8px;font-family:${FONT};flex-shrink:0;}
+        .pg-btn{display:inline-flex;align-items:center;justify-content:center;min-width:36px;height:36px;padding:0 10px;border-radius:8px;border:1px solid #DDE5F5;background:#fff;color:#334155;font-size:14px;font-weight:500;font-family:${FONT};cursor:pointer;transition:background 150ms ease,border-color 150ms ease,color 150ms ease;user-select:none;}
+        .pg-btn:hover{background:#EEF2FC;border-color:#1B66D1;color:#1B66D1;}
+        .pg-btn.active{background:#1F3A6D;border-color:#1F3A6D;color:#fff;font-weight:600;}
+        .pg-ellipsis{display:inline-flex;align-items:center;justify-content:center;min-width:36px;height:36px;font-size:14px;color:#9CA3AF;font-family:${FONT};user-select:none;}
+        .pg-arrow{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px;border:1px solid #DDE5F5;background:#fff;color:#334155;cursor:pointer;transition:background 150ms ease,border-color 150ms ease,color 150ms ease;}
+        .pg-arrow:hover:not([disabled]){background:#EEF2FC;border-color:#1B66D1;color:#1B66D1;}
+        .pg-arrow[disabled]{opacity:0.38;cursor:not-allowed;pointer-events:none;}
+      `}</style>
+      <div className="pg-wrap" role="navigation" aria-label="Pagination">
+        <button
+          className="pg-arrow"
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          aria-label="Previous page"
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path
+              d="M10 12L6 8L10 4"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+        {pages.map((p) =>
+          typeof p === "string" ? (
+            <span key={p} className="pg-ellipsis">
+              …
+            </span>
+          ) : (
+            <button
+              key={p}
+              className={`pg-btn${p === currentPage ? " active" : ""}`}
+              onClick={() => onPageChange(p)}
+              aria-label={`Page ${p}`}
+              aria-current={p === currentPage ? "page" : undefined}
+            >
+              {p}
+            </button>
+          ),
+        )}
+        <button
+          className="pg-arrow"
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          aria-label="Next page"
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path
+              d="M6 4L10 8L6 12"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+      </div>
+    </>
+  );
+}
+
+/* ══════════════════════════════════════════════════
+   SectorGroup
+══════════════════════════════════════════════════ */
+function SectorGroup({
+  sector,
+  items,
+  onOpen,
+  onViewAll,
+  expanded,
+  onToggle,
+  cols,
 }) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef(null);
-  const pill = PILL_STYLES[pillIndex % PILL_STYLES.length];
-
-  useEffect(() => {
-    function handleClickOutside(e) {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const selected = selectedValues || [];
-  const hasSelection = selected.length > 0;
-
-  const toggleValue = (value) => {
-    if (!value) return;
-    if (selected.includes(value)) onChange(selected.filter((v) => v !== value));
-    else onChange([...selected, value]);
-  };
-
-  const pillText = hasSelection ? selected[0] : label;
-  const showCount = selected.length > 1;
+  const previewLimit = getPreviewLimit(cols);
+  const preview = items.slice(0, previewLimit);
+  const hasMore = items.length > previewLimit;
 
   return (
-    <div style={{ position: "relative" }} ref={ref}>
+    <div>
       <button
         type="button"
-        onClick={() => setOpen((o) => !o)}
-        aria-expanded={open}
-        aria-controls={`ucl-dropdown-${id}`}
+        onClick={onToggle}
         style={{
-          display: "inline-flex",
+          width: "100%",
+          display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          gap: "0.55rem",
-          borderRadius: 999,
-          padding: "0.35rem 0.75rem",
-          fontSize: "0.75rem",
+          padding: "14px 0",
+          background: "none",
+          border: "none",
+          borderBottom: "1px solid #E5E9F3",
           cursor: "pointer",
-          whiteSpace: "nowrap",
-          border: `1px solid ${hasSelection ? pill.selBorder : pill.border}`,
-          background: hasSelection ? pill.selBg : pill.bg,
-          color: hasSelection ? pill.selColor : "#797979",
-          fontWeight: 500,
-          fontFamily: '"Albert Sans", system-ui, sans-serif',
-          transition: "filter 120ms ease",
+          fontFamily: FONT,
         }}
       >
-        <span
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+         
+          {/* ── Sector icon from /public/assets/sector_icons/ ── */}
+          <span
+            style={{
+              width: 28,
+              height: 28,
+              borderRadius: 8,
+            
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+            }}
+          >
+            <img
+              src={`/assets/sector_icons/${sector
+                .toLowerCase()
+                .replace(/\s*\/\s*/g, "_")
+                .replace(/\s+/g, "_")}.svg`}
+              alt=""
+              width={16}
+              height={16}
+              style={{ display: "block" }}
+            />
+          </span>
+
+          {/* ── Sector name in #1B66D1 ── */}
+          <span
+            style={{
+              fontSize: 16,
+              fontWeight: 600,
+              color: "#0FIB2D",
+              fontFamily: FONT,
+            }}
+          >
+            {sector}
+          </span>
+          <span style={{ fontSize: 13, color: "#9CA3AF", fontFamily: FONT }}>
+            ({items.length})
+          </span>
+        </div>
+
+        {/* ── Chevron in #1B66D1 ── */}
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 20 20"
+          fill="none"
+          aria-hidden="true"
           style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "0.35rem",
+            transition: "transform 200ms ease",
+            transform: expanded ? "rotate(180deg)" : "rotate(0deg)",
+            flexShrink: 0,
           }}
         >
-          {showCount && (
-            <span
-              style={{
-                width: 18,
-                height: 18,
-                borderRadius: 999,
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: 12,
-                lineHeight: 1,
-                fontWeight: 600,
-                color: "#284181",
-                background: "#ffffff",
-                border: "1px solid #ABB5D0",
-              }}
-            >
-              {selected.length}
-            </span>
-          )}
-          <span style={{ fontWeight: 500 }}>{pillText}</span>
-        </span>
-        <span style={{ opacity: 0.9, fontSize: "0.7rem" }} aria-hidden="true">
-          ▼
-        </span>
+          <path
+            d="M5 7.5L10 12.5L15 7.5"
+            stroke="#0F1B2D"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
       </button>
 
-      {open && (
-        <div
-          id={`ucl-dropdown-${id}`}
-          style={{
-            position: "absolute",
-            top: "110%",
-            left: 0,
-            zIndex: 30,
-            minWidth: 240,
-            maxHeight: 260,
-            overflowY: "auto",
-            background: "#fff",
-            borderRadius: "0.75rem",
-            border: `1px solid ${pill.border}`,
-            boxShadow: "0 10px 26px rgba(0,0,0,0.14)",
-            padding: "0.4rem",
-          }}
-        >
-          {(!options || options.length === 0) && (
+      {/* ── rest unchanged ── */}
+      {expanded && (
+        <>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: `repeat(${cols}, 1fr)`,
+              gap: 16,
+              padding: "16px 0 12px",
+            }}
+          >
+            {preview.map((uc, idx) => (
+              <UseCaseCard
+                key={`${sector}-${uc.ID ?? uc.Id ?? ""}-${idx}`}
+                uc={uc}
+                onOpen={onOpen}
+              />
+            ))}
+          </div>
+          {hasMore && (
             <div
               style={{
-                fontSize: "0.82rem",
-                color: "#666",
-                padding: "0.25rem 0.4rem",
+                display: "flex",
+                justifyContent: "flex-end",
+                paddingBottom: 16,
               }}
             >
-              No options
-            </div>
-          )}
-          {(options || []).map((value) => {
-            const active = selected.includes(value);
-            return (
-              <div
-                key={value}
-                onClick={() => toggleValue(value)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    toggleValue(value);
-                  }
-                }}
+              <button
+                type="button"
+                onClick={() => onViewAll(sector)}
                 style={{
-                  display: "flex",
+                  display: "inline-flex",
                   alignItems: "center",
-                  gap: "0.45rem",
-                  padding: "0.3rem 0.45rem",
-                  borderRadius: "0.5rem",
+                  gap: 8,
+                  padding: "11px 22px",
+                  borderRadius: 26,
+                  border: "none",
+                  background: "#1F3A6D",
+                  color: "#fff",
+                  fontSize: 14,
+                  fontWeight: 600,
+                  fontFamily: FONT,
                   cursor: "pointer",
-                  fontSize: "0.82rem",
-                  background: active ? pill.bg : "transparent",
-                  transition: "background 100ms ease",
-                  fontFamily: '"Albert Sans", system-ui, sans-serif',
+                  transition: "background 200ms ease",
                 }}
                 onMouseEnter={(e) => {
-                  if (!active)
-                    e.currentTarget.style.background = "rgba(0,0,0,0.04)";
+                  e.currentTarget.style.background = "#1B66D1";
                 }}
                 onMouseLeave={(e) => {
-                  if (!active) e.currentTarget.style.background = "transparent";
+                  e.currentTarget.style.background = "#1F3A6D";
                 }}
               >
-                <span
-                  style={{
-                    width: "1rem",
-                    height: "1rem",
-                    borderRadius: "0.25rem",
-                    border: `1px solid ${pill.selBorder}`,
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "0.7rem",
-                    color: "#1f2a44",
-                    background: active ? pill.selBg : "transparent",
-                    flexShrink: 0,
-                  }}
-                >
-                  {active ? "✓" : ""}
-                </span>
-                <span style={{ flex: 1 }}>{value}</span>
-              </div>
-            );
-          })}
-        </div>
+                View all use cases
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <path
+                    d="M3 7h8M7 3l4 4-4 4"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
 }
-
-// ─── UseCaseCard ───────────────────────────────────────────────────────────────
-function UseCaseCard({ uc, onOpen }) {
-  const [hovered, setHovered] = useState(false);
-  const sectors = splitValues(uc.Sectors);
-  const primarySector = sectors[0] || "—";
-  const countriesList = splitValues(uc.Country);
-  const primaryCountry = countriesList[0] || uc.Country || "—";
-  const maturityValue = uc.MaturityLevel || "—";
-  const description = uc.Remarks || uc.Summary || uc.Description || "";
-
-  const handleOpen = () => {
-    if (typeof onOpen === "function") onOpen(uc);
-  };
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      handleOpen();
-    }
-  };
-
-  return (
-    <div
-      role="button"
-      tabIndex={0}
-      onClick={handleOpen}
-      onKeyDown={handleKeyDown}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      aria-label={`Open details for ${uc.Title || "use case"}`}
-      style={{
-        borderRadius: 12,
-        border: "1px solid #e5e9f3",
-        background: "#fff",
-        padding: "0.9rem 0.75rem",
-        display: "grid",
-        gridTemplateRows: "28px 64px 56px 48px 1px auto",
-        gap: 8,
-        alignItems: "start",
-        boxShadow: hovered
-          ? "0 10px 22px rgba(0,0,0,0.12)"
-          : "0 4px 10px rgba(0,0,0,0.04)",
-        cursor: "pointer",
-        transition: "box-shadow 200ms ease",
-        outline: "none",
-        fontFamily: '"Albert Sans", system-ui, sans-serif',
-      }}
-    >
-      {/* Country badge */}
-      <div
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          justifyContent: "center",
-          background: "#345096",
-          color: "#fff",
-          padding: "8px 10px",
-          borderRadius: 4,
-          fontSize: 12,
-          fontWeight: 400,
-          lineHeight: 1,
-          textTransform: "uppercase",
-          whiteSpace: "nowrap",
-          alignSelf: "start",
-          justifySelf: "start",
-          gridRow: 1,
-          fontFamily: '"Albert Sans", system-ui, sans-serif',
-        }}
-      >
-        {String(primaryCountry).toUpperCase()}
-      </div>
-
-      {/* Title */}
-      <div
-        style={{
-          fontSize: 18,
-          fontWeight: 700,
-          color: "#000",
-          margin: 0,
-          display: "-webkit-box",
-          WebkitLineClamp: 2,
-          WebkitBoxOrient: "vertical",
-          overflow: "hidden",
-          gridRow: 2,
-          paddingTop: 2,
-          maxHeight: 64,
-        }}
-      >
-        {uc.Title || "Untitled use case"}
-      </div>
-
-      {/* Description */}
-      <div
-        style={{
-          margin: 0,
-          fontSize: 16,
-          fontWeight: 400,
-          color: "#000",
-          lineHeight: 1.4,
-          display: "-webkit-box",
-          WebkitLineClamp: 3,
-          WebkitBoxOrient: "vertical",
-          overflow: "hidden",
-          gridRow: 3,
-          paddingRight: 8,
-          maxHeight: 80,
-        }}
-      >
-        {description}
-      </div>
-
-      {/* Maturity pill */}
-      <div
-        style={{
-          margin: 0,
-          display: "flex",
-          alignItems: "center",
-          gridRow: 4,
-          paddingTop: 14,
-          justifySelf: "start",
-        }}
-      >
-        <span
-          style={{
-            display: "inline-block",
-            padding: "8px 12px",
-            borderRadius: 999,
-            border: "1px solid #A4A4A4",
-            background: "#fff",
-            fontWeight: 600,
-            fontSize: "0.78rem",
-            color: "#575757",
-          }}
-        >
-          Maturity Level: {maturityValue}
-        </span>
-      </div>
-
-      {/* Separator */}
-      <div style={{ borderBottom: "1px dashed #CCDBFF", gridRow: 5 }} />
-
-      {/* Bottom row */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gridRow: 6,
-          paddingTop: 22,
-          paddingBottom: 8,
-        }}
-      >
-        <div
-          style={{
-            color: "#2a4aa6",
-            fontWeight: 700,
-            textTransform: "uppercase",
-            fontSize: "0.78rem",
-          }}
-        >
-          {primarySector}
-        </div>
-        <div style={{ color: "#2a4aa6", fontWeight: 700, fontSize: "1rem" }}>
-          →
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ─── Main component ────────────────────────────────────────────────────────────
+/* ══════════════════════════════════════════════════
+   Main component
+══════════════════════════════════════════════════ */
 export default function UseCaseLibrary({
   initialData = [],
   filterConfig = [],
+  staticOptions = {},
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [rawItems] = useState(initialData);
+
+  const [search, setSearch] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+  const [activeSector, setActiveSector] = useState("All");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [openSector, setOpenSector] = useState(null);
+  const [cols, setCols] = useState(3);
+  const [sidebarVisible, setSidebarVisible] = useState(true);
+
+  const wrapperRef = useRef(null);
+
+  /* ── measure wrapper for cols + sidebar visibility ── */
+  useEffect(() => {
+    const el = wrapperRef.current;
+    if (!el) return;
+    const update = (w) => {
+      setCols(getColumns(w));
+      setSidebarVisible(w >= 860);
+    };
+    const ro = new ResizeObserver(([e]) => update(e.contentRect.width));
+    ro.observe(el);
+    update(el.getBoundingClientRect().width);
+    return () => ro.disconnect();
+  }, []);
+
   const [filters, setFilters] = useState(() => {
     const init = {};
     filterConfig.forEach((f) => {
-      if (f && f.id) init[f.id] = [];
+      if (f?.id) init[f.id] = [];
     });
     return init;
   });
-  const [search, setSearch] = useState("");
 
-  const useCases = useMemo(() => rawItems || [], [rawItems]);
+  const useCases = useMemo(() => initialData || [], [initialData]);
 
-  const filterOptions = useMemo(() => {
-    if (!filterConfig.length) return {};
-    const map = {};
-    filterConfig.forEach((f) => {
-      map[f.id] = new Set();
-    });
-
-    useCases.forEach((uc) => {
-      filterConfig.forEach((f) => {
-        if (!f || !f.id) return;
-        if (f.usesSubregion) {
-          const r = uc.Region || "";
-          const s = uc.Subregion || "";
-          const combined = r && s ? `${r} — ${s}` : r || s;
-          if (combined) map[f.id].add(combined);
-          return;
-        }
-        const raw = uc[f.field];
-        if (!raw) return;
-        const isAssuranceField =
-          f.field === "IdentityAssuranceLevel" ||
-          f.field === "AuthenticationAssuranceLevel";
-        if (f.multiValue) {
-          splitValues(raw).forEach((v) => {
-            const cleaned =
-              isAssuranceField && v.includes(";") ? v.split(";")[0].trim() : v;
-            map[f.id].add(cleaned);
-          });
-        } else {
-          const cleaned =
-            isAssuranceField && raw.includes(";")
-              ? raw.split(";")[0].trim()
-              : raw;
-          map[f.id].add(cleaned);
-        }
-      });
-    });
-
-    const final = {};
-    Object.keys(map).forEach((id) => {
-      final[id] = Array.from(map[id]).sort((a, b) =>
-        String(a).localeCompare(String(b)),
-      );
-    });
-    return final;
-  }, [useCases, filterConfig]);
-
+  /* ── URL param sync ── */
   useEffect(() => {
     if (!filterConfig.length) return;
-    const countryParam = searchParams.get("country");
-    if (countryParam) {
-      const countryFilter = filterConfig.find((f) => f.id === "country");
-      if (countryFilter) {
-        const optionsForCountry = filterOptions[countryFilter.id] || [];
-        const targetNorm = normalizeCountryLabelForMatch(countryParam);
-        const match =
-          optionsForCountry.find(
-            (opt) => normalizeCountryLabelForMatch(opt) === targetNorm,
-          ) || null;
-        if (match)
-          setFilters((prev) => ({ ...prev, [countryFilter.id]: [match] }));
-      }
+    const cp = searchParams.get("country");
+    if (cp) {
+      const match = (staticOptions["Country"] || []).find(
+        (o) => normalizeLabelForMatch(o) === normalizeLabelForMatch(cp),
+      );
+      if (match) setFilters((prev) => ({ ...prev, Country: [match] }));
     }
-    const sectorParam = searchParams.get("sector");
-    if (sectorParam) {
-      const sectorFilter = filterConfig.find((f) => f.id === "sector");
-      if (sectorFilter) {
-        const optionsForSector = filterOptions[sectorFilter.id] || [];
-        const wanted = splitValues(sectorParam);
-        const matches = wanted
-          .map((w) => {
-            const wNorm = normalizeLabelForMatch(w);
-            return (
-              optionsForSector.find(
-                (opt) => normalizeLabelForMatch(opt) === wNorm,
-              ) || null
-            );
-          })
-          .filter(Boolean);
-        if (matches.length)
-          setFilters((prev) => ({ ...prev, [sectorFilter.id]: matches }));
-      }
+    const sp = searchParams.get("sector");
+    if (sp) setActiveSector(sp);
+    const mp = searchParams.get("maturity");
+    if (mp) {
+      const match = (staticOptions["CurrentStatus"] || []).find(
+        (o) => normalizeLabelForMatch(o) === normalizeLabelForMatch(mp),
+      );
+      if (match) setFilters((prev) => ({ ...prev, CurrentStatus: [match] }));
     }
-    const maturityParam = searchParams.get("maturity");
-    if (maturityParam) {
-      const maturityFilter = filterConfig.find((f) => f.id === "maturity");
-      if (maturityFilter) {
-        const optionsForMaturity = filterOptions[maturityFilter.id] || [];
-        const targetNorm = normalizeLabelForMatch(maturityParam);
-        const match =
-          optionsForMaturity.find(
-            (opt) => normalizeLabelForMatch(opt) === targetNorm,
-          ) || null;
-        if (match)
-          setFilters((prev) => ({ ...prev, [maturityFilter.id]: [match] }));
-      }
-    }
-  }, [filterConfig, filterOptions, searchParams]);
+  }, [filterConfig, staticOptions, searchParams]);
 
-  const updateFilter = (id, values) =>
-    setFilters((prev) => ({ ...prev, [id]: values }));
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeSector, search, filters]);
 
-  const clearAll = () => {
-    const cleared = {};
-    filterConfig.forEach((f) => {
-      if (f && f.id) cleared[f.id] = [];
-    });
-    setFilters(cleared);
-    setSearch("");
-  };
-
-  const openUseCase = (uc) => {
-    const caseId = uc?.ID ?? uc?.Id;
-    if (!caseId) return;
-    router.push(`/use-cases/${caseId}`);
-  };
-
+  /* ── filter + search ── */
   const filtered = useMemo(() => {
-    if (!filterConfig.length) return useCases;
     return useCases.filter((uc) => {
       if (search.trim()) {
-        const haystack = [
+        const hay = [
           uc.Title,
           uc.Country,
-          uc.Sectors,
+          uc.Sector,
           uc.KeyTerms,
+          uc.Description,
           uc.Remarks,
         ]
           .filter(Boolean)
           .join(" ")
           .toLowerCase();
-        if (!haystack.includes(search.toLowerCase())) return false;
+        if (!hay.includes(search.toLowerCase())) return false;
       }
-      return filterConfig.every((f) => {
-        if (!f || !f.id) return true;
-        const selected = filters[f.id];
-        if (!selected || selected.length === 0) return true;
-        if (f.usesSubregion) {
-          const r = uc.Region || "";
-          const s = uc.Subregion || "";
-          const combined = r && s ? `${r} — ${s}` : r || s;
-          return selected.includes(combined);
-        }
-        const raw = uc[f.field];
-        if (!raw) return false;
-        const isAssuranceField =
-          f.field === "IdentityAssuranceLevel" ||
-          f.field === "AuthenticationAssuranceLevel";
-        const values = f.multiValue ? splitValues(raw) : [raw];
-        const cleanedValues = isAssuranceField
-          ? values.map((v) => (v.includes(";") ? v.split(";")[0].trim() : v))
-          : values;
-        return selected.some((v) => cleanedValues.includes(v));
-      });
+      const selRegion = filters["Region"] || [];
+      if (selRegion.length > 0 && !selRegion.includes(uc.Region || ""))
+        return false;
+      const selCountry = filters["Country"] || [];
+      if (selCountry.length > 0) {
+        const ucc = Array.isArray(uc.Country)
+          ? uc.Country
+          : splitValues(uc.Country);
+        if (!selCountry.some((c) => ucc.includes(c))) return false;
+      }
+      const selStatus = filters["CurrentStatus"] || [];
+      if (selStatus.length > 0 && !selStatus.includes(uc.MaturityLevel || ""))
+        return false;
+      const selMode = filters["ModeofAccess"] || [];
+      if (
+        selMode.length > 0 &&
+        !selMode.some((m) => getModeValues(uc).includes(m))
+      )
+        return false;
+      const selAAL = filters["AuthenticationAssuranceLevel"] || [];
+      if (selAAL.length > 0) {
+        const raw = uc.AuthenticationAssuranceLevel || "";
+        const match = raw.match(/^(AAL\s*\d+|Not available)/i);
+        if (!selAAL.includes(match ? match[1] : raw)) return false;
+      }
+      return true;
     });
-  }, [useCases, search, filters, filterConfig]);
+  }, [useCases, search, filters]);
 
+  const sectorList = useMemo(() => {
+    const counts = {};
+    useCases.forEach((uc) =>
+      splitValues(uc.Sector || "Other").forEach((s) => {
+        counts[s] = (counts[s] || 0) + 1;
+      }),
+    );
+    return Object.entries(counts).sort((a, b) => a[0].localeCompare(b[0]));
+  }, [useCases]);
+
+  const grouped = useMemo(() => {
+    const map = {};
+    filtered.forEach((uc) => {
+      const p = splitValues(uc.Sector || "Other")[0] || "Other";
+      if (!map[p]) map[p] = [];
+      map[p].push(uc);
+    });
+    return Object.entries(map).sort((a, b) => a[0].localeCompare(b[0]));
+  }, [filtered]);
+
+  const didInitRef = useRef(false);
+  useEffect(() => {
+    if (!didInitRef.current && grouped.length > 0) {
+      didInitRef.current = true;
+      setOpenSector(grouped[0][0]);
+    }
+  }, [grouped]);
+
+  const pageSize = getPageSize(cols);
+  const sectorItems = useMemo(() => {
+    if (activeSector === "All") return [];
+    return filtered.filter(
+      (uc) =>
+        (splitValues(uc.Sector || "Other")[0] || "Other") === activeSector,
+    );
+  }, [filtered, activeSector]);
+
+  const totalPages = Math.ceil(sectorItems.length / pageSize);
+  const pagedItems = sectorItems.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize,
+  );
+
+  const handleFilterChange = (id, vals) =>
+    setFilters((prev) => ({ ...prev, [id]: vals }));
+  const clearAll = () => {
+    const cleared = {};
+    filterConfig.forEach((f) => {
+      if (f?.id) cleared[f.id] = [];
+    });
+    setFilters(cleared);
+    setSearch("");
+    setSearchInput("");
+    setActiveSector("All");
+    setOpenSector(null);
+  };
+  const handleSelectSector = (sector) => {
+    setActiveSector(sector);
+    setCurrentPage(1);
+  };
+  const handleViewAll = (sector) => {
+    setActiveSector(sector);
+    setCurrentPage(1);
+  };
+  const handleToggle = (sector) =>
+    setOpenSector((prev) => (prev === sector ? null : sector));
+  const openUseCase = (uc) => {
+    const id = uc?.ID ?? uc?.Id;
+    if (id) router.push(`/use-cases/${id}`);
+  };
+  const scrollToTop = useCallback(
+    () => window.scrollTo({ top: 0, behavior: "smooth" }),
+    [],
+  );
+  const isAllSectors = activeSector === "All";
+
+  /* ── responsive page padding ── */
+  const pagePadding = !sidebarVisible
+    ? cols === 1
+      ? "0 16px"
+      : "0 48px"
+    : "0 100px";
+
+  return (
+    <>
+      <style>{`
+  @import url('https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700&display=swap');
+  .ucl-layout { display:flex; gap:24px; align-items:flex-start; }
+  .ucl-content { flex:1; min-width:0; padding-top:8px; overflow: visible, height: auto,margin-bottom:15px; }
+`}</style>
+
+      <FilterBar
+        filterConfig={filterConfig}
+        filterOptions={{}}
+        staticOptions={staticOptions}
+        filters={filters}
+        onFilterChange={handleFilterChange}
+        search={searchInput}
+        onSearchChange={setSearchInput}
+        onSearch={() => setSearch(searchInput)}
+        sectorList={sectorList}
+        activeSector={activeSector}
+        onSelectSector={handleSelectSector}
+        showSectorDropdown={!sidebarVisible}
+      />
+
+      <div
+        ref={wrapperRef}
+        style={{
+          padding: pagePadding,
+          boxSizing: "border-box",
+          fontFamily: FONT,
+          transition: "padding 200ms ease",
+          height: "auto",
+          minHeight: 0,
+          overflow: "visible",
+          marginBottom: 100,
+        }}
+      >
+        <div
+          style={{
+            padding: "16px 0 12px",
+            fontSize: 13,
+            color: "#6B7280",
+            fontFamily: FONT,
+          }}
+        >
+          Total {filtered.length} use cases
+        </div>
+
+        <div className="ucl-layout">
+          {sidebarVisible && (
+            <SectorSidebar
+              sectorList={sectorList}
+              totalCount={useCases.length}
+              activeSector={activeSector}
+              onSelect={handleSelectSector}
+            />
+          )}
+
+          <div className="ucl-content">
+            {isAllSectors &&
+              (grouped.length === 0 ? (
+                <EmptyState onClear={clearAll} />
+              ) : (
+                grouped.map(([sector, items]) => (
+                  <SectorGroup
+                    key={sector}
+                    sector={sector}
+                    items={items}
+                    onOpen={openUseCase}
+                    onViewAll={handleViewAll}
+                    expanded={openSector === sector}
+                    onToggle={() => handleToggle(sector)}
+                    cols={cols}
+                  />
+                ))
+              ))}
+
+            {!isAllSectors && (
+              <>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    padding: "14px 0",
+                    borderBottom: "1px solid #E5E9F3",
+                    marginBottom: 4,
+                  }}
+                >
+                  <span
+                    style={{
+                      width: 28,
+                      height: 28,
+                     
+                     
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <img
+                      src={`/assets/sector_icons/${activeSector
+                        .toLowerCase()
+                        .replace(/\s*\/\s*/g, "_")
+                        .replace(/\s+/g, "_")}.svg`}
+                      alt=""
+                      width={16}
+                      height={16}
+                      style={{ display: "block" }}
+                    />
+                  </span>
+                  <span
+                    style={{
+                      fontSize: 16,
+                      fontWeight: 600,
+                      color: "#0FIB2D",
+                      fontFamily: FONT,
+                    }}
+                  >
+                    {activeSector}
+                  </span>
+                  <span
+                    style={{ fontSize: 13, color: "#9CA3AF", fontFamily: FONT }}
+                  >
+                    ({sectorItems.length})
+                  </span>
+                </div>
+                {pagedItems.length === 0 ? (
+                  <EmptyState onClear={clearAll} />
+                ) : (
+                  <>
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: `repeat(${cols}, 1fr)`,
+                        gap: 16,
+                        padding: "16px 0",
+                      }}
+                    >
+                      {pagedItems.map((uc, idx) => (
+                        <UseCaseCard
+                          key={`${activeSector}-${uc.ID ?? uc.Id ?? ""}-${idx}`}
+                          uc={uc}
+                          onOpen={openUseCase}
+                        />
+                      ))}
+                    </div>
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={(p) => {
+                        setCurrentPage(p);
+                        scrollToTop();
+                      }}
+                    />
+                  </>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function EmptyState({ onClear }) {
   return (
     <div
       style={{
-        width: "min(1120px, calc(100% - 112px))",
-        margin: "0 auto",
-        padding: "1.25rem 0 2.25rem",
-        background: "#ffffff",
-        fontFamily: '"Albert Sans", system-ui, sans-serif',
+        marginTop: 48,
+        textAlign: "center",
+        fontSize: 14,
+        color: "#6B7280",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 16,
+        fontFamily: FONT,
       }}
     >
-      {/* Header */}
-      <header style={{ textAlign: "center", marginBottom: "0.85rem" }}>
-        <h1
-          style={{
-            margin: 0,
-            fontSize: 32,
-            fontWeight: 700,
-            fontFamily: '"Albert Sans", system-ui, sans-serif',
-          }}
-        >
-          Explore World's Use Cases Repository
-        </h1>
-      </header>
-
-      {/* Search + Filters */}
-      <section
+      <p style={{ margin: 0 }}>No use cases match your search and filters.</p>
+      <button
+        onClick={onClear}
         style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "0.9rem",
-          alignItems: "center",
-          marginBottom: "0.75rem",
+          padding: "8px 20px",
+          borderRadius: 999,
+          border: "none",
+          background: "#1F3A6D",
+          color: "#fff",
+          fontSize: 13,
+          cursor: "pointer",
+          fontFamily: FONT,
         }}
       >
-        {/* Search bar */}
-        <div
-          style={{ width: "100%", display: "flex", justifyContent: "center" }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.75rem",
-              background: "#fff",
-              color: "#24304a",
-              borderRadius: 12,
-              padding: "0.6rem 0.9rem",
-              border: "1px solid rgba(17,24,39,0.06)",
-              width: "min(760px, 100%)",
-              boxShadow:
-                "0px 1px 1px 0px #0000000A, 0px 2px 10.4px 0px #FFDB5870",
-            }}
-          >
-            <span
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                aria-hidden="true"
-                focusable="false"
-                style={{
-                  stroke: "#EE8821",
-                  strokeWidth: 2,
-                  strokeLinecap: "round",
-                  strokeLinejoin: "round",
-                }}
-              >
-                <circle cx="11" cy="11" r="7" />
-                <path d="M20 20L16.65 16.65" />
-              </svg>
-            </span>
-            <input
-              type="text"
-              placeholder="Search use Cases"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              style={{
-                flex: 1,
-                border: "none",
-                background: "transparent",
-                color: "#1f2a44",
-                padding: "0.45rem 0",
-                fontSize: "0.95rem",
-                outline: "none",
-                fontFamily: '"Albert Sans", system-ui, sans-serif',
-              }}
-            />
-            <button
-              type="button"
-              aria-label="Search"
-              style={{
-                border: "none",
-                borderRadius: 8,
-                padding: "0.45rem 0.9rem",
-                background: "#EEF2FC",
-                color: "#284181",
-                fontSize: "0.95rem",
-                fontWeight: 700,
-                cursor: "pointer",
-                fontFamily: '"Albert Sans", system-ui, sans-serif',
-              }}
-            >
-              Search
-            </button>
-          </div>
-        </div>
-
-        {/* Filters row */}
-        {filterConfig.length > 0 && (
-          <div
-            style={{
-              width: "min(760px, 100%)",
-              margin: "0 auto",
-              display: "grid",
-              gridTemplateColumns: "1fr auto",
-              columnGap: "0.9rem",
-              alignItems: "start",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                flexWrap: "wrap",
-                gap: "0.75rem",
-                alignItems: "center",
-                width: "100%",
-              }}
-            >
-              {filterConfig.map((f, index) => (
-                <Fragment key={f.id}>
-                  <FilterBubble
-                    id={f.id}
-                    label={f.label}
-                    options={filterOptions[f.id] || []}
-                    selectedValues={filters[f.id] || []}
-                    onChange={(vals) => updateFilter(f.id, vals)}
-                    pillIndex={index}
-                  />
-                  {index === 3 && (
-                    <span
-                      style={{
-                        flexBasis: "100%",
-                        height: 0,
-                        padding: 0,
-                        margin: 0,
-                      }}
-                      aria-hidden="true"
-                    />
-                  )}
-                </Fragment>
-              ))}
-            </div>
-            <button
-              type="button"
-              onClick={clearAll}
-              style={{
-                borderRadius: 999,
-                padding: "0.38rem 0.9rem",
-                fontSize: "0.78rem",
-                background: "#284181",
-                color: "#fff",
-                border: "1px solid #1f2c57",
-                cursor: "pointer",
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "0.5rem",
-                fontFamily: '"Albert Sans", system-ui, sans-serif',
-              }}
-            >
-              Clear all{" "}
-              <span style={{ fontSize: "1rem", lineHeight: 1, opacity: 0.95 }}>
-                ×
-              </span>
-            </button>
-          </div>
-        )}
-      </section>
-
-      {/* Results count */}
-      <div
-        style={{
-          fontSize: "0.85rem",
-          color: "#444",
-          margin: "0.2rem 0 0.75rem",
-          fontFamily: '"Albert Sans", system-ui, sans-serif',
-        }}
-      >
-        Showing {filtered.length} of {useCases.length} use cases
-      </div>
-
-      {/* Cards or empty state */}
-      {filtered.length === 0 ? (
-        <div
-          style={{
-            marginTop: "2rem",
-            textAlign: "center",
-            fontSize: "0.9rem",
-            color: "#555",
-            display: "flex",
-            flexDirection: "column",
-            gap: "0.75rem",
-            alignItems: "center",
-          }}
-        >
-          <p>No use cases match your search and filters.</p>
-          <button
-            onClick={clearAll}
-            style={{
-              padding: "0.45rem 0.85rem",
-              borderRadius: 999,
-              border: "none",
-              background: "#26436b",
-              color: "#fff",
-              fontSize: "0.82rem",
-              cursor: "pointer",
-              fontFamily: '"Albert Sans", system-ui, sans-serif',
-            }}
-          >
-            Clear filters
-          </button>
-        </div>
-      ) : (
-        <section
-          style={{
-            background: "#eef5fb",
-            borderRadius: 14,
-            padding: "1rem 1rem 1.25rem",
-          }}
-        >
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(3, minmax(240px, 1fr))",
-              gap: "0.9rem",
-            }}
-          >
-            {filtered.map((uc, idx) => (
-              <UseCaseCard
-                key={uc.ID ?? uc.Id ?? idx}
-                uc={uc}
-                onOpen={openUseCase}
-              />
-            ))}
-          </div>
-        </section>
-      )}
+        Clear filters
+      </button>
     </div>
   );
 }

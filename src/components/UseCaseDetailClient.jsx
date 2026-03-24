@@ -1,5 +1,4 @@
 "use client";
-// src/components/UseCaseDetailClient.jsx
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -9,258 +8,125 @@ const FONT =
 
 function splitValues(value) {
   if (!value) return [];
-  return String(value)
-    .split(",")
-    .map((v) => v.trim())
-    .filter(Boolean);
+  return String(value).split(",").map((v) => v.trim()).filter(Boolean);
 }
 
 function splitMainAndTip(value) {
   const raw = String(value ?? "").trim();
   if (!raw) return { main: "—", tip: null };
-  const idx = raw.indexOf(";");
+  const idx = raw.indexOf(" - ");
   if (idx === -1) return { main: raw, tip: null };
   return {
     main: raw.slice(0, idx).trim() || "—",
-    tip: raw.slice(idx + 1).trim() || null,
+    tip: raw.slice(idx + 3).trim() || null,
   };
 }
 
-// ─── MetaItem ─────────────────────────────────────────────────────────────────
-function MetaItem({ label, value, tooltipValue }) {
-  const [tipVisible, setTipVisible] = useState(false);
-  const { main, tip } = tooltipValue
-    ? splitMainAndTip(tooltipValue)
-    : { main: value ?? "—", tip: null };
+function InfoTooltip({ tip }) {
+  const [visible, setVisible] = useState(false);
+  return (
+    <span
+      style={{ position: "relative", display: "inline-flex", alignItems: "center" }}
+      onMouseEnter={() => setVisible(true)}
+      onMouseLeave={() => setVisible(false)}
+    >
+      <span
+        role="img"
+        aria-label="More info"
+        tabIndex={0}
+        onFocus={() => setVisible(true)}
+        onBlur={() => setVisible(false)}
+        style={{
+          display: "inline-flex", alignItems: "center", justifyContent: "center",
+          width: 16, height: 16, cursor: "help", userSelect: "none", flexShrink: 0,
+        }}
+      >
+        <img src="/assets/info.svg" alt="" width={13} height={13} style={{ display: "block" }} />
+      </span>
+      {visible && (
+        <span
+          role="tooltip"
+          style={{
+            position: "absolute", left: 0, top: "calc(100% + 8px)",
+            minWidth: 220, maxWidth: 300, padding: "10px 12px",
+            borderRadius: 10, background: "#fff", color: "#111",
+            fontSize: 12, lineHeight: 1.5,
+            boxShadow: "0 8px 30px rgba(0,0,0,0.18)", zIndex: 50,
+            fontFamily: FONT, border: "1px solid rgba(0,0,0,0.07)", whiteSpace: "normal",
+          }}
+        >
+          {tip}
+        </span>
+      )}
+    </span>
+  );
+}
+
+function MetaItem({ label, value, showTooltip = false }) {
+  const { main, tip } = showTooltip
+    ? splitMainAndTip(value)
+    : { main: value || "—", tip: null };
 
   return (
     <div style={{ minWidth: 0, fontFamily: FONT }}>
-      <div
-        style={{
-          fontSize: "0.7rem",
-          lineHeight: 1.1,
-          color: "#4b5563",
-          fontWeight: 600,
-          marginBottom: "0.15rem",
-          whiteSpace: "nowrap",
-        }}
-      >
-        {label}:
+      <div style={{
+        fontSize: 13, lineHeight: 1.3, color: "#334155",
+        fontWeight: 500, marginBottom: 4,
+      }}>
+        {label}
       </div>
-      <div
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          gap: "0.35rem",
-          fontSize: "0.8rem",
-          color: "#111",
-          fontWeight: 700,
-          minWidth: 0,
-        }}
-      >
-        <span
-          style={{
-            minWidth: 0,
-            overflowWrap: "anywhere",
-            wordBreak: "break-word",
-          }}
-        >
+      <div style={{
+        display: "inline-flex", alignItems: "center", gap: 4,
+        fontSize: 14, color: "#000000", fontWeight: 500, minWidth: 0,
+      }}>
+        <span style={{ overflowWrap: "anywhere", wordBreak: "break-word" }}>
           {main || "—"}
         </span>
-        {tip && (
-          <span
-            style={{
-              position: "relative",
-              display: "inline-flex",
-              alignItems: "center",
-              marginLeft: "0.15rem",
-            }}
-            onMouseEnter={() => setTipVisible(true)}
-            onMouseLeave={() => setTipVisible(false)}
-          >
-            <span
-              role="img"
-              aria-label={`More info about ${label}`}
-              tabIndex={0}
-              onFocus={() => setTipVisible(true)}
-              onBlur={() => setTipVisible(false)}
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: 16,
-                height: 16,
-                borderRadius: 999,
-                fontSize: 11,
-                lineHeight: 1,
-                cursor: "help",
-                userSelect: "none",
-                opacity: 0.85,
-              }}
-            >
-              ⓘ
-            </span>
-            {tipVisible && (
-              <span
-                role="tooltip"
-                style={{
-                  position: "absolute",
-                  left: 0,
-                  top: "calc(100% + 8px)",
-                  minWidth: 220,
-                  maxWidth: 360,
-                  padding: "10px 12px",
-                  borderRadius: 10,
-                  background: "#fff",
-                  color: "#111",
-                  fontSize: 12,
-                  lineHeight: 1.35,
-                  boxShadow: "0 8px 30px rgba(0,0,0,0.18)",
-                  zIndex: 50,
-                  fontFamily: FONT,
-                }}
-              >
-                {tip}
-              </span>
-            )}
-          </span>
-        )}
+        {showTooltip && tip && <InfoTooltip tip={tip} />}
       </div>
     </div>
   );
 }
 
-// ─── Source pill ───────────────────────────────────────────────────────────────
-function SourcePill({ title, url }) {
+function SourceRow({ url }) {
   const [hovered, setHovered] = useState(false);
-  const isExternal = /^https?:\/\//i.test(String(url));
+  const normalized = /^https?:\/\//i.test(url)
+    ? url
+    : /^www\./i.test(url) ? `https://${url}` : url;
+
   return (
-    <a
-      href={url}
-      target={isExternal ? "_blank" : undefined}
-      rel={isExternal ? "noreferrer" : undefined}
-      title={url}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 10,
-        padding: "12px 16px",
-        borderRadius: 12,
-        background: hovered ? "#ffffff" : "#F6F8FF",
-        border: `1px dashed ${hovered ? "rgba(40,65,129,0.28)" : "#AFB7CD"}`,
-        textDecoration: "none",
-        color: "#1d4ed8",
-        transition: "background 150ms ease, border-color 150ms ease",
-        fontFamily: FONT,
-      }}
-    >
-      <span
-        style={{
-          width: 18,
-          height: 18,
-          display: "inline-flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "#284181",
-          background: "rgba(40,65,129,0.08)",
-          border: "1px solid rgba(40,65,129,0.16)",
-          borderRadius: 6,
-          flex: "0 0 auto",
-        }}
-      >
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          aria-hidden="true"
-        >
-          <path
-            d="M10 13a5 5 0 0 1 0-7l1.2-1.2a5 5 0 0 1 7 7L17 13"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-          />
-          <path
-            d="M14 11a5 5 0 0 1 0 7L12.8 19.2a5 5 0 1 1-7-7L7 11"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-          />
-        </svg>
-      </span>
-      <span style={{ fontSize: 13, lineHeight: 1.25, color: "#1f3b8a" }}>
-        {title}
-      </span>
-    </a>
-  );
+  <a
+    href={normalized}
+    target="_blank"
+    rel="noopener noreferrer"
+    onMouseEnter={() => setHovered(true)}
+    onMouseLeave={() => setHovered(false)}
+    style={{
+      display: "flex", alignItems: "center", gap: 10,
+      minHeight: 38, textDecoration: "none", fontFamily: FONT,
+      borderBottom: "1px solid #F1F1F1",
+    }}
+  >
+    <span style={{
+      display: "inline-flex", alignItems: "center", justifyContent: "center",
+      width: 20, height: 20, flexShrink: 0, color: "#0F1B2D",
+    }}>
+      <img src="/assets/link.svg" alt="" width={20} height={10} style={{ display: "block" }} />
+    </span>
+    <span style={{
+      fontSize: 14, fontWeight: 500,
+      color: hovered ? "#1F3A6D" : "#0F1B2D",
+      textDecoration: "underline", textDecorationStyle: "solid",
+      textUnderlineOffset: "2px", transition: "color 150ms ease",
+      overflowWrap: "anywhere", wordBreak: "break-all",
+      lineHeight: 1.4, padding: "10px 0",
+    }}>
+      {url}
+    </span>
+  </a>
+);
 }
 
-function normalizeUrl(raw) {
-  const s = String(raw ?? "").trim();
-  if (!s) return null;
-  if (/^https?:\/\//i.test(s)) return s;
-  if (/^www\./i.test(s)) return `https://${s}`;
-  return s;
-}
-
-function makeSourcesFromLinks(linksValue) {
-  return splitValues(linksValue)
-    .map((p) => {
-      const url = normalizeUrl(p);
-      if (!url) return null;
-      let title = p;
-      try {
-        if (/^https?:\/\//i.test(url))
-          title = new URL(url).hostname.replace(/^www\./i, "");
-      } catch {
-        /* leave as-is */
-      }
-      return { title, url };
-    })
-    .filter(Boolean);
-}
-
-function SourcesSection({ linksValue }) {
-  const sources = useMemo(() => makeSourcesFromLinks(linksValue), [linksValue]);
-  return (
-    <section style={{ marginTop: "1.05rem" }}>
-      <h2
-        style={{
-          margin: "0 0 0.6rem",
-          fontSize: "1.05rem",
-          fontWeight: 800,
-          color: "#111",
-          fontFamily: FONT,
-        }}
-      >
-        Sources
-      </h2>
-      {sources.length ? (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 10,
-            marginTop: 10,
-          }}
-        >
-          {sources.map((s, idx) => (
-            <SourcePill key={`${s.url}-${idx}`} {...s} />
-          ))}
-        </div>
-      ) : (
-        <p style={{ color: "#666", margin: "0.25rem 0 0", fontFamily: FONT }}>
-          No sources
-        </p>
-      )}
-    </section>
-  );
-}
-
-// ─── Back button ───────────────────────────────────────────────────────────────
 function BackButton({ onClick }) {
   const [hovered, setHovered] = useState(false);
   return (
@@ -271,293 +137,326 @@ function BackButton({ onClick }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        display: "inline-flex",
-        alignItems: "center",
-        gap: "0.5rem",
-        border: "none",
-        background: hovered ? "rgba(40,65,129,0.1)" : "#eef2fc",
-        color: "#111",
-        padding: "0.5rem 0.85rem",
-        borderRadius: 8,
-        fontSize: "0.9rem",
-        fontWeight: 600,
+        display: "inline-flex", alignItems: "center", gap: 10,
+        height: 44, padding: "10px 16px",
+        borderRadius: 8, border: "none",
+        background:  "#1F3A6D",
+        color: "#fff", fontFamily: FONT, fontSize: 14, fontWeight: 500,
         cursor: "pointer",
-        fontFamily: FONT,
-        transition: "background 150ms ease",
+        transition: "background 250ms ease, box-shadow 250ms ease, transform 250ms ease",
+        flexShrink: 0, boxSizing: "border-box",
+      
+        whiteSpace: "nowrap",
       }}
     >
-      <span
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          justifyContent: "center",
-          width: 18,
-          height: 18,
-          padding: 0,
-          borderRadius: 6,
-          background: "transparent",
-          color: "#152A61",
-          fontSize: 16,
-          fontWeight: 600,
-          lineHeight: 1,
-        }}
-        aria-hidden="true"
-      >
-        ←
-      </span>
+      <img src="/assets/back.svg" alt="" width={18} height={12} style={{ display: "block" }} />
       <span>Back</span>
     </button>
   );
 }
 
-// ─── Main component ────────────────────────────────────────────────────────────
+function Breadcrumb({ sector, title }) {
+  return (
+    <nav
+      aria-label="Breadcrumb"
+      style={{
+        display: "flex", alignItems: "center", gap: 6,
+        fontFamily: FONT, fontSize: 14, color: "#6B7280",
+        flexWrap: "wrap", minWidth: 0, flex: 1,
+      }}
+    >
+      <Link
+        href="/library"
+        style={{ color: "#334155", fontWeight: 400, textDecoration: "none", whiteSpace: "nowrap" }}
+        onMouseEnter={(e) => (e.currentTarget.style.color = "#1F3A6D")}
+        onMouseLeave={(e) => (e.currentTarget.style.color = "#334155")}
+      >
+        {sector || "Library"}
+      </Link>
+      <span aria-hidden="true" style={{ color: "#334155", fontWeight: 400, fontSize: 20 }}>›</span>
+      <span style={{
+        color: "#1F3A6D", fontWeight: 400,
+        overflow: "hidden", textOverflow: "ellipsis",
+        whiteSpace: "nowrap", maxWidth: "55vw",
+      }}>
+        {title}
+      </span>
+    </nav>
+  );
+}
+
 export default function UseCaseDetailClient({ useCase }) {
   const router = useRouter();
 
   if (!useCase) {
     return (
-      <div
-        style={{
-          maxWidth: 1200,
-          margin: "0 auto",
-          padding: "1.1rem 1rem 2.25rem",
-          minHeight: "60vh",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: "0.75rem",
-          fontFamily: FONT,
-        }}
-      >
-        <h2
-          style={{
-            margin: 0,
-            fontSize: "1.25rem",
-            fontWeight: 800,
-            color: "#111",
-          }}
-        >
+      <div style={{
+        maxWidth: 1440, margin: "0 auto", padding: "2rem 1.5rem",
+        minHeight: "60vh", display: "flex", flexDirection: "column",
+        alignItems: "center", justifyContent: "center", gap: "0.75rem", fontFamily: FONT,
+      }}>
+        <h2 style={{ margin: 0, fontSize: "1.25rem", fontWeight: 800, color: "#111" }}>
           Use case not found
         </h2>
-        <p style={{ margin: 0, color: "#666" }}>
+        <p style={{ margin: 0, color: "#6B7280" }}>
           The link may be broken, or the item was removed.
         </p>
-        <Link
-          href="/library"
-          style={{
-            display: "inline-block",
-            padding: "0.6rem 0.85rem",
-            borderRadius: 10,
-            textDecoration: "none",
-            background: "#1e3a8a",
-            color: "#fff",
-            fontWeight: 700,
-            fontFamily: FONT,
-          }}
-        >
+        <Link href="/library" style={{
+          display: "inline-block", padding: "0.6rem 1.2rem",
+          borderRadius: 10, textDecoration: "none",
+          background: "#1F3A6D", color: "#fff", fontWeight: 700, fontFamily: FONT,
+        }}>
           Back to Use Case Library
         </Link>
       </div>
     );
   }
 
-  const title = useCase.Title || "Use case";
-  const description = useCase.Remarks || "";
+  const title = useCase.Title || "—";
+  const description = useCase.Description || useCase.Remarks || "";
   const region = useCase.Region || "—";
-  const subregion = useCase.Subregion || "";
   const country = useCase.Country || "—";
-  const accessibility = useCase.Accessibility || useCase.ModeOfAccess || "—";
-  const ialRaw = useCase.IdentityAssuranceLevel;
-  const aalRaw = useCase.AuthenticationAssuranceLevel;
-  const regionText = `${region}${subregion ? `; ${subregion}` : ""}`;
+  const sector = useCase.Sector || "";
+  const maturity = useCase.MaturityLevel || "—";
+  const modeAccess = useCase.ModeofAccess || "—";
+  const aalRaw = useCase.AuthenticationAssuranceLevel || "—";
   const keyTerms = splitValues(useCase.KeyTerms);
-  const linksValue = useCase.Links;
+
+  const sources = useMemo(() => {
+    const raw = String(useCase.Source || useCase.Links || "").trim();
+    if (!raw) return [];
+    return raw.split(/\n|,/).map((s) => s.trim()).filter(Boolean);
+  }, [useCase.Source, useCase.Links]);
 
   const handleBack = () => {
-    if (window.history.length > 1) router.back();
+    if (typeof window !== "undefined" && window.history.length > 1) router.back();
     else router.push("/library");
-  };
-
-  // content column — shared by all sections
-  const col = {
-    maxWidth: 980,
-    margin: "0 auto",
-    width: "100%",
-    boxSizing: "border-box",
   };
 
   return (
     <>
-      {/* Responsive overrides — only what inline styles can't express */}
       <style>{`
-        @media (max-width: 980px) {
-          .ucd-meta-strip { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+        @import url('https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700&display=swap');
+
+        /* ── Meta strip: matches library breakpoints ── */
+        .ucd-meta-strip {
+          display: grid;
+          grid-template-columns: repeat(6, minmax(0, 1fr));
+          gap: 20px 16px;
+        }
+        @media (max-width: 900px) {
+          .ucd-meta-strip {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+          }
         }
         @media (max-width: 560px) {
-          .ucd-page-wrap { padding: 0.9rem 0.85rem 2rem !important; }
-          .ucd-meta-strip { grid-template-columns: 1fr !important; }
+          .ucd-meta-strip {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px 12px;
+          }
+        }
+        @media (max-width: 360px) {
+          .ucd-meta-strip {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        /* ── Page wrapper padding: mirrors library pagePadding logic ── */
+        .ucd-page-wrap {
+          max-width: 1440px;
+          margin: 0 auto;
+          padding: 40px 100px 60px;
+          box-sizing: border-box;
+        }
+        @media (max-width: 1100px) {
+          .ucd-page-wrap { padding: 32px 48px 60px; }
+        }
+        @media (max-width: 860px) {
+          .ucd-page-wrap { padding: 28px 48px 48px; }
+        }
+        @media (max-width: 560px) {
+          .ucd-page-wrap { padding: 20px 16px 40px; }
+        }
+
+        /* ── Back + breadcrumb row ── */
+        .ucd-nav-row {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          margin-bottom: 28px;
+          flex-wrap: nowrap;
+          min-width: 0;
+        }
+        @media (max-width: 560px) {
+          .ucd-nav-row { gap: 10px; margin-bottom: 20px; }
+        }
+
+        /* ── Title ── */
+        .ucd-title {
+          margin: 0 0 16px;
+          font-size: 24px;
+          font-weight: 700;
+          line-height: 1.2;
+          color: #0F1B2D;
+          font-family: ${FONT};
+          overflow-wrap: anywhere;
+          word-break: break-word;
+        }
+        @media (max-width: 860px) {
+          .ucd-title { font-size: 22px; }
+        }
+        @media (max-width: 560px) {
+          .ucd-title { font-size: 19px; margin-bottom: 12px; }
+        }
+        @media (max-width: 360px) {
+          .ucd-title { font-size: 17px; }
+        }
+
+        /* ── Description ── */
+        .ucd-desc {
+          font-size: 16px;
+          font-weight: 400;
+          line-height: 1.6;
+          color: #334155;
+          font-family: ${FONT};
+          overflow-wrap: anywhere;
+          margin: 0;
+        }
+        @media (max-width: 560px) {
+          .ucd-desc { font-size: 15px; }
+        }
+
+        /* ── Section headings ── */
+        .ucd-section-heading {
+          margin: 0 0 16px;
+          font-size: 16px;
+          font-weight: 600;
+          color: #0F1B2D;
+          font-family: ${FONT};
+          line-height: 100%;
+        }
+
+        /* ── Key terms ── */
+        .ucd-terms-wrap {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+        }
+        .ucd-term {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 10px 14px;
+          border-radius: 12px;
+          background: #EEF4FF;
+          font-size: 14px;
+          font-weight: 400;
+          color: #334155;
+          font-family: ${FONT};
+          white-space: nowrap;
+          height: 38px;
+          box-sizing: border-box;
+        }
+        @media (max-width: 560px) {
+          .ucd-term { font-size: 13px; padding: 8px 12px; height: 34px; }
+        }
+
+        /* ── Meta strip container ── */
+        .ucd-meta-container {
+          background: #EEF4FF;
+          border-radius: 8px;
+          border: 1px solid #F7FAFF;
+          padding: 24px;
+          margin-bottom: 32px;
+          box-sizing: border-box;
+        }
+        @media (max-width: 560px) {
+          .ucd-meta-container { padding: 16px; margin-bottom: 24px; }
+        }
+
+        /* ── Sections spacing ── */
+        .ucd-section {
+          margin-bottom: 32px;
+        }
+        @media (max-width: 560px) {
+          .ucd-section { margin-bottom: 24px; }
         }
       `}</style>
 
-      <div
-        className="ucd-page-wrap"
-        style={{
-          maxWidth: 1200,
-          margin: "0 auto",
-          padding: "0.85rem 1rem 2.25rem",
-          fontFamily: FONT,
-        }}
-      >
-        {/* Back */}
-        <div
-          style={{
-            ...col,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "flex-start",
-            marginBottom: "0.85rem",
-          }}
-        >
+      <div className="ucd-page-wrap" style={{ fontFamily: FONT, background: "#fff", position: "relative", zIndex: 0 }}>
+
+        {/* ── Row 1: Back + Breadcrumb ── */}
+        <div className="ucd-nav-row">
           <BackButton onClick={handleBack} />
+          <Breadcrumb sector={sector} title={title} />
         </div>
 
-        {/* Header */}
-        <header style={{ ...col }}>
-          <h1
-            style={{
-              margin: "0 0 0.6rem",
-              color: "#111",
-              fontSize: 32,
-              lineHeight: 1.2,
-              fontWeight: 700,
-              overflowWrap: "anywhere",
-              wordBreak: "break-word",
-              fontFamily: FONT,
-            }}
-          >
-            {title}
-          </h1>
+        {/* ── Row 2: Title ── */}
+        <h1 className="ucd-title">{title}</h1>
 
+        {/* ── Row 3: Description ── */}
+        <div className="ucd-section">
           {description ? (
-            <div>
-              {String(description)
-                .split(/\n\s*\n/)
-                .map((p, idx) => (
-                  <p
-                    key={idx}
-                    style={{
-                      margin: "30px 0",
-                      color: "#222",
-                      lineHeight: 1.2,
-                      fontSize: 18,
-                      fontWeight: 400,
-                      textAlign: "justify",
-                      textJustify: "inter-word",
-                      hyphens: "auto",
-                      overflowWrap: "anywhere",
-                      fontFamily: FONT,
-                    }}
-                  >
-                    {p.trim()}
-                  </p>
-                ))}
-            </div>
+            String(description).split(/\n\s*\n/).map((para, idx) => (
+              <p
+                key={idx}
+                className="ucd-desc"
+                style={{ marginTop: idx === 0 ? 0 : 12 }}
+              >
+                {para.trim()}
+              </p>
+            ))
           ) : (
-            <p
-              style={{ color: "#666", margin: "0.25rem 0 0", fontFamily: FONT }}
-            >
+            <p style={{ margin: 0, color: "#9CA3AF", fontFamily: FONT }}>
               No description available.
             </p>
           )}
+        </div>
 
-          {/* Meta strip */}
-          <div
-            className="ucd-meta-strip"
-            role="group"
-            aria-label="Use case metadata"
-            style={{
-              marginTop: "0.9rem",
-              background: "#eef2fc",
-              borderRadius: 8,
-              padding: "0.75rem 0.9rem",
-              display: "grid",
-              gridTemplateColumns: "repeat(5, minmax(0, 1fr))",
-              gap: "0.9rem",
-              border: "1px solid rgba(17,24,39,0.08)",
-              width: "100%",
-              boxSizing: "border-box",
-            }}
-          >
-            <MetaItem label="Region" value={regionText} />
+        {/* ── Row 4: Meta strip ── */}
+        <div className="ucd-meta-container">
+          <div className="ucd-meta-strip" role="group" aria-label="Use case metadata">
+            <MetaItem label="Mode of Access" value={modeAccess} />
+            <MetaItem label="Maturity level" value={maturity} />
+            <MetaItem label="Region" value={region} />
             <MetaItem label="Country" value={country} />
-            <MetaItem label="Accessibility" value={accessibility} />
-            <MetaItem
-              label="Authentication Assurance Level"
-              tooltipValue={aalRaw}
-            />
-            <MetaItem label="Identity Assurance Level" tooltipValue={ialRaw} />
+            <MetaItem label="Sector" value={sector} />
+            <MetaItem label="Authentication Assurance Level" value={aalRaw} showTooltip />
           </div>
-        </header>
+        </div>
 
-        {/* Body */}
-        <main style={{ ...col, paddingTop: "0.95rem" }}>
-          {/* Key terms */}
-          <section style={{ marginTop: "1.05rem" }}>
-            <h2
-              style={{
-                margin: "0 0 0.6rem",
-                fontSize: "1.05rem",
-                fontWeight: 800,
-                color: "#111",
-                fontFamily: FONT,
-              }}
-            >
-              Key terms
-            </h2>
-            {keyTerms.length ? (
-              <div
-                style={{
-                  display: "flex",
-                  flexWrap: "wrap",
-                  gap: "0.6rem",
-                  marginTop: "0.5rem",
-                }}
-              >
-                {keyTerms.map((t) => (
-                  <span
-                    key={t}
-                    style={{
-                      border: "1px dashed #000",
-                      borderRadius: 12,
-                      padding: "0.45rem 0.75rem",
-                      fontSize: 16,
-                      fontWeight: 400,
-                      color: "#111",
-                      background: "#fff",
-                      overflowWrap: "anywhere",
-                      fontFamily: FONT,
-                    }}
-                  >
-                    {t}
-                  </span>
-                ))}
-              </div>
-            ) : (
-              <p
-                style={{
-                  color: "#666",
-                  margin: "0.25rem 0 0",
-                  fontFamily: FONT,
-                }}
-              >
-                No key terms listed.
-              </p>
-            )}
-          </section>
+        {/* ── Row 5: Key terms ── */}
+        <section className="ucd-section">
+          <h2 className="ucd-section-heading">Key terms</h2>
+          {keyTerms.length ? (
+            <div className="ucd-terms-wrap">
+              {keyTerms.map((term) => (
+                <span key={term} className="ucd-term">{term}</span>
+              ))}
+            </div>
+          ) : (
+            <p style={{ margin: 0, color: "#9CA3AF", fontFamily: FONT }}>
+              No key terms listed.
+            </p>
+          )}
+        </section>
 
-          <SourcesSection linksValue={linksValue} />
-        </main>
+        {/* ── Row 6: Sources ── */}
+        <section className="ucd-section">
+          <h2 className="ucd-section-heading">Sources</h2>
+          {sources.length ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+              {sources.map((url, idx) => (
+                <SourceRow key={`${url}-${idx}`} url={url} />
+              ))}
+            </div>
+          ) : (
+            <p style={{ margin: 0, color: "#9CA3AF", fontFamily: FONT }}>
+              No sources available.
+            </p>
+          )}
+        </section>
+
       </div>
     </>
   );

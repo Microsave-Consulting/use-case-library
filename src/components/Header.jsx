@@ -3,321 +3,273 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import ContactModal from "@/components/ContactModal";
+
+const FONT = "'Albert Sans', sans-serif";
 
 export default function Header() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const contactDialogRef = useRef(null);
-  const contactCloseBtnRef = useRef(null);
-  const lastActiveElRef = useRef(null);
+  const dropRef = useRef(null);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 12);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  const openContact = () => {
-    lastActiveElRef.current = document.activeElement;
-    setContactOpen(true);
-  };
-
-  const closeContact = () => {
-    setContactOpen(false);
-    setTimeout(() => lastActiveElRef.current?.focus?.(), 0);
-  };
-
-  useEffect(() => {
-    if (!contactOpen) return;
-    setTimeout(() => contactCloseBtnRef.current?.focus?.(), 0);
-
-    const onKeyDown = (e) => {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        closeContact();
-        return;
-      }
-      if (e.key !== "Tab") return;
-      const root = contactDialogRef.current;
-      if (!root) return;
-      const focusable = root.querySelectorAll(
-        'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])',
-      );
-      if (!focusable.length) return;
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      const active = document.activeElement;
-      if (e.shiftKey && active === first) {
-        e.preventDefault();
-        last.focus();
-        return;
-      }
-      if (!e.shiftKey && active === last) {
-        e.preventDefault();
-        first.focus();
+    const handler = (e) => {
+      if (dropRef.current && !dropRef.current.contains(e.target)) {
+        setMobileOpen(false);
       }
     };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
-    document.addEventListener("keydown", onKeyDown, true);
-    return () => document.removeEventListener("keydown", onKeyDown, true);
-  }, [contactOpen]);
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
 
   const isActive = (href) => pathname === href;
 
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700&display=swap');
 
-        .hdr-root {
-          position: sticky;
-          top: 0;
-          z-index: 100;
-          font-family: 'DM Sans', sans-serif;
-          transition: box-shadow 300ms ease, background 300ms ease;
-        }
-        .hdr-root.scrolled {
-          box-shadow: 0 4px 32px rgba(0,0,0,0.18);
-        }
+        /* ── Inner padding — native media queries, no Tailwind ── */
+        .hdr-inner { padding: 0 100px; }
+        @media (max-width: 1100px) { .hdr-inner { padding: 0 48px; } }
+        @media (max-width: 860px) { .hdr-inner { padding: 0 20px; } }
 
-        /* Nav link base */
+        /* ── Desktop nav links ── */
         .hdr-link {
           position: relative;
           display: inline-flex;
           align-items: center;
-          font-size: 15px;
-          font-weight: 500;
-          color: rgba(255,255,255,0.78);
+          font-size: 18px;
+          font-weight: 400;
+          color: #334155;
           text-decoration: none;
-          padding: 6px 2px;
-          letter-spacing: 0.01em;
-          transition: color 200ms ease;
+          padding: 0 4px;
+          height: 30px;
           white-space: nowrap;
+          font-family: 'Albert Sans', sans-serif;
+          transition: color 250ms ease, font-weight 250ms ease;
         }
-        .hdr-link::after {
-          content: '';
-          position: absolute;
-          bottom: 0; left: 0; right: 0;
-          height: 2px;
-          background: #EE8821;
-          border-radius: 2px;
-          transform: scaleX(0);
-          transform-origin: left;
-          transition: transform 220ms cubic-bezier(.4,0,.2,1);
-        }
-        .hdr-link:hover { color: #fff; }
-        .hdr-link:hover::after { transform: scaleX(1); }
-        .hdr-link.active {
-          color: #fff;
-          font-weight: 600;
-        }
-        .hdr-link.active::after { transform: scaleX(1); }
+        .hdr-link:hover { color: #1B66D1; font-weight: 600; text-decoration: none; }
+        .hdr-link.active { font-size: 18px; font-weight: 600; color: #1B66D1; text-decoration: none; }
 
-        /* Dropdown trigger */
         .hdr-drop-btn {
           position: relative;
           display: inline-flex;
           align-items: center;
-          gap: 5px;
-          font-size: 15px;
-          font-weight: 500;
-          color: rgba(255,255,255,0.78);
+          gap: 6px;
+          font-size: 18px;
+          font-weight: 400;
+          color: #334155;
           background: none;
           border: none;
-          padding: 6px 2px;
+          padding: 0 4px;
+          height: 30px;
           cursor: pointer;
-          letter-spacing: 0.01em;
-          transition: color 200ms ease;
           white-space: nowrap;
+          font-family: 'Albert Sans', sans-serif;
+          transition: color 250ms ease, font-weight 250ms ease;
         }
-        .hdr-drop-btn::after {
-          content: '';
-          position: absolute;
-          bottom: 0; left: 0; right: 0;
-          height: 2px;
-          background: #EE8821;
-          border-radius: 2px;
-          transform: scaleX(0);
-          transform-origin: left;
-          transition: transform 220ms cubic-bezier(.4,0,.2,1);
-        }
-        .hdr-drop-group:hover .hdr-drop-btn,
-        .hdr-drop-group:focus-within .hdr-drop-btn { color: #fff; }
-        .hdr-drop-group:hover .hdr-drop-btn::after,
-        .hdr-drop-group:focus-within .hdr-drop-btn::after { transform: scaleX(1); }
+        .hdr-drop-btn:hover { color: #1B66D1; font-weight: 600; }
 
-        .hdr-drop-arrow {
-          display: inline-block;
-          font-size: 10px;
-          opacity: 0.6;
-          transition: transform 200ms ease;
-        }
-        .hdr-drop-group:hover .hdr-drop-arrow,
-        .hdr-drop-group:focus-within .hdr-drop-arrow { transform: rotate(180deg); opacity: 1; }
-
-        /* Dropdown panel */
+        /* ── Desktop hackathons dropdown ── */
         .hdr-dropdown {
           position: absolute;
-          top: calc(100% + 14px);
+          top: calc(100% + 12px);
           left: 50%;
-          transform: translateX(-50%);
-          min-width: 280px;
+          transform: translateX(-50%) translateY(-6px);
+          min-width: 290px;
           background: #fff;
           border-radius: 14px;
-          box-shadow: 0 16px 48px rgba(0,0,0,0.16), 0 2px 8px rgba(0,0,0,0.08);
-          border: 1px solid rgba(0,0,0,0.06);
+          box-shadow: 0 16px 48px rgba(0,0,0,0.14), 0 2px 8px rgba(0,0,0,0.06);
+          border: 1px solid rgba(0,0,0,0.07);
           padding: 6px;
           opacity: 0;
           visibility: hidden;
-          transform: translateX(-50%) translateY(-6px);
           transition: opacity 200ms ease, transform 200ms ease, visibility 200ms;
+          z-index: 60;
         }
         .hdr-drop-group:hover .hdr-dropdown,
         .hdr-drop-group:focus-within .hdr-dropdown {
-          opacity: 1;
-          visibility: visible;
-          transform: translateX(-50%) translateY(0);
+          opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0);
         }
         .hdr-dropdown::before {
           content: '';
           position: absolute;
-          top: -6px; left: 50%;
-          transform: translateX(-50%);
-          width: 12px; height: 12px;
+          top: -5px; left: 50%;
+          transform: translateX(-50%) rotate(45deg);
+          width: 10px; height: 10px;
           background: #fff;
-          border-left: 1px solid rgba(0,0,0,0.06);
-          border-top: 1px solid rgba(0,0,0,0.06);
-          rotate: 45deg;
+          border-left: 1px solid rgba(0,0,0,0.07);
+          border-top: 1px solid rgba(0,0,0,0.07);
         }
         .hdr-dropdown a {
           display: block;
           padding: 10px 16px;
           font-size: 14px;
-          font-weight: 500;
+          font-weight: 400;
           color: #374151;
           text-decoration: none;
           border-radius: 9px;
-          transition: background 150ms ease, color 150ms ease;
+          font-family: 'Albert Sans', sans-serif;
+          transition: background 250ms ease, color 250ms ease, font-weight 250ms ease;
           line-height: 1.4;
         }
-        .hdr-dropdown a:hover { background: #EEF2FC; color: #284181; }
+        .hdr-dropdown a:hover { background: #EEF2FC; color: #1B66D1; font-weight: 600; }
 
-        /* CTA button */
+        /* ── CTA ── */
         .hdr-cta {
           display: inline-flex;
           align-items: center;
-          gap: 6px;
-          background: #EE8821;
-          color: #fff;
-          font-family: 'DM Sans', sans-serif;
-          font-size: 14px;
+          justify-content: center;
+          width: 126px;
+          height: 46px;
+          background: #1F3A6D;
+          color: #ffffff;
+          font-family: 'Albert Sans', sans-serif;
+          font-size: 18px;
           font-weight: 600;
-          padding: 9px 22px;
-          border-radius: 10px;
+          padding: 12px 16px;
+          border-radius: 26px;
           border: none;
           cursor: pointer;
-          letter-spacing: 0.02em;
-          box-shadow: 0 2px 12px rgba(238,136,33,0.38);
-          transition: transform 180ms ease, box-shadow 180ms ease, opacity 180ms ease;
           white-space: nowrap;
+          transition: background 200ms ease;
         }
-        .hdr-cta:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 6px 20px rgba(238,136,33,0.48);
-        }
-        .hdr-cta:active { transform: translateY(0); }
+        .hdr-cta:hover { background: #1B66D1; }
 
-        /* Mobile drawer */
-        .hdr-drawer {
-          background: #1d3070;
-          border-top: 1px solid rgba(255,255,255,0.1);
-          box-shadow: 0 12px 32px rgba(0,0,0,0.22);
-        }
-        .hdr-drawer-link {
-          display: flex;
-          align-items: center;
-          padding: 14px 0;
-          font-size: 16px;
-          font-weight: 500;
-          color: rgba(255,255,255,0.85);
-          text-decoration: none;
-          border-bottom: 1px solid rgba(255,255,255,0.08);
-          transition: color 150ms ease, padding-left 150ms ease;
-        }
-        .hdr-drawer-link:hover { color: #fff; padding-left: 6px; }
-        .hdr-drawer-link:last-of-type { border-bottom: none; }
-
-        /* Hamburger */
+        /* ── Hamburger — hidden on desktop ── */
         .hdr-ham {
           display: none;
           align-items: center;
           justify-content: center;
-          width: 38px; height: 38px;
-          border-radius: 9px;
-          background: rgba(255,255,255,0.1);
-          border: 1px solid rgba(255,255,255,0.15);
-          color: white;
-          font-size: 17px;
+          width: 40px; height: 40px;
+          border-radius: 10px;
+          background: #ffffff;
+          border: 1.5px solid #DDE5F5;
           cursor: pointer;
+          transition: background 200ms ease, border-color 200ms ease;
+          flex-shrink: 0;
+        }
+        .hdr-ham:hover { background: #EEF2FC; border-color: #1B66D1; }
+        .hdr-ham .bar {
+          display: block;
+          width: 17px; height: 1.5px;
+          background: #1F3A6D;
+          border-radius: 2px;
+          transition: transform 260ms ease, opacity 200ms ease, width 200ms ease;
+          transform-origin: center;
+        }
+        .hdr-ham .bars { display: flex; flex-direction: column; gap: 4px; }
+        .hdr-ham.open .bar:nth-child(1) { transform: translateY(5.5px) rotate(45deg); }
+        .hdr-ham.open .bar:nth-child(2) { opacity: 0; width: 0; }
+        .hdr-ham.open .bar:nth-child(3) { transform: translateY(-5.5px) rotate(-45deg); }
+
+        /* ── Breakpoint ── */
+        @media (max-width: 860px) {
+          .hdr-nav-links { display: none !important; }
+          .hdr-ham { display: inline-flex !important; }
+          /* On mobile: logo flush left, right group flush right */
+          .hdr-nav { justify-content: space-between !important; }
+          .hdr-logo { margin-right: 0 !important; }
+        }
+
+        /* ── Mobile dropdown — white theme ── */
+        .mob-drop {
+          position: absolute;
+          top: calc(100% + 10px);
+          right: 0;
+          width: 232px;
+          background: #ffffff;
+          border-radius: 14px;
+          box-shadow: 0 16px 48px rgba(31,58,109,0.14), 0 2px 8px rgba(0,0,0,0.07);
+          border: 1px solid #DDE5F5;
+          padding: 8px;
+          z-index: 200;
+          transform-origin: top right;
+          animation: mobDropIn 180ms cubic-bezier(0.34,1.3,0.64,1) forwards;
+        }
+        @keyframes mobDropIn {
+          from { opacity: 0; transform: scale(0.93) translateY(-8px); }
+          to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .mob-drop-label {
+          font-size: 10px;
+          font-weight: 700;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          color: #9CA3AF;
+          padding: 6px 12px 4px;
+          margin: 0;
+          font-family: 'Albert Sans', sans-serif;
+        }
+        .mob-drop-item {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          width: 100%;
+          padding: 10px 12px;
+          font-size: 14px;
+          font-weight: 500;
+          color: #334155;
+          text-decoration: none;
+          border-radius: 9px;
+          font-family: 'Albert Sans', sans-serif;
+          background: transparent;
+          border: none;
+          cursor: pointer;
+          text-align: left;
+          box-sizing: border-box;
+          transition: background 150ms ease, color 150ms ease;
+        }
+        .mob-drop-item:hover { background: #EEF2FC; color: #1B66D1; }
+        .mob-drop-item.mob-active { background: #EEF2FC; color: #1B66D1; font-weight: 600; }
+        .mob-dot {
+          width: 6px; height: 6px;
+          border-radius: 50%;
+          background: #DDE5F5;
+          flex-shrink: 0;
           transition: background 150ms ease;
         }
-        .hdr-ham:hover { background: rgba(255,255,255,0.18); }
-
-        @media (max-width: 720px) {
-          .hdr-nav-links { display: none !important; }
-          .hdr-ham { display: inline-flex; }
+        .mob-drop-item:hover .mob-dot { background: #1B66D1; }
+        .mob-drop-item.mob-active .mob-dot { background: #1B66D1; }
+        .mob-drop-divider {
+          height: 1px;
+          background: #EEF2FC;
+          margin: 6px 4px;
         }
-
-        /* Modal */
-        .hdr-modal-backdrop {
-          position: fixed; inset: 0;
-          background: rgba(17,24,39,0.6);
-          backdrop-filter: blur(6px);
-          display: flex; align-items: center; justify-content: center;
-          z-index: 1000;
-          animation: hdrFadeIn 200ms ease;
-        }
-        .hdr-modal {
-          background: #fff;
-          border-radius: 20px;
-          padding: 2.25rem;
-          width: min(440px, calc(100% - 2rem));
-          box-shadow: 0 32px 80px rgba(0,0,0,0.22);
-          border: 1px solid rgba(0,0,0,0.06);
-          animation: hdrSlideUp 220ms cubic-bezier(.34,1.56,.64,1);
-          text-align: center;
-        }
-        @keyframes hdrFadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes hdrSlideUp { from { opacity: 0; transform: translateY(16px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
       `}</style>
 
-      {/* ===== HEADER ===== */}
-      <header className={`hdr-root bg-[#284181]${scrolled ? " scrolled" : ""}`}>
-        <div className="max-w-[1200px] mx-auto px-8 max-[980px]:px-5">
+      <header
+        style={{ fontFamily: FONT }}
+        className="fixed top-0 left-0 right-0 z-[100] w-full bg-white border-b border-[rgba(140,140,140,0.11)]"
+      >
+        <div className="hdr-inner">
           <nav
-            className="grid items-center h-[72px]"
-            style={{ gridTemplateColumns: "auto 1fr auto", gap: "24px" }}
+            className="hdr-nav flex items-center justify-between h-[91px]"
             aria-label="Primary"
           >
-            {/* LEFT: Logo */}
+            {/* Logo — original styling, untouched */}
             <Link
               href="/"
               aria-label="MSC Home"
-              className="inline-flex items-center no-underline shrink-0"
+              className="hdr-logo shrink-0 flex items-center no-underline"
             >
               <img
                 src="/assets/msc-logo.svg"
                 alt="MSC"
-                style={{ height: 36, width: "auto", display: "block" }}
+                className="h-[59px] w-[100px] object-contain block"
               />
             </Link>
 
-            {/* CENTER: Nav links */}
+            {/* Desktop nav links */}
             <div
-              className="hdr-nav-links inline-flex justify-center items-center"
-              style={{ gap: "36px" }}
+              className="hdr-nav-links flex items-center h-[32px]"
+              style={{ gap: 16 }}
             >
               <Link
                 href="/"
@@ -326,7 +278,6 @@ export default function Header() {
                 Home
               </Link>
 
-              {/* Hackathons dropdown */}
               <div className="hdr-drop-group relative">
                 <button
                   type="button"
@@ -334,9 +285,21 @@ export default function Header() {
                   className="hdr-drop-btn"
                 >
                   Hackathons
-                  <span className="hdr-drop-arrow" aria-hidden="true">
-                    ▾
-                  </span>
+                  <svg
+                    width="12"
+                    height="7.41"
+                    viewBox="0 0 12 7.41"
+                    fill="none"
+                    style={{ color: "#334155", flexShrink: 0 }}
+                  >
+                    <path
+                      d="M1 1l5 5.41L11 1"
+                      stroke="currentColor"
+                      strokeWidth="1.6"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
                 </button>
                 <div className="hdr-dropdown">
                   <a
@@ -362,198 +325,100 @@ export default function Header() {
               >
                 Use Case Library
               </Link>
-              <Link
-                href="/about"
-                className={`hdr-link${isActive("/about") ? " active" : ""}`}
-              >
-                About Us
-              </Link>
-              <Link
-                href="/blog"
-                className={`hdr-link${isActive("/blog") ? " active" : ""}`}
-              >
-                Blog
-              </Link>
             </div>
 
-            {/* RIGHT */}
-            <div className="flex items-center shrink-0" style={{ gap: "12px" }}>
-              {/* Mobile hamburger */}
-              <button
-                type="button"
-                aria-label={mobileOpen ? "Close menu" : "Open menu"}
-                aria-expanded={mobileOpen}
-                onClick={() => setMobileOpen((s) => !s)}
-                className="hdr-ham"
-              >
-                <span aria-hidden="true">{mobileOpen ? "✕" : "☰"}</span>
-              </button>
+            {/* Right side: hamburger (mobile only) + Contact Us */}
+            <div className="flex items-center shrink-0 gap-3" ref={dropRef}>
+              {/* Hamburger wrapper */}
+              <div style={{ position: "relative" }}>
+                <button
+                  type="button"
+                  aria-label={mobileOpen ? "Close menu" : "Open menu"}
+                  aria-expanded={mobileOpen}
+                  onClick={() => setMobileOpen((s) => !s)}
+                  className={`hdr-ham${mobileOpen ? " open" : ""}`}
+                >
+                  <span className="bars" aria-hidden="true">
+                    <span className="bar" />
+                    <span className="bar" />
+                    <span className="bar" />
+                  </span>
+                </button>
+
+                {mobileOpen && (
+                  <div className="mob-drop" role="menu">
+                    <p className="mob-drop-label">Navigation</p>
+
+                    <Link
+                      href="/"
+                      role="menuitem"
+                      className={`mob-drop-item${isActive("/") ? " mob-active" : ""}`}
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      <span className="mob-dot" />
+                      Home
+                    </Link>
+
+                    <Link
+                      href="/library"
+                      role="menuitem"
+                      className={`mob-drop-item${isActive("/library") ? " mob-active" : ""}`}
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      <span className="mob-dot" />
+                      Use Case Library
+                    </Link>
+
+                    <div className="mob-drop-divider" />
+                    <p className="mob-drop-label">Hackathons</p>
+
+                    <a
+                      href="https://www.africa.engineering.cmu.edu/research/upanzi/id-hackathon.html"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      role="menuitem"
+                      className="mob-drop-item"
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      <span className="mob-dot" />
+                      Digital ID Hackathon Africa
+                    </a>
+
+                    <a
+                      href="https://digitalidinnovations.com/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      role="menuitem"
+                      className="mob-drop-item"
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      <span className="mob-dot" />
+                      PNG National Digital ID Hackathon
+                    </a>
+                  </div>
+                )}
+              </div>
 
               {/* Contact Us */}
               <button
                 type="button"
-                className="hdr-cta"
                 onClick={() => {
                   setMobileOpen(false);
-                  openContact();
+                  setContactOpen(true);
                 }}
+                className="hdr-cta"
               >
                 Contact Us
               </button>
             </div>
           </nav>
         </div>
-
-        {/* Mobile drawer */}
-        {mobileOpen && (
-          <div
-            className="hdr-drawer absolute left-0 right-0 top-[72px] z-[60]"
-            role="menu"
-            aria-hidden={!mobileOpen}
-          >
-            <div className="max-w-[1200px] mx-auto px-6 py-3 flex flex-col">
-              {[
-                { href: "/", label: "Home" },
-                { href: "/library", label: "Use Case Library" },
-                { href: "/about", label: "About Us" },
-                { href: "/blog", label: "Blog" },
-              ].map(({ href, label }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  className="hdr-drawer-link"
-                  onClick={() => setMobileOpen(false)}
-                >
-                  {label}
-                </Link>
-              ))}
-              <div style={{ paddingTop: "16px" }}>
-                <button
-                  type="button"
-                  className="hdr-cta"
-                  onClick={() => {
-                    setMobileOpen(false);
-                    openContact();
-                  }}
-                >
-                  Contact Us
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
       </header>
 
-      {/* ===== CONTACT MODAL ===== */}
-      {contactOpen && (
-        <div
-          className="hdr-modal-backdrop"
-          onMouseDown={(e) => {
-            if (e.target === e.currentTarget) closeContact();
-          }}
-        >
-          <div
-            ref={contactDialogRef}
-            className="hdr-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="contact-modal-title"
-            onMouseDown={(e) => e.stopPropagation()}
-            tabIndex={-1}
-          >
-            {/* Icon */}
-            <div
-              style={{
-                width: 52,
-                height: 52,
-                borderRadius: "50%",
-                background: "linear-gradient(135deg, #284181, #3a5bb8)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                margin: "0 auto 16px",
-                boxShadow: "0 8px 24px rgba(40,65,129,0.25)",
-              }}
-            >
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="white"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                <polyline points="22,6 12,13 2,6" />
-              </svg>
-            </div>
-
-            <h2
-              id="contact-modal-title"
-              style={{
-                margin: "0 0 8px",
-                fontSize: "1.3rem",
-                fontWeight: 700,
-                color: "#111827",
-                fontFamily: "'DM Sans', sans-serif",
-              }}
-            >
-              Get in Touch
-            </h2>
-            <p
-              style={{
-                margin: "0 0 24px",
-                fontSize: "0.9rem",
-                color: "#6B7280",
-                lineHeight: 1.6,
-                fontFamily: "'DM Sans', sans-serif",
-              }}
-            >
-              For any queries please reach out to us at{" "}
-              <a
-                href="mailto:placeholder@microsave.net"
-                style={{
-                  color: "#284181",
-                  fontWeight: 600,
-                  textDecoration: "none",
-                }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.textDecoration = "underline")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.textDecoration = "none")
-                }
-              >
-                placeholder@microsave.net
-              </a>
-            </p>
-            <button
-              ref={contactCloseBtnRef}
-              type="button"
-              onClick={closeContact}
-              style={{
-                width: "100%",
-                background: "#284181",
-                color: "#fff",
-                padding: "11px 0",
-                borderRadius: "10px",
-                border: "none",
-                cursor: "pointer",
-                fontSize: "0.9rem",
-                fontWeight: 600,
-                fontFamily: "'DM Sans', sans-serif",
-                transition: "opacity 150ms ease",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.88")}
-              onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
+      <ContactModal
+        isOpen={contactOpen}
+        onClose={() => setContactOpen(false)}
+      />
     </>
   );
 }

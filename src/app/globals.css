@@ -25,3 +25,17 @@
 *::before,
 *::after { box-sizing: border-box; }
 body { margin: 0; }
+
+
+
+header {
+  background-color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+.ucl-layout,
+.ucl-content {
+  height: auto !important;
+  overflow: visible !important;
+  max-height: none !important;
+}

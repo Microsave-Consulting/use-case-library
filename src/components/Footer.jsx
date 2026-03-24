@@ -22,41 +22,133 @@ export default function Footer() {
 
   return (
     <>
-      {/* ===== FOOTER ===== */}
-      <footer
-        className="bg-[#284181] text-white"
-        style={{ fontFamily: "'Albert Sans', system-ui, sans-serif" }}
-      >
-        {/* 4-column grid — matches original 1.8fr 1fr 1fr 1fr */}
-        <div
-          className="max-w-[1200px] mx-auto px-4"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1.8fr 1fr 1fr 1fr",
-            gap: "20px",
-            alignItems: "start",
-            padding: "28px 16px",
-          }}
-        >
-          {/* Brand */}
-          <div>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700&display=swap');
+
+        @keyframes ftrFadeIn  { from { opacity:0 } to { opacity:1 } }
+        @keyframes ftrSlideUp { from { opacity:0; transform:translateY(16px) scale(.97) } to { opacity:1; transform:translateY(0) scale(1) } }
+
+        .ftr-root {
+          font-family: 'Albert Sans', sans-serif;
+          background: #FFFFFF;
+          box-shadow: 0 -1px 0 0 #F1F1F1, 0 4px 4px 0 rgba(0,0,0,0.11);
+        }
+
+        .ftr-grid {
+          max-width: 1440px;
+          padding: 48px 100px;
+          display: grid;
+          grid-template-columns: 1fr auto auto auto;
+          gap: 80px;
+          align-items: start;
+        }
+
+        /* Large desktop: tighten gap slightly */
+        @media (max-width: 1300px) {
+          .ftr-grid {
+            gap: 56px;
+            padding: 48px 60px;
+          }
+        }
+
+        /* Tablet landscape */
+        @media (max-width: 1100px) {
+          .ftr-grid {
+            gap: 40px;
+            padding: 40px 48px;
+          }
+        }
+
+        /* Tablet portrait: 2-col */
+        @media (max-width: 860px) {
+          .ftr-grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 36px 48px;
+            padding: 36px 32px;
+          }
+          .ftr-brand {
+            grid-column: 1 / -1;
+          }
+        }
+
+        /* Mobile */
+        @media (max-width: 540px) {
+          .ftr-grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 28px 24px;
+            padding: 32px 20px;
+          }
+          .ftr-brand {
+            grid-column: 1 / -1;
+          }
+        }
+
+        /* Very small mobile: single column */
+        @media (max-width: 360px) {
+          .ftr-grid {
+            grid-template-columns: 1fr;
+            gap: 28px;
+            padding: 28px 16px;
+          }
+          .ftr-brand {
+            grid-column: 1;
+          }
+        }
+
+        .ftr-link {
+          color: #334155;
+          text-decoration: none;
+          font-size: 14px;
+          font-weight: 400;
+          line-height: 100%;
+          white-space: nowrap;
+          font-family: 'Albert Sans', sans-serif;
+          transition: color 150ms ease;
+        }
+        .ftr-link:hover { color: #1F3A6D; }
+
+        .ftr-bottom {
+          background: #FBFBFB;
+          border-top: 1px solid #F1F1F1;
+          padding: 18px 20px;
+        }
+        .ftr-bottom p {
+          margin: 0;
+          text-align: center;
+          font-family: 'Albert Sans', sans-serif;
+          font-size: 15px;
+          font-weight: 400;
+          color: #334155;
+          line-height: 100%;
+        }
+
+        @media (max-width: 480px) {
+          .ftr-bottom p { font-size: 13px; }
+        }
+      `}</style>
+
+      <footer className="ftr-root">
+        <div className="ftr-grid">
+          {/* ── Brand ── */}
+          <div className="ftr-brand" style={{ maxWidth: 417 }}>
             <img
               src="/assets/msc-logo.svg"
-              alt="MSC"
+              alt="MSC MicroSave Consulting"
               style={{
-                height: 30,
-                width: "auto",
+                height: 59,
+                width: 100,
                 display: "block",
                 marginBottom: 12,
               }}
             />
             <p
               style={{
-                margin: "0 0 12px",
-                fontSize: 13,
-                color: "rgba(255,255,255,0.85)",
-                maxWidth: 320,
+                fontSize: 14,
+                fontWeight: 400,
+                color: "#334155",
                 lineHeight: 1.6,
+                letterSpacing: 0,
+                marginBottom: 16,
               }}
             >
               MSC (MicroSave Consulting) is a global consulting firm that
@@ -64,98 +156,106 @@ export default function Footer() {
               the digital age.
             </p>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <a href="#" aria-label="LinkedIn">
+              <a
+                href="#"
+                aria-label="LinkedIn"
+                style={{ display: "inline-flex", width: 24, height: 24 }}
+              >
                 <img
-                  src="/assets/li_white.svg"
+                  src="/assets/linkedin.svg"
                   alt="LinkedIn"
-                  style={{ width: 28, height: 28 }}
+                  style={{ width: 24, height: 24 }}
                 />
               </a>
-              <a href="#" aria-label="X">
+              <a
+                href="#"
+                aria-label="X (Twitter)"
+                style={{ display: "inline-flex", width: 24, height: 24 }}
+              >
                 <img
-                  src="/assets/x_white.svg"
+                  src="/assets/twitter.svg"
                   alt="X"
-                  style={{ width: 28, height: 28 }}
+                  style={{ width: 24, height: 24 }}
                 />
               </a>
             </div>
           </div>
 
-          {/* Platform */}
+          {/* ── Platform ── */}
           <div>
             <h4
               style={{
-                margin: "0 0 8px",
-                fontSize: 13,
-                letterSpacing: "0.08em",
-                textTransform: "uppercase",
-                color: "rgba(255,255,255,0.9)",
+                margin: "0 0 12px 0",
+                fontSize: 16,
                 fontWeight: 600,
+                color: "#334155",
+                textTransform: "uppercase",
+                whiteSpace: "nowrap",
+                lineHeight: "100%",
+                letterSpacing: 0,
               }}
             >
               PLATFORM
             </h4>
-            <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+            <ul
+              style={{
+                listStyle: "none",
+                margin: 0,
+                padding: 0,
+                display: "flex",
+                flexDirection: "column",
+                gap: 8,
+              }}
+            >
               <li>
-                <Link
-                  href="/library"
-                  style={{
-                    color: "rgba(255,255,255,0.9)",
-                    textDecoration: "none",
-                    fontSize: 16,
-                    fontWeight: 400,
-                  }}
-                  className="hover:underline"
-                >
+                <Link href="/library" className="ftr-link">
                   Library
                 </Link>
               </li>
               <li>
-                <a
-                  href="#"
-                  style={{
-                    color: "rgba(255,255,255,0.9)",
-                    textDecoration: "none",
-                    fontSize: 16,
-                    fontWeight: 400,
-                  }}
-                  className="hover:underline"
-                >
+                <a href="#" className="ftr-link">
                   Hackathons
                 </a>
               </li>
             </ul>
           </div>
 
-          {/* Partner with us */}
+          {/* ── Partner With Us ── */}
           <div>
             <h4
               style={{
-                margin: "0 0 8px",
-                fontSize: 13,
-                letterSpacing: "0.08em",
-                textTransform: "uppercase",
-                color: "rgba(255,255,255,0.9)",
+                margin: "0 0 12px 0",
+                fontSize: 16,
                 fontWeight: 600,
+                color: "#334155",
+                textTransform: "uppercase",
+                whiteSpace: "nowrap",
+                lineHeight: "100%",
+                letterSpacing: 0,
               }}
             >
-              Partner with us
+              PARTNER WITH US
             </h4>
-            <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+            <ul
+              style={{
+                listStyle: "none",
+                margin: 0,
+                padding: 0,
+                display: "flex",
+                flexDirection: "column",
+                gap: 8,
+              }}
+            >
               <li>
                 <button
                   type="button"
                   onClick={openContact}
-                  className="hover:underline"
+                  className="ftr-link"
                   style={{
                     background: "transparent",
                     border: "none",
                     padding: 0,
                     margin: 0,
-                    color: "rgba(255,255,255,0.9)",
-                    fontFamily: "inherit",
-                    fontSize: 16,
-                    fontWeight: 400,
                     cursor: "pointer",
                     textAlign: "left",
                   }}
@@ -166,46 +266,39 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Legal */}
+          {/* ── Legal ── */}
           <div>
             <h4
               style={{
-                margin: "0 0 8px",
-                fontSize: 13,
-                letterSpacing: "0.08em",
-                textTransform: "uppercase",
-                color: "rgba(255,255,255,0.9)",
+                margin: "0 0 12px 0",
+                fontSize: 16,
                 fontWeight: 600,
+                color: "#334155",
+                textTransform: "uppercase",
+                whiteSpace: "nowrap",
+                lineHeight: "100%",
+                letterSpacing: 0,
               }}
             >
               LEGAL
             </h4>
-            <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+            <ul
+              style={{
+                listStyle: "none",
+                margin: 0,
+                padding: 0,
+                display: "flex",
+                flexDirection: "column",
+                gap: 8,
+              }}
+            >
               <li>
-                <a
-                  href="#"
-                  style={{
-                    color: "rgba(255,255,255,0.9)",
-                    textDecoration: "none",
-                    fontSize: 16,
-                    fontWeight: 400,
-                  }}
-                  className="hover:underline"
-                >
+                <a href="#" className="ftr-link">
                   Privacy Policy
                 </a>
               </li>
               <li>
-                <a
-                  href="#"
-                  style={{
-                    color: "rgba(255,255,255,0.9)",
-                    textDecoration: "none",
-                    fontSize: 16,
-                    fontWeight: 400,
-                  }}
-                  className="hover:underline"
-                >
+                <a href="#" className="ftr-link">
                   Terms of Use
                 </a>
               </li>
@@ -213,57 +306,134 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Bottom bar */}
-        <div
-          style={{
-            borderTop: "1px solid rgba(255,255,255,0.05)",
-            padding: "12px 0 28px",
-            background: "rgba(0,0,0,0.02)",
-          }}
-        >
-          <div className="max-w-[1200px] mx-auto px-4">
-            <p
-              style={{
-                margin: 0,
-                textAlign: "center",
-                color: "rgba(255,255,255,0.8)",
-                fontSize: 13,
-              }}
-            >
-              © 2026 Microsave Consulting &nbsp; All rights reserved.
-            </p>
-          </div>
+        {/* ── Bottom bar ── */}
+        <div className="ftr-bottom">
+          <p>© 2026 MicroSave Consulting &nbsp; All rights reserved.</p>
         </div>
       </footer>
 
-      {/* ===== CONTACT MODAL — original logic restored ===== */}
+      {/* ── Contact Modal ── */}
       {contactOpen && (
         <div
-          className="contact-modal-overlay"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="contact-modal-title"
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(17,24,39,0.5)",
+            backdropFilter: "blur(6px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+            animation: "ftrFadeIn 200ms ease",
+          }}
           onMouseDown={(e) => {
             if (e.target === e.currentTarget) closeContact();
           }}
         >
           <div
-            className="contact-modal"
             ref={contactDialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="ftr-contact-title"
+            tabIndex={-1}
             onMouseDown={(e) => e.stopPropagation()}
+            style={{
+              fontFamily: "'Albert Sans', sans-serif",
+              animation: "ftrSlideUp 220ms cubic-bezier(.34,1.56,.64,1)",
+              background: "#fff",
+              borderRadius: 20,
+              padding: "2.25rem",
+              width: "min(440px, calc(100% - 2rem))",
+              boxShadow: "0 32px 80px rgba(0,0,0,0.18)",
+              border: "1px solid rgba(0,0,0,0.06)",
+              textAlign: "center",
+            }}
           >
-            <h2 id="contact-modal-title">Contact Us</h2>
-            <p>
-              For any queries please contact{" "}
-              <a href="mailto:placeholder@microsave.net">
+            <div
+              style={{
+                width: 52,
+                height: 52,
+                borderRadius: "50%",
+                background: "linear-gradient(135deg,#1F3A6D,#3a5bb8)",
+                boxShadow: "0 8px 24px rgba(31,58,109,0.22)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                margin: "0 auto 16px",
+              }}
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                <polyline points="22,6 12,13 2,6" />
+              </svg>
+            </div>
+
+            <h2
+              id="ftr-contact-title"
+              style={{
+                margin: "0 0 8px",
+                fontSize: "1.3rem",
+                fontWeight: 700,
+                color: "#111827",
+              }}
+            >
+              Get in Touch
+            </h2>
+            <p
+              style={{
+                margin: "0 0 24px",
+                fontSize: "0.9rem",
+                color: "#6B7280",
+                lineHeight: 1.6,
+              }}
+            >
+              For any queries please reach out to us at{" "}
+              <a
+                href="mailto:placeholder@microsave.net"
+                style={{
+                  color: "#1F3A6D",
+                  fontWeight: 600,
+                  textDecoration: "none",
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.textDecoration = "underline")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.textDecoration = "none")
+                }
+              >
                 placeholder@microsave.net
               </a>
             </p>
+
             <button
-              type="button"
-              className="contact-modal-close"
-              onClick={closeContact}
               ref={contactCloseBtnRef}
+              type="button"
+              onClick={closeContact}
+              style={{
+                width: "100%",
+                background: "#1F3A6D",
+                color: "#fff",
+                padding: "11px 0",
+                borderRadius: 10,
+                border: "none",
+                cursor: "pointer",
+                fontSize: "0.9rem",
+                fontWeight: 600,
+                fontFamily: "'Albert Sans', sans-serif",
+                transition: "opacity 150ms ease",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.88")}
+              onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
             >
               Close
             </button>

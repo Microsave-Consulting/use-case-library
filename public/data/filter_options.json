@@ -1,0 +1,54 @@
+{
+  "Sector": [
+    "Agriculture",
+    "Commerce",
+    "Education",
+    "Energy",
+    "Financial services",
+    "Healthcare",
+    "Housing and Land",
+    "Labour and employment",
+    "Legal/ e-Sign",
+    "Mobility",
+    "Public service",
+    "Social Protection",
+    "Telecom"
+  ],
+  "Region": [
+    "Africa - Eastern Africa",
+    "Africa - Northern Africa",
+    "Africa - Southern Africa",
+    "Africa - Western Africa",
+    "Asia - South Asia",
+    "Oceania - Pacific"
+  ],
+  "Country": [
+    "Benin",
+    "Botswana",
+    "India",
+    "Kenya",
+    "Malawi",
+    "Morocco",
+    "N/A",
+    "Papua New Guinea",
+    "Rwanda",
+    "Senegal",
+    "Togo",
+    "Uganda"
+  ],
+  "CurrentStatus": ["Idea", "Operational", "Pilot"],
+  "ModeofAccess": [
+    "In Person",
+    "Online",
+    "Online - In Person",
+    "Online - Remote",
+    "SMS"
+  ],
+  "AuthenticationAssuranceLevel": [
+    "AAL 0",
+    "AAL 1",
+    "AAL 2",
+    "AAL 3",
+    "Not available"
+  ]
+}
