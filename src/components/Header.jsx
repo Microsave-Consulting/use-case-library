@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import ContactModal from "@/components/ContactModal";
+import { BASE_PATH } from "@/lib/siteConfig";
 
 const FONT = "'Albert Sans', sans-serif";
 
@@ -260,7 +261,7 @@ export default function Header() {
               className="hdr-logo shrink-0 flex items-center no-underline"
             >
               <img
-                src="/assets/msc-logo.svg"
+                src={`${BASE_PATH}/assets/msc-logo.svg`}
                 alt="MSC"
                 className="h-[59px] w-[100px] object-contain block"
               />
