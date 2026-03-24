@@ -1,6 +1,9 @@
 // src/app/sitemap.js
 import { readFileSync } from "fs";
 import path from "path";
+import { SITE_URL } from "@/lib/siteConfig";
+
+export const dynamic = "force-static";
 
 export default function sitemap() {
   const data = JSON.parse(
@@ -10,14 +13,14 @@ export default function sitemap() {
     ),
   );
   return [
-    { url: "https://yoursite.com", priority: 1.0 },
+    { url: SITE_URL, priority: 1.0 },
     {
-      url: "https://yoursite.com/library",
+      url: `${SITE_URL}/library`,
       priority: 0.9,
       changeFrequency: "daily",
     },
     ...data.map((uc) => ({
-      url: `https://yoursite.com/use-cases/${uc.ID ?? uc.Id}`,
+      url: `${SITE_URL}/use-cases/${uc.ID ?? uc.Id}`,
       lastModified: new Date(uc.Modified ?? Date.now()),
       changeFrequency: "weekly",
       priority: 0.8,
