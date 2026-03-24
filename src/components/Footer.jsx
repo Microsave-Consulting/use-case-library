@@ -2,6 +2,7 @@
 // src/components/Footer.jsx
 import Link from "next/link";
 import { useRef, useState } from "react";
+import { BASE_PATH } from "@/lib/siteConfig";
 
 export default function Footer() {
   const [contactOpen, setContactOpen] = useState(false);
@@ -132,7 +133,7 @@ export default function Footer() {
           {/* ── Brand ── */}
           <div className="ftr-brand" style={{ maxWidth: 417 }}>
             <img
-              src="/assets/msc-logo.svg"
+              src={`${BASE_PATH}/assets/msc-logo.svg`}
               alt="MSC MicroSave Consulting"
               style={{
                 height: 59,
@@ -162,7 +163,7 @@ export default function Footer() {
                 style={{ display: "inline-flex", width: 24, height: 24 }}
               >
                 <img
-                  src="/assets/linkedin.svg"
+                  src={`${BASE_PATH}/assets/linkedin.svg`}
                   alt="LinkedIn"
                   style={{ width: 24, height: 24 }}
                 />
@@ -173,7 +174,7 @@ export default function Footer() {
                 style={{ display: "inline-flex", width: 24, height: 24 }}
               >
                 <img
-                  src="/assets/twitter.svg"
+                  src={`${BASE_PATH}/assets/twitter.svg`}
                   alt="X"
                   style={{ width: 24, height: 24 }}
                 />

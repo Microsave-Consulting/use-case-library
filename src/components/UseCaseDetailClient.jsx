@@ -2,6 +2,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { BASE_PATH } from "@/lib/siteConfig";
 
 const FONT =
   '"Albert Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
@@ -41,7 +42,7 @@ function InfoTooltip({ tip }) {
           width: 16, height: 16, cursor: "help", userSelect: "none", flexShrink: 0,
         }}
       >
-        <img src="/assets/info.svg" alt="" width={13} height={13} style={{ display: "block" }} />
+        <img src={`${BASE_PATH}/assets/info.svg`} alt="" width={13} height={13} style={{ display: "block" }} />
       </span>
       {visible && (
         <span
@@ -111,7 +112,7 @@ function SourceRow({ url }) {
       display: "inline-flex", alignItems: "center", justifyContent: "center",
       width: 20, height: 20, flexShrink: 0, color: "#0F1B2D",
     }}>
-      <img src="/assets/link.svg" alt="" width={20} height={10} style={{ display: "block" }} />
+      <img src={`${BASE_PATH}/assets/link.svg`} alt="" width={20} height={10} style={{ display: "block" }} />
     </span>
     <span style={{
       fontSize: 14, fontWeight: 500,
@@ -149,7 +150,7 @@ function BackButton({ onClick }) {
         whiteSpace: "nowrap",
       }}
     >
-      <img src="/assets/back.svg" alt="" width={18} height={12} style={{ display: "block" }} />
+      <img src={`${BASE_PATH}/assets/back.svg`} alt="" width={18} height={12} style={{ display: "block" }} />
       <span>Back</span>
     </button>
   );
