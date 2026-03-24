@@ -31,18 +31,18 @@ export const metadata = {
   authors: [{ name: "MicroSave Consulting" }],
   creator: "MicroSave Consulting",
   publisher: "MicroSave Consulting",
-  metadataBase: new URL("https://yoursite.com"), // ← update when deployed
+  metadataBase: new URL("https://microsave-consulting.github.io/use-case-library"),
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://yoursite.com",
+    url: "https://microsave-consulting.github.io/use-case-library",
     siteName: "Digital ID Use Cases | MSC",
     title: "Digital ID Use Cases | MSC",
     description:
       "Explore a global repository of Digital ID use cases across Africa, Oceania, and beyond.",
     images: [
       {
-        url: "/images/og-image.png", // ← add an og image to public/images/
+        url: "/images/og-image.png",
         width: 1200,
         height: 630,
         alt: "MSC Digital ID Use Cases",
@@ -80,7 +80,7 @@ export default function RootLayout({ children }) {
           href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap"
           rel="stylesheet"
         />
-        <link rel="canonical" href="https://yoursite.com" />
+      <link rel="canonical" href="https://microsave-consulting.github.io/use-case-library" />
       </head>
       <body
         style={{
