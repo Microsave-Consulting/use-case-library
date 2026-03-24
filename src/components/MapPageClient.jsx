@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import UseCaseDotMap from "./UseCaseDotMap";
 import UseCaseSectorPie from "@/widgets/UseCaseSectorPie";
+import { BASE_PATH } from "@/lib/siteConfig";
 
 const FONT =
   '"Albert Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
@@ -276,7 +277,7 @@ function TopSectorCard({ sector, onClick }) {
           }}
         >
           <Image
-            src="/assets/folder_blue.svg"
+            src={`${BASE_PATH}/assets/folder_blue.svg`}
             alt=""
             width={18}
             height={18}
@@ -298,7 +299,7 @@ function TopSectorCard({ sector, onClick }) {
           }}
         >
           <Image
-            src="/assets/loc_pin_blue.svg"
+            src={`${BASE_PATH}/assets/loc_pin_blue.svg`}
             alt=""
             width={18}
             height={18}
@@ -419,22 +420,22 @@ export default function MapPageClient({
 
   const STAT_ITEMS = [
     {
-      icon: "/assets/loc_pin_blue.svg",
+      icon: `${BASE_PATH}/assets/loc_pin_blue.svg`,
       value: `${formatInt(stats.countries)}+`,
       label: "COUNTRIES",
     },
     {
-      icon: "/assets/sectors_left.svg",
+      icon: `${BASE_PATH}/assets/sectors_left.svg`,
       value: `${formatInt(stats.sectors)}+`,
       label: "SECTORS",
     },
     {
-      icon: "/assets/uc_left.svg",
+      icon: `${BASE_PATH}/assets/uc_left.svg`,
       value: formatInt(stats.useCases),
       label: "USE CASES",
     },
     {
-      icon: "/assets/folder_blue.svg",
+      icon: `${BASE_PATH}/assets/folder_blue.svg`,
       value: formatInt(stats.hackathons),
       label: "HACKATHONS",
     },

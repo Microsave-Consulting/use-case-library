@@ -11,6 +11,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import FilterBar from "./FilterBar";
 import SectorSidebar from "./SectorSidebar";
 import UseCaseCard from "./UseCaseCard";
+import { BASE_PATH } from "@/lib/siteConfig";
 
 const FONT =
   '"Albert Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
@@ -186,7 +187,7 @@ function SectorGroup({
             }}
           >
             <img
-              src={`/assets/sector_icons/${sector
+              src={`${BASE_PATH}/assets/sector_icons/${sector
                 .toLowerCase()
                 .replace(/\s*\/\s*/g, "_")
                 .replace(/\s+/g, "_")}.svg`}
@@ -606,7 +607,7 @@ export default function UseCaseLibrary({
                     }}
                   >
                     <img
-                      src={`/assets/sector_icons/${activeSector
+                      src={`${BASE_PATH}/assets/sector_icons/${activeSector
                         .toLowerCase()
                         .replace(/\s*\/\s*/g, "_")
                         .replace(/\s+/g, "_")}.svg`}
