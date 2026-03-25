@@ -417,7 +417,6 @@ function SectorDropdown({ sectorList = [], activeSector = "All", onSelect }) {
             fontFamily: FONT,
           }}
         >
-          {/* All Sectors option */}
           {[["All", null], ...sectorList].map(([sector, count]) => {
             const isActive = activeSector === sector;
             return (
@@ -496,11 +495,10 @@ export default function FilterBar({
   search = "",
   onSearchChange,
   onSearch,
-  /* sector props — only used on mobile/tablet */
   sectorList = [],
   activeSector = "All",
   onSelectSector,
-  showSectorDropdown = false, // controlled by parent based on screen size
+  showSectorDropdown = false,
 }) {
   const handleKeyDown = (e) => {
     if (e.key === "Enter") onSearch?.();
@@ -594,8 +592,15 @@ export default function FilterBar({
         }
         .fbar-filters::-webkit-scrollbar { display: none; }
 
-        /* ── Tablet (≤860px): 2 rows ── */
-        @media (max-width: 860px) {
+        /* ── Large tablet (≤1100px): reduce side padding ── */
+        @media (max-width: 1100px) {
+          .fbar-inner {
+            padding: 16px 48px;
+          }
+        }
+
+        /* ── Tablet (≤960px): 2 rows, sidebar hides at same breakpoint ── */
+        @media (max-width: 960px) {
           .fbar-inner {
             padding: 12px 48px;
             flex-wrap: wrap;
@@ -614,8 +619,8 @@ export default function FilterBar({
           }
         }
 
-        /* ── Mobile (≤540px) ── */
-        @media (max-width: 540px) {
+        /* ── Mobile (≤560px) ── */
+        @media (max-width: 560px) {
           .fbar-inner { padding: 10px 16px; }
           .fbar-search { width: 100%; }
         }
@@ -644,7 +649,7 @@ export default function FilterBar({
             <input
               type="text"
               className="fbar-search-input"
-              placeholder="Search use Cases"
+              placeholder="Search Use Cases"
               value={search}
               onChange={(e) => onSearchChange?.(e.target.value)}
               onKeyDown={handleKeyDown}
@@ -661,7 +666,6 @@ export default function FilterBar({
 
           {/* ── Filter pills ── */}
           <div className="fbar-filters" role="group" aria-label="Filters">
-            {/* Sector dropdown — only on mobile/tablet when sidebar is hidden */}
             {showSectorDropdown && (
               <SectorDropdown
                 sectorList={sectorList}
@@ -669,8 +673,6 @@ export default function FilterBar({
                 onSelect={onSelectSector}
               />
             )}
-
-            {/* Regular filter dropdowns */}
             {filterConfig.map((f) => (
               <FilterDropdown
                 key={f.id}

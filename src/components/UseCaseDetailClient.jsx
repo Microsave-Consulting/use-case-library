@@ -89,6 +89,102 @@ function MetaItem({ label, value, showTooltip = false }) {
   );
 }
 
+function ModeAccessItem({ value }) {
+  const values = Array.isArray(value)
+    ? value.map((v) => String(v).trim()).filter(Boolean)
+    : String(value ?? "")
+        .split(",")
+        .map((v) => v.trim())
+        .filter(Boolean);
+
+  const display = values.length ? values : ["—"];
+
+  return (
+    <div style={{ minWidth: 0, fontFamily: FONT }}>
+      <div
+        style={{
+          fontSize: 13,
+          lineHeight: 1.3,
+          color: "#334155",
+          fontWeight: 500,
+          marginBottom: 4,
+        }}
+      >
+        Mode of Access
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        {display.map((v, i) => (
+          <div
+            key={i}
+            style={{
+              fontSize: 14,
+              color: "#000000",
+              fontWeight: 500,
+              lineHeight: 1.4,
+              overflowWrap: "anywhere",
+              wordBreak: "break-word",
+              fontFamily: FONT,
+            }}
+          >
+            {v}
+            {i < display.length - 1 && (
+              <span style={{ color: "#000000", fontWeight: 400 }}>,</span>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function CountryItem({ value }) {
+  const values = Array.isArray(value)
+    ? value.map((v) => String(v).trim()).filter(Boolean)
+    : String(value ?? "")
+        .split(",")
+        .map((v) => v.trim())
+        .filter(Boolean);
+
+  const display = values.length ? values : ["—"];
+
+  return (
+    <div style={{ minWidth: 0, fontFamily: FONT }}>
+      <div
+        style={{
+          fontSize: 13,
+          lineHeight: 1.3,
+          color: "#334155",
+          fontWeight: 500,
+          marginBottom: 4,
+        }}
+      >
+        Country
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        {display.map((v, i) => (
+          <div
+            key={i}
+            style={{
+              fontSize: 14,
+              color: "#000000",
+              fontWeight: 500,
+              lineHeight: 1.4,
+              overflowWrap: "anywhere",
+              wordBreak: "break-word",
+              fontFamily: FONT,
+            }}
+          >
+            {v}
+            {i < display.length - 1 && (
+              <span style={{ color: "#000000", fontWeight: 400 }}>,</span>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function SourceRow({ url }) {
   const [hovered, setHovered] = useState(false);
   const normalized = /^https?:\/\//i.test(url)
@@ -384,8 +480,15 @@ export default function UseCaseDetailClient({ useCase }) {
         }
       `}</style>
 
-      <div className="ucd-page-wrap" style={{ fontFamily: FONT, background: "#fff", position: "relative", zIndex: 0 }}>
-
+      <div
+        className="ucd-page-wrap"
+        style={{
+          fontFamily: FONT,
+          background: "#fff",
+          position: "relative",
+          zIndex: 0,
+        }}
+      >
         {/* ── Row 1: Back + Breadcrumb ── */}
         <div className="ucd-nav-row">
           <BackButton onClick={handleBack} />
@@ -398,15 +501,17 @@ export default function UseCaseDetailClient({ useCase }) {
         {/* ── Row 3: Description ── */}
         <div className="ucd-section">
           {description ? (
-            String(description).split(/\n\s*\n/).map((para, idx) => (
-              <p
-                key={idx}
-                className="ucd-desc"
-                style={{ marginTop: idx === 0 ? 0 : 12 }}
-              >
-                {para.trim()}
-              </p>
-            ))
+            String(description)
+              .split(/\n\s*\n/)
+              .map((para, idx) => (
+                <p
+                  key={idx}
+                  className="ucd-desc"
+                  style={{ marginTop: idx === 0 ? 0 : 12 }}
+                >
+                  {para.trim()}
+                </p>
+              ))
           ) : (
             <p style={{ margin: 0, color: "#9CA3AF", fontFamily: FONT }}>
               No description available.
@@ -416,13 +521,21 @@ export default function UseCaseDetailClient({ useCase }) {
 
         {/* ── Row 4: Meta strip ── */}
         <div className="ucd-meta-container">
-          <div className="ucd-meta-strip" role="group" aria-label="Use case metadata">
-            <MetaItem label="Mode of Access" value={modeAccess} />
+          <div
+            className="ucd-meta-strip"
+            role="group"
+            aria-label="Use case metadata"
+          >
+            <ModeAccessItem value={useCase.ModeofAccess} />
             <MetaItem label="Maturity level" value={maturity} />
             <MetaItem label="Region" value={region} />
-            <MetaItem label="Country" value={country} />
+            <CountryItem value={useCase.Country} />
             <MetaItem label="Sector" value={sector} />
-            <MetaItem label="Authentication Assurance Level" value={aalRaw} showTooltip />
+            <MetaItem
+              label="Authentication Assurance Level"
+              value={aalRaw}
+              showTooltip
+            />
           </div>
         </div>
 
@@ -432,7 +545,9 @@ export default function UseCaseDetailClient({ useCase }) {
           {keyTerms.length ? (
             <div className="ucd-terms-wrap">
               {keyTerms.map((term) => (
-                <span key={term} className="ucd-term">{term}</span>
+                <span key={term} className="ucd-term">
+                  {term}
+                </span>
               ))}
             </div>
           ) : (
@@ -457,7 +572,6 @@ export default function UseCaseDetailClient({ useCase }) {
             </p>
           )}
         </section>
-
       </div>
     </>
   );

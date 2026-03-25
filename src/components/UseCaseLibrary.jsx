@@ -16,10 +16,14 @@ import { BASE_PATH } from "@/lib/siteConfig";
 const FONT =
   '"Albert Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
 
-function getColumns(width) {
-  if (width >= 1200) return 4;
-  if (width >= 860) return 3;
-  if (width >= 540) return 2;
+const SIDEBAR_WIDTH = 316;
+
+function getColumns(w, sidebarVisible) {
+  if (w <= 480) return 1;
+  const contentWidth = sidebarVisible ? w - SIDEBAR_WIDTH : w;
+  if (contentWidth >= 900) return 4;
+  if (contentWidth >= 640) return 3;
+  if (contentWidth >= 400) return 2;
   return 1;
 }
 function getPreviewLimit(cols) {
@@ -36,21 +40,168 @@ function splitValues(value) {
     .map((v) => v.trim())
     .filter((v) => v.length > 0);
 }
-function normalizeLabelForMatch(label) {
-  if (!label) return "";
-  return String(label)
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
 function getModeValues(uc) {
   const raw = uc.ModeofAccess;
   if (!raw) return [];
   if (Array.isArray(raw))
     return raw.map((v) => String(v).trim()).filter(Boolean);
   return splitValues(raw);
+}
+
+/* ══════════════════════════════════════════════════
+   Back Button
+══════════════════════════════════════════════════ */
+function BackButton({ onClick }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label="Back"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 8,
+        height: 36,
+        padding: "0 14px",
+        borderRadius: 8,
+        border: "none",
+        background:  "#1F3A6D",
+        color: "#fff",
+        fontFamily: FONT,
+        fontSize: 13,
+        fontWeight: 500,
+        cursor: "pointer",
+     
+        flexShrink: 0,
+        boxSizing: "border-box",
+        whiteSpace: "nowrap",
+      }}
+    >
+      <img
+        src={`${BASE_PATH}/assets/back.svg`}
+        alt=""
+        width={16}
+        height={11}
+        style={{ display: "block" }}
+      />
+      <span>Back</span>
+    </button>
+  );
+}
+
+/* ══════════════════════════════════════════════════
+   Search Results Header
+══════════════════════════════════════════════════ */
+function SearchResultsHeader({ query, count }) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 6,
+        padding: "20px 0 18px",
+        borderBottom: "1px solid #E5E9F3",
+        marginBottom: 4,
+      }}
+    >
+      {/* label row */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+          flexWrap: "wrap",
+        }}
+      >
+        {/* search icon */}
+        <span
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: 32,
+            height: 32,
+            borderRadius: 8,
+            background: "#EEF4FF",
+            flexShrink: 0,
+          }}
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            aria-hidden="true"
+          >
+            <circle cx="11" cy="11" r="7" stroke="#1F3A6D" strokeWidth="2" />
+            <path
+              d="M20 20L16.65 16.65"
+              stroke="#1F3A6D"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+          </svg>
+        </span>
+
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
+            minWidth: 0,
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "baseline",
+              gap: 8,
+              flexWrap: "wrap",
+            }}
+          >
+            <span
+              style={{
+                fontSize: 16,
+                fontWeight: 600,
+                color: "#0F1B2D",
+                fontFamily: FONT,
+              }}
+            >
+              Results for
+            </span>
+            <span
+              style={{
+                fontSize: 16,
+                fontWeight: 700,
+                color: "#1F3A6D",
+                fontFamily: FONT,
+                background: "#EEF4FF",
+                padding: "2px 10px",
+                borderRadius: 6,
+                wordBreak: "break-word",
+              }}
+            >
+              "{query}"
+            </span>
+          </div>
+          <span
+            style={{
+              fontSize: 13,
+              color: "#6B7280",
+              fontFamily: FONT,
+            }}
+          >
+            {count === 0
+              ? "No use cases found"
+              : `${count} use case${count === 1 ? "" : "s"} found`}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 /* ══════════════════════════════════════════════════
@@ -172,14 +323,11 @@ function SectorGroup({
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-         
-          {/* ── Sector icon from /public/assets/sector_icons/ ── */}
           <span
             style={{
               width: 28,
               height: 28,
               borderRadius: 8,
-            
               display: "inline-flex",
               alignItems: "center",
               justifyContent: "center",
@@ -192,18 +340,16 @@ function SectorGroup({
                 .replace(/\s*\/\s*/g, "_")
                 .replace(/\s+/g, "_")}.svg`}
               alt=""
-              width={16}
-              height={16}
+              width={28}
+              height={28}
               style={{ display: "block" }}
             />
           </span>
-
-          {/* ── Sector name in #1B66D1 ── */}
           <span
             style={{
               fontSize: 16,
               fontWeight: 600,
-              color: "#0FIB2D",
+              color: "#0F1B2D",
               fontFamily: FONT,
             }}
           >
@@ -213,8 +359,6 @@ function SectorGroup({
             ({items.length})
           </span>
         </div>
-
-        {/* ── Chevron in #1B66D1 ── */}
         <svg
           width="20"
           height="20"
@@ -237,7 +381,6 @@ function SectorGroup({
         </svg>
       </button>
 
-      {/* ── rest unchanged ── */}
       {expanded && (
         <>
           <div
@@ -307,6 +450,7 @@ function SectorGroup({
     </div>
   );
 }
+
 /* ══════════════════════════════════════════════════
    Main component
 ══════════════════════════════════════════════════ */
@@ -318,28 +462,37 @@ export default function UseCaseLibrary({
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [search, setSearch] = useState("");
-  const [searchInput, setSearchInput] = useState("");
-  const [activeSector, setActiveSector] = useState("All");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [openSector, setOpenSector] = useState(null);
+  const [search, setSearch] = useState(() => searchParams.get("q") || "");
+  const [searchInput, setSearchInput] = useState(
+    () => searchParams.get("q") || "",
+  );
+  const [activeSector, setActiveSector] = useState(
+    () => searchParams.get("sector") || "All",
+  );
+  const [currentPage, setCurrentPage] = useState(
+    () => Number(searchParams.get("page")) || 1,
+  );
+  const [openSector, setOpenSector] = useState(
+    () => searchParams.get("open") || null,
+  );
   const [cols, setCols] = useState(3);
   const [sidebarVisible, setSidebarVisible] = useState(true);
+  const [wrapperWidth, setWrapperWidth] = useState(1200);
 
-  const wrapperRef = useRef(null);
+  // Snapshot for Back button
+  const previousStateRef = useRef(null);
 
-  /* ── measure wrapper for cols + sidebar visibility ── */
   useEffect(() => {
-    const el = wrapperRef.current;
-    if (!el) return;
-    const update = (w) => {
-      setCols(getColumns(w));
-      setSidebarVisible(w >= 860);
+    const update = () => {
+      const w = window.innerWidth;
+      const visible = w >= 960;
+      setSidebarVisible(visible);
+      setWrapperWidth(w);
+      setCols(getColumns(w, visible));
     };
-    const ro = new ResizeObserver(([e]) => update(e.contentRect.width));
-    ro.observe(el);
-    update(el.getBoundingClientRect().width);
-    return () => ro.disconnect();
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
   }, []);
 
   const [filters, setFilters] = useState(() => {
@@ -347,37 +500,48 @@ export default function UseCaseLibrary({
     filterConfig.forEach((f) => {
       if (f?.id) init[f.id] = [];
     });
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      filterConfig.forEach((f) => {
+        if (!f?.id) return;
+        const val = params.get(`f_${f.id}`);
+        if (val) init[f.id] = val.split("|").filter(Boolean);
+      });
+    }
     return init;
   });
 
   const useCases = useMemo(() => initialData || [], [initialData]);
 
-  /* ── URL param sync ── */
+  /* ── Sync state → URL ── */
+  const isMountedRef = useRef(false);
   useEffect(() => {
-    if (!filterConfig.length) return;
-    const cp = searchParams.get("country");
-    if (cp) {
-      const match = (staticOptions["Country"] || []).find(
-        (o) => normalizeLabelForMatch(o) === normalizeLabelForMatch(cp),
-      );
-      if (match) setFilters((prev) => ({ ...prev, Country: [match] }));
+    if (!isMountedRef.current) {
+      isMountedRef.current = true;
+      return;
     }
-    const sp = searchParams.get("sector");
-    if (sp) setActiveSector(sp);
-    const mp = searchParams.get("maturity");
-    if (mp) {
-      const match = (staticOptions["CurrentStatus"] || []).find(
-        (o) => normalizeLabelForMatch(o) === normalizeLabelForMatch(mp),
-      );
-      if (match) setFilters((prev) => ({ ...prev, CurrentStatus: [match] }));
-    }
-  }, [filterConfig, staticOptions, searchParams]);
+    const params = new URLSearchParams();
+    if (activeSector && activeSector !== "All")
+      params.set("sector", activeSector);
+    if (currentPage > 1) params.set("page", String(currentPage));
+    if (search) params.set("q", search);
+    if (openSector) params.set("open", openSector);
+    Object.entries(filters).forEach(([key, vals]) => {
+      if (vals && vals.length > 0) params.set(`f_${key}`, vals.join("|"));
+    });
+    const qs = params.toString();
+    window.history.replaceState(
+      null,
+      "",
+      qs ? `?${qs}` : window.location.pathname,
+    );
+  }, [activeSector, currentPage, search, openSector, filters]);
 
   useEffect(() => {
     setCurrentPage(1);
   }, [activeSector, search, filters]);
 
-  /* ── filter + search ── */
+  /* ── Filter + search ── */
   const filtered = useMemo(() => {
     return useCases.filter((uc) => {
       if (search.trim()) {
@@ -447,11 +611,13 @@ export default function UseCaseLibrary({
   useEffect(() => {
     if (!didInitRef.current && grouped.length > 0) {
       didInitRef.current = true;
-      setOpenSector(grouped[0][0]);
+      if (!openSector) setOpenSector(grouped[0][0]);
     }
   }, [grouped]);
 
   const pageSize = getPageSize(cols);
+
+  /* ── Sector-drilled view ── */
   const sectorItems = useMemo(() => {
     if (activeSector === "All") return [];
     return filtered.filter(
@@ -460,30 +626,73 @@ export default function UseCaseLibrary({
     );
   }, [filtered, activeSector]);
 
+  /* ── Search results view (paginated flat list) ── */
+  const searchPageSize = pageSize;
+  const [searchPage, setSearchPage] = useState(1);
+  useEffect(() => {
+    setSearchPage(1);
+  }, [search]);
+
+  const searchTotalPages = Math.ceil(filtered.length / searchPageSize);
+  const searchPagedItems = filtered.slice(
+    (searchPage - 1) * searchPageSize,
+    searchPage * searchPageSize,
+  );
+
   const totalPages = Math.ceil(sectorItems.length / pageSize);
   const pagedItems = sectorItems.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize,
   );
 
-  const handleFilterChange = (id, vals) =>
+  const scrollToTop = useCallback(
+    () => window.scrollTo({ top: 0, behavior: "smooth" }),
+    [],
+  );
+
+  /* ── Snapshot helpers ── */
+  const saveSnapshot = () => {
+    if (previousStateRef.current === null) {
+      previousStateRef.current = {
+        activeSector,
+        search,
+        searchInput,
+        filters: JSON.parse(JSON.stringify(filters)),
+        currentPage,
+        openSector,
+      };
+    }
+  };
+
+  const handleFilterChange = (id, vals) => {
+    saveSnapshot();
     setFilters((prev) => ({ ...prev, [id]: vals }));
+  };
+
+  const handleSearch = () => {
+    if (searchInput.trim()) saveSnapshot();
+    setSearch(searchInput);
+  };
+
   const clearAll = () => {
     const cleared = {};
     filterConfig.forEach((f) => {
       if (f?.id) cleared[f.id] = [];
     });
+    previousStateRef.current = null;
     setFilters(cleared);
     setSearch("");
     setSearchInput("");
     setActiveSector("All");
     setOpenSector(null);
   };
+
   const handleSelectSector = (sector) => {
     setActiveSector(sector);
     setCurrentPage(1);
   };
   const handleViewAll = (sector) => {
+    saveSnapshot();
     setActiveSector(sector);
     setCurrentPage(1);
   };
@@ -493,26 +702,71 @@ export default function UseCaseLibrary({
     const id = uc?.ID ?? uc?.Id;
     if (id) router.push(`/use-cases/${id}`);
   };
-  const scrollToTop = useCallback(
-    () => window.scrollTo({ top: 0, behavior: "smooth" }),
-    [],
-  );
+
+  /* ── Back button ── */
+  const hasActiveFilters =
+    search.trim().length > 0 ||
+    Object.values(filters).some((vals) => vals && vals.length > 0);
+  const showBackButton = activeSector !== "All" || hasActiveFilters;
+
+  const handleBack = () => {
+    const prev = previousStateRef.current;
+    if (prev) {
+      setActiveSector(prev.activeSector);
+      setSearch(prev.search);
+      setSearchInput(prev.searchInput);
+      setFilters(prev.filters);
+      setCurrentPage(prev.currentPage);
+      setOpenSector(prev.openSector);
+      previousStateRef.current = null;
+    } else {
+      clearAll();
+    }
+    scrollToTop();
+  };
+
+  /* ── View mode ── */
+  const isSearchMode = search.trim().length > 0;
   const isAllSectors = activeSector === "All";
 
-  /* ── responsive page padding ── */
-  const pagePadding = !sidebarVisible
-    ? cols === 1
-      ? "0 16px"
+  const pagePadding = sidebarVisible
+    ? wrapperWidth >= 1100
+      ? "0 100px"
       : "0 48px"
-    : "0 100px";
+    : wrapperWidth <= 560
+      ? "0 16px"
+      : "0 48px";
 
   return (
     <>
       <style>{`
-  @import url('https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700&display=swap');
-  .ucl-layout { display:flex; gap:24px; align-items:flex-start; }
-  .ucl-content { flex:1; min-width:0; padding-top:8px; overflow: visible, height: auto,margin-bottom:15px; }
-`}</style>
+        @import url('https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700&display=swap');
+        .ucl-layout { display:flex; gap:24px; align-items:flex-start; }
+        .ucl-content { flex:1; min-width:0; padding-top:8px; overflow:visible; height:auto; margin-bottom:15px; }
+        .ucl-content-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 16px 0 12px;
+          gap: 12px;
+        }
+        .ucl-total-count {
+          font-size: 13px;
+          color: #6B7280;
+          font-family: ${FONT};
+          flex-shrink: 0;
+        }
+        /* Search results empty state */
+        .ucl-search-empty {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+          padding: 64px 24px;
+          text-align: center;
+        }
+      `}</style>
 
       <FilterBar
         filterConfig={filterConfig}
@@ -522,7 +776,7 @@ export default function UseCaseLibrary({
         onFilterChange={handleFilterChange}
         search={searchInput}
         onSearchChange={setSearchInput}
-        onSearch={() => setSearch(searchInput)}
+        onSearch={handleSearch}
         sectorList={sectorList}
         activeSector={activeSector}
         onSelectSector={handleSelectSector}
@@ -530,143 +784,273 @@ export default function UseCaseLibrary({
       />
 
       <div
-        ref={wrapperRef}
         style={{
           padding: pagePadding,
           boxSizing: "border-box",
           fontFamily: FONT,
-          transition: "padding 200ms ease",
           height: "auto",
           minHeight: 0,
           overflow: "visible",
           marginBottom: 100,
         }}
       >
-        <div
-          style={{
-            padding: "16px 0 12px",
-            fontSize: 13,
-            color: "#6B7280",
-            fontFamily: FONT,
-          }}
-        >
-          Total {filtered.length} use cases
+        {/* ── Header row: total count left · Back button right ── */}
+        <div className="ucl-content-header">
+          <span className="ucl-total-count">
+            Total {useCases.length} use cases
+          </span>
+          {showBackButton && <BackButton onClick={handleBack} />}
         </div>
 
-        <div className="ucl-layout">
-          {sidebarVisible && (
-            <SectorSidebar
-              sectorList={sectorList}
-              totalCount={useCases.length}
-              activeSector={activeSector}
-              onSelect={handleSelectSector}
-            />
-          )}
+        {/* ════════════════════════════════════════
+            SEARCH RESULTS MODE
+        ════════════════════════════════════════ */}
+        {isSearchMode && (
+          <div className="ucl-layout">
+            {sidebarVisible && (
+              <SectorSidebar
+                sectorList={sectorList}
+                totalCount={useCases.length}
+                activeSector={activeSector}
+                onSelect={handleSelectSector}
+              />
+            )}
+            <div className="ucl-content">
+              <SearchResultsHeader
+                query={search.trim()}
+                count={filtered.length}
+              />
 
-          <div className="ucl-content">
-            {isAllSectors &&
-              (grouped.length === 0 ? (
-                <EmptyState onClear={clearAll} />
-              ) : (
-                grouped.map(([sector, items]) => (
-                  <SectorGroup
-                    key={sector}
-                    sector={sector}
-                    items={items}
-                    onOpen={openUseCase}
-                    onViewAll={handleViewAll}
-                    expanded={openSector === sector}
-                    onToggle={() => handleToggle(sector)}
-                    cols={cols}
-                  />
-                ))
-              ))}
-
-            {!isAllSectors && (
-              <>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 10,
-                    padding: "14px 0",
-                    borderBottom: "1px solid #E5E9F3",
-                    marginBottom: 4,
-                  }}
-                >
+              {filtered.length === 0 ? (
+                <div className="ucl-search-empty">
                   <span
                     style={{
-                      width: 28,
-                      height: 28,
-                     
-                     
                       display: "inline-flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      flexShrink: 0,
+                      width: 52,
+                      height: 52,
+                      borderRadius: 14,
+                      background: "#F3F6FF",
                     }}
                   >
-                    <img
-                      src={`${BASE_PATH}/assets/sector_icons/${activeSector
-                        .toLowerCase()
-                        .replace(/\s*\/\s*/g, "_")
-                        .replace(/\s+/g, "_")}.svg`}
-                      alt=""
-                      width={16}
-                      height={16}
-                      style={{ display: "block" }}
-                    />
+                    <svg
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      aria-hidden="true"
+                    >
+                      <circle
+                        cx="11"
+                        cy="11"
+                        r="7"
+                        stroke="#9CA3AF"
+                        strokeWidth="2"
+                      />
+                      <path
+                        d="M20 20L16.65 16.65"
+                        stroke="#9CA3AF"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                      />
+                    </svg>
                   </span>
-                  <span
+                  <p
                     style={{
-                      fontSize: 16,
+                      margin: 0,
+                      fontSize: 15,
                       fontWeight: 600,
-                      color: "#0FIB2D",
+                      color: "#334155",
                       fontFamily: FONT,
                     }}
                   >
-                    {activeSector}
-                  </span>
-                  <span
-                    style={{ fontSize: 13, color: "#9CA3AF", fontFamily: FONT }}
+                    No results for "{search.trim()}"
+                  </p>
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: 13,
+                      color: "#9CA3AF",
+                      fontFamily: FONT,
+                    }}
                   >
-                    ({sectorItems.length})
-                  </span>
+                    Try a different keyword or clear filters.
+                  </p>
+                  <button
+                    onClick={clearAll}
+                    style={{
+                      marginTop: 4,
+                      padding: "9px 20px",
+                      borderRadius: 999,
+                      border: "none",
+                      background: "#1F3A6D",
+                      color: "#fff",
+                      fontSize: 13,
+                      fontWeight: 500,
+                      cursor: "pointer",
+                      fontFamily: FONT,
+                    }}
+                  >
+                    Clear search
+                  </button>
                 </div>
-                {pagedItems.length === 0 ? (
+              ) : (
+                <>
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: `repeat(${cols}, 1fr)`,
+                      gap: 16,
+                      padding: "16px 0",
+                    }}
+                  >
+                    {searchPagedItems.map((uc, idx) => (
+                      <UseCaseCard
+                        key={`search-${uc.ID ?? uc.Id ?? ""}-${idx}`}
+                        uc={uc}
+                        onOpen={openUseCase}
+                      />
+                    ))}
+                  </div>
+                  <Pagination
+                    currentPage={searchPage}
+                    totalPages={searchTotalPages}
+                    onPageChange={(p) => {
+                      setSearchPage(p);
+                      scrollToTop();
+                    }}
+                  />
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ════════════════════════════════════════
+            NORMAL MODE (grouped / sector drilled)
+        ════════════════════════════════════════ */}
+        {!isSearchMode && (
+          <div className="ucl-layout">
+            {sidebarVisible && (
+              <SectorSidebar
+                sectorList={sectorList}
+                totalCount={useCases.length}
+                activeSector={activeSector}
+                onSelect={handleSelectSector}
+              />
+            )}
+
+            <div className="ucl-content">
+              {/* All-sectors grouped view */}
+              {isAllSectors &&
+                (grouped.length === 0 ? (
                   <EmptyState onClear={clearAll} />
                 ) : (
-                  <>
-                    <div
+                  grouped.map(([sector, items]) => (
+                    <SectorGroup
+                      key={sector}
+                      sector={sector}
+                      items={items}
+                      onOpen={openUseCase}
+                      onViewAll={handleViewAll}
+                      expanded={openSector === sector}
+                      onToggle={() => handleToggle(sector)}
+                      cols={cols}
+                    />
+                  ))
+                ))}
+
+              {/* Single-sector drilled view */}
+              {!isAllSectors && (
+                <>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      padding: "14px 0",
+                      borderBottom: "1px solid #E5E9F3",
+                      marginBottom: 4,
+                    }}
+                  >
+                    <span
                       style={{
-                        display: "grid",
-                        gridTemplateColumns: `repeat(${cols}, 1fr)`,
-                        gap: 16,
-                        padding: "16px 0",
+                        width: 28,
+                        height: 28,
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
                       }}
                     >
-                      {pagedItems.map((uc, idx) => (
-                        <UseCaseCard
-                          key={`${activeSector}-${uc.ID ?? uc.Id ?? ""}-${idx}`}
-                          uc={uc}
-                          onOpen={openUseCase}
-                        />
-                      ))}
-                    </div>
-                    <Pagination
-                      currentPage={currentPage}
-                      totalPages={totalPages}
-                      onPageChange={(p) => {
-                        setCurrentPage(p);
-                        scrollToTop();
+                      <img
+                        src={`${BASE_PATH}/assets/sector_icons/${activeSector
+                          .toLowerCase()
+                          .replace(/\s*\/\s*/g, "_")
+                          .replace(/\s+/g, "_")}.svg`}
+                        alt=""
+                        width={28}
+                        height={28}
+                        style={{ display: "block" }}
+                      />
+                    </span>
+                    <span
+                      style={{
+                        fontSize: 16,
+                        fontWeight: 600,
+                        color: "#0F1B2D",
+                        fontFamily: FONT,
                       }}
-                    />
-                  </>
-                )}
-              </>
-            )}
+                    >
+                      {activeSector}
+                    </span>
+                    <span
+                      style={{
+                        fontSize: 13,
+                        color: "#9CA3AF",
+                        fontFamily: FONT,
+                      }}
+                    >
+                      ({sectorItems.length})
+                    </span>
+                  </div>
+
+                  {pagedItems.length === 0 ? (
+                    <EmptyState onClear={clearAll} />
+                  ) : (
+                    <>
+                      <div
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: `repeat(${cols}, 1fr)`,
+                          gap: 16,
+                          padding: "16px 0",
+                        }}
+                      >
+                        {pagedItems.map((uc, idx) => (
+                          <UseCaseCard
+                            key={`${activeSector}-${uc.ID ?? uc.Id ?? ""}-${idx}`}
+                            uc={uc}
+                            onOpen={openUseCase}
+                          />
+                        ))}
+                      </div>
+                      <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={(p) => {
+                          setCurrentPage(p);
+                          scrollToTop();
+                        }}
+                      />
+                    </>
+                  )}
+                </>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </>
   );

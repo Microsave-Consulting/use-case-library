@@ -7,6 +7,13 @@ import ReactCountryFlag from "react-country-flag";
 const FONT =
   '"Albert Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
 
+/* ── maturity level → background colour ── */
+const MATURITY_COLORS = {
+  Idea: "#dad4ff",
+  Pilot: "#f8ebff",
+  Operational: "#c8e3fc",
+};
+
 /* ── country name → ISO 2-letter code ── */
 const COUNTRY_CODES = {
   Afghanistan: "AF",
@@ -222,7 +229,7 @@ export default function UseCaseCard({ uc, onOpen }) {
             padding: "5px 12px",
             borderRadius: 999,
             border: "1px solid #E5E9F3",
-            background: "#FFFFFF",
+            background: MATURITY_COLORS[maturity] ?? "#FFFFFF",
             fontSize: 13,
             fontWeight: 400,
             color: "#374151",

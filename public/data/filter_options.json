@@ -3,14 +3,14 @@
     "Agriculture",
     "Commerce",
     "Education",
-    "Energy",
-    "Financial services",
+    "Energy and Climate",
+    "Financial Services",
     "Healthcare",
     "Housing and Land",
-    "Labour and employment",
+    "Labor and Employment",
     "Legal/ e-Sign",
     "Mobility",
-    "Public service",
+    "Public Services",
     "Social Protection",
     "Telecom"
   ],
@@ -36,13 +36,14 @@
     "Togo",
     "Uganda"
   ],
-  "CurrentStatus": ["Idea", "Operational", "Pilot"],
+  "CurrentStatus": [
+    "Idea",
+    "Operational",
+    "Pilot"
+  ],
   "ModeofAccess": [
-    "In Person",
-    "Online",
     "Online - In Person",
-    "Online - Remote",
-    "SMS"
+    "Online - Remote"
   ],
   "AuthenticationAssuranceLevel": [
     "AAL 0",

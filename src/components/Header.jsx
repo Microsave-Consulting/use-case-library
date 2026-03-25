@@ -123,26 +123,50 @@ export default function Header() {
         .hdr-dropdown a:hover { background: #EEF2FC; color: #1B66D1; font-weight: 600; }
 
         /* ── CTA ── */
-        .hdr-cta {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          width: 126px;
-          height: 46px;
-          background: #1F3A6D;
-          color: #ffffff;
-          font-family: 'Albert Sans', sans-serif;
-          font-size: 18px;
-          font-weight: 600;
-          padding: 12px 16px;
-          border-radius: 26px;
-          border: none;
-          cursor: pointer;
-          white-space: nowrap;
-          transition: background 200ms ease;
-        }
-        .hdr-cta:hover { background: #1B66D1; }
+        /* ── CTA ── */
+.hdr-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  padding: 0 24px;
+  background: #1F3A6D;
+  color: #ffffff;
+  font-family: 'Albert Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 22px;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
 
+}
+.hdr-cta:hover {
+  background: #1B66D1;
+
+}
+.hdr-cta:active {
+  transform: translateY(0);
+  
+}
+
+@media (max-width: 860px) {
+  .hdr-cta {
+    height: 40px;
+    padding: 0 18px;
+    font-size: 14px;
+    border-radius: 20px;
+  }
+}
+
+@media (max-width: 400px) {
+  .hdr-cta {
+    height: 38px;
+    padding: 0 14px;
+    font-size: 13px;
+  }
+}
         /* ── Hamburger — hidden on desktop ── */
         .hdr-ham {
           display: none;

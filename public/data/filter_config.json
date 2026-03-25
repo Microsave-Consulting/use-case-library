@@ -24,7 +24,7 @@
   },
   {
     "id": "ModeofAccess",
-    "label": "Mode Of Access",
+    "label": "Mode of Access",
     "field": "ModeofAccess",
     "usesSubregion": false,
     "multiValue": true
