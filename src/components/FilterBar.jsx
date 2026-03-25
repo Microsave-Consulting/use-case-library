@@ -531,6 +531,10 @@ export default function FilterBar({
           flex-wrap: nowrap;
         }
 
+        @media (max-width: 1400px) {
+          .fbar-inner { padding: 16px 48px; }
+        }
+
         .fbar-search {
           display: flex;
           align-items: center;

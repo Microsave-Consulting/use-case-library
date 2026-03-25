@@ -37,7 +37,7 @@ export default function Header() {
 
         /* ── Inner padding — native media queries, no Tailwind ── */
         .hdr-inner { padding: 0 100px; }
-        @media (max-width: 1100px) { .hdr-inner { padding: 0 48px; } }
+        @media (max-width: 1400px) { .hdr-inner { padding: 0 48px; } }
         @media (max-width: 860px) { .hdr-inner { padding: 0 20px; } }
 
         /* ── Desktop nav links ── */

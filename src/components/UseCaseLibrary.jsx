@@ -327,20 +327,29 @@ export default function UseCaseLibrary({
   const [sidebarVisible, setSidebarVisible] = useState(true);
 
   const wrapperRef = useRef(null);
+  const contentRef = useRef(null);
 
-  /* ── measure wrapper for cols + sidebar visibility ── */
+  /* ── measure wrapper width for sidebar visibility ── */
   useEffect(() => {
     const el = wrapperRef.current;
     if (!el) return;
-    const update = (w) => {
-      setCols(getColumns(w));
-      setSidebarVisible(w >= 860);
-    };
+    const update = (w) => setSidebarVisible(w >= 860);
     const ro = new ResizeObserver(([e]) => update(e.contentRect.width));
     ro.observe(el);
     update(el.getBoundingClientRect().width);
     return () => ro.disconnect();
   }, []);
+
+  /* ── measure actual card-grid area for accurate column count ── */
+  useEffect(() => {
+    const el = contentRef.current;
+    if (!el) return;
+    const update = (w) => setCols(getColumns(w));
+    const ro = new ResizeObserver(([e]) => update(e.contentRect.width));
+    ro.observe(el);
+    update(el.getBoundingClientRect().width);
+    return () => ro.disconnect();
+  }, [])
 
   const [filters, setFilters] = useState(() => {
     const init = {};
@@ -499,19 +508,15 @@ export default function UseCaseLibrary({
   );
   const isAllSectors = activeSector === "All";
 
-  /* ── responsive page padding ── */
-  const pagePadding = !sidebarVisible
-    ? cols === 1
-      ? "0 16px"
-      : "0 48px"
-    : "0 100px";
-
   return (
     <>
       <style>{`
   @import url('https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700&display=swap');
   .ucl-layout { display:flex; gap:24px; align-items:flex-start; }
-  .ucl-content { flex:1; min-width:0; padding-top:8px; overflow: visible, height: auto,margin-bottom:15px; }
+  .ucl-content { flex:1; min-width:0; padding-top:8px; overflow:visible; height:auto; margin-bottom:15px; }
+  .ucl-wrapper { padding:0 100px; box-sizing:border-box; transition:padding 200ms ease; }
+  @media (max-width:1400px) { .ucl-wrapper { padding:0 48px; } }
+  @media (max-width:540px) { .ucl-wrapper { padding:0 16px; } }
 `}</style>
 
       <FilterBar
@@ -531,11 +536,9 @@ export default function UseCaseLibrary({
 
       <div
         ref={wrapperRef}
+        className="ucl-wrapper"
         style={{
-          padding: pagePadding,
-          boxSizing: "border-box",
           fontFamily: FONT,
-          transition: "padding 200ms ease",
           height: "auto",
           minHeight: 0,
           overflow: "visible",
@@ -563,7 +566,7 @@ export default function UseCaseLibrary({
             />
           )}
 
-          <div className="ucl-content">
+          <div className="ucl-content" ref={contentRef}>
             {isAllSectors &&
               (grouped.length === 0 ? (
                 <EmptyState onClear={clearAll} />

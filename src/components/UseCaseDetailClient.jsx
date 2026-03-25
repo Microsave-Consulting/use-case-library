@@ -269,7 +269,7 @@ export default function UseCaseDetailClient({ useCase }) {
           padding: 40px 100px 60px;
           box-sizing: border-box;
         }
-        @media (max-width: 1100px) {
+        @media (max-width: 1400px) {
           .ucd-page-wrap { padding: 32px 48px 60px; }
         }
         @media (max-width: 860px) {
