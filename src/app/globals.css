@@ -26,10 +26,12 @@
 *::after { box-sizing: border-box; }
 body { margin: 0; }
 
-/* FIX 5: Removed the blanket `header { background-color: #ffffff !important; opacity: 1 !important; }`
-   rule. The Header component already sets bg-white directly via Tailwind className.
-   This redundant override was forcing a style recalculation on every header paint,
-   adding unnecessary reflow pressure to the CLS score. */
+
+
+header {
+  background-color: #ffffff !important;
+  opacity: 1 !important;
+}
 
 .ucl-layout,
 .ucl-content {
@@ -37,3 +39,5 @@ body { margin: 0; }
   overflow: visible !important;
   max-height: none !important;
 }
+
+

@@ -33,9 +33,7 @@ export default function Header() {
   return (
     <>
       <style>{`
-        /* FIX 1: Removed @import url('https://fonts.googleapis.com/...') from here.
-           Duplicate of the font already loaded in layout.js — was causing
-           a font swap layout shift on every page load. */
+        @import url('https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700&display=swap');
 
         /* ── Inner padding — native media queries, no Tailwind ── */
         .hdr-inner { padding: 0 100px; }
@@ -125,47 +123,50 @@ export default function Header() {
         .hdr-dropdown a:hover { background: #EEF2FC; color: #1B66D1; font-weight: 600; }
 
         /* ── CTA ── */
-        .hdr-cta {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          height: 44px;
-          padding: 0 24px;
-          background: #1F3A6D;
-          color: #ffffff;
-          font-family: 'Albert Sans', sans-serif;
-          font-size: 15px;
-          font-weight: 600;
-          border-radius: 22px;
-          border: none;
-          cursor: pointer;
-          white-space: nowrap;
-          letter-spacing: 0.01em;
-        }
-        .hdr-cta:hover {
-          background: #1B66D1;
-        }
-        .hdr-cta:active {
-          transform: translateY(0);
-        }
+        /* ── CTA ── */
+.hdr-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  padding: 0 24px;
+  background: #1F3A6D;
+  color: #ffffff;
+  font-family: 'Albert Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 22px;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
 
-        @media (max-width: 860px) {
-          .hdr-cta {
-            height: 40px;
-            padding: 0 18px;
-            font-size: 14px;
-            border-radius: 20px;
-          }
-        }
+}
+.hdr-cta:hover {
+  background: #1B66D1;
 
-        @media (max-width: 400px) {
-          .hdr-cta {
-            height: 38px;
-            padding: 0 14px;
-            font-size: 13px;
-          }
-        }
+}
+.hdr-cta:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(27, 102, 209, 0.2);
+}
 
+@media (max-width: 860px) {
+  .hdr-cta {
+    height: 40px;
+    padding: 0 18px;
+    font-size: 14px;
+    border-radius: 20px;
+  }
+}
+
+@media (max-width: 400px) {
+  .hdr-cta {
+    height: 38px;
+    padding: 0 14px;
+    font-size: 13px;
+  }
+}
         /* ── Hamburger — hidden on desktop ── */
         .hdr-ham {
           display: none;
@@ -197,6 +198,7 @@ export default function Header() {
         @media (max-width: 860px) {
           .hdr-nav-links { display: none !important; }
           .hdr-ham { display: inline-flex !important; }
+          /* On mobile: logo flush left, right group flush right */
           .hdr-nav { justify-content: space-between !important; }
           .hdr-logo { margin-right: 0 !important; }
         }
@@ -276,7 +278,7 @@ export default function Header() {
             className="hdr-nav flex items-center justify-between h-[91px]"
             aria-label="Primary"
           >
-            {/* Logo */}
+            {/* Logo — original styling, untouched */}
             <Link
               href="/"
               aria-label="MSC Home"
@@ -352,6 +354,7 @@ export default function Header() {
 
             {/* Right side: hamburger (mobile only) + Contact Us */}
             <div className="flex items-center shrink-0 gap-3" ref={dropRef}>
+              {/* Hamburger wrapper */}
               <div style={{ position: "relative" }}>
                 <button
                   type="button"
