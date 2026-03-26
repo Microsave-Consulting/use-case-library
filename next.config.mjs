@@ -1,12 +1,17 @@
 /** @type {import('next').NextConfig} */
-const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "/use-case-library";
+
+const isGitHubPages = process.env.NEXT_PUBLIC_DEPLOY_TARGET === "gh-pages";
+const repoName = "use-case-library";
 
 const nextConfig = {
-  output: "export",
-  basePath,
-  assetPrefix: basePath,
   images: {
-    unoptimized: true,
+    unoptimized: isGitHubPages,
   },
+  ...(isGitHubPages && {
+    output: "export",
+    basePath: `/${repoName}`,
+    assetPrefix: `/${repoName}/`,
+  }),
 };
+
 export default nextConfig;

@@ -70,12 +70,29 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        {/* FIX 2: Added crossOrigin="anonymous" to fonts.googleapis.com preconnect.
+            Without it the browser opens a non-CORS connection first, then a CORS one,
+            wasting the preconnect entirely. Lighthouse flagged this explicitly. */}
+        <link
+          rel="preconnect"
+          href="https://fonts.googleapis.com"
+          crossOrigin="anonymous"
+        />
         <link
           rel="preconnect"
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
+
+        {/* FIX 3: Added preconnect for cdn.jsdelivr.net.
+            react-country-flag loads flag SVGs from jsDelivr CDN.
+            Lighthouse flagged this as a 90ms LCP saving opportunity. */}
+        <link
+          rel="preconnect"
+          href="https://cdn.jsdelivr.net"
+          crossOrigin="anonymous"
+        />
+
         <link
           href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap"
           rel="stylesheet"

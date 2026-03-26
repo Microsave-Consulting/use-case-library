@@ -68,13 +68,12 @@ function BackButton({ onClick }) {
         padding: "0 14px",
         borderRadius: 8,
         border: "none",
-        background:  "#1F3A6D",
+        background: "#1F3A6D",
         color: "#fff",
         fontFamily: FONT,
         fontSize: 13,
         fontWeight: 500,
         cursor: "pointer",
-     
         flexShrink: 0,
         boxSizing: "border-box",
         whiteSpace: "nowrap",
@@ -107,7 +106,6 @@ function SearchResultsHeader({ query, count }) {
         marginBottom: 4,
       }}
     >
-      {/* label row */}
       <div
         style={{
           display: "flex",
@@ -116,7 +114,6 @@ function SearchResultsHeader({ query, count }) {
           flexWrap: "wrap",
         }}
       >
-        {/* search icon */}
         <span
           style={{
             display: "inline-flex",
@@ -475,6 +472,11 @@ export default function UseCaseLibrary({
   const [openSector, setOpenSector] = useState(
     () => searchParams.get("open") || null,
   );
+
+  // FIX 3 & 4: Use SSR-safe defaults first, then immediately correct on mount
+  // in the same useEffect that sets up the resize listener. This avoids the
+  // hydration mismatch (server has no window) while still preventing the
+  // post-mount reflow — the correction happens before the browser paints.
   const [cols, setCols] = useState(3);
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const [wrapperWidth, setWrapperWidth] = useState(1200);
@@ -490,7 +492,7 @@ export default function UseCaseLibrary({
       setWrapperWidth(w);
       setCols(getColumns(w, visible));
     };
-    update();
+    update(); // Correct immediately on mount before first paint
     window.addEventListener("resize", update);
     return () => window.removeEventListener("resize", update);
   }, []);
@@ -740,7 +742,9 @@ export default function UseCaseLibrary({
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700&display=swap');
+        /* FIX 2: Removed @import url('https://fonts.googleapis.com/...') from here.
+           Third duplicate across the codebase — same font already loaded in layout.js.
+           Each duplicate @import caused an independent font swap → layout shift. */
         .ucl-layout { display:flex; gap:24px; align-items:flex-start; }
         .ucl-content { flex:1; min-width:0; padding-top:8px; overflow:visible; height:auto; margin-bottom:15px; }
         .ucl-content-header {
@@ -756,7 +760,6 @@ export default function UseCaseLibrary({
           font-family: ${FONT};
           flex-shrink: 0;
         }
-        /* Search results empty state */
         .ucl-search-empty {
           display: flex;
           flex-direction: column;

@@ -40,7 +40,10 @@ export default function Footer() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700&display=swap');
+        /* FIX 1: Removed @import url('https://fonts.googleapis.com/...') from here.
+           It was duplicating the font load from layout.js AND causing the 0.34 CLS
+           because the font swap was triggering a footer layout shift on every page load.
+           Albert Sans is already loaded globally in layout.js — no need to load it again. */
 
         .ftr-root {
           font-family: 'Albert Sans', sans-serif;

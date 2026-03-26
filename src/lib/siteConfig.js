@@ -1,2 +1,8 @@
-export const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "/use-case-library";
-export const SITE_URL = `https://microsave-consulting.github.io${BASE_PATH}`;
+const isGitHubPages = process.env.NEXT_PUBLIC_DEPLOY_TARGET === "gh-pages";
+const repoName = "use-case-library";
+
+export const BASE_PATH = isGitHubPages ? `/${repoName}` : "";
+
+export const SITE_URL = isGitHubPages
+  ? `https://microsave-consulting.github.io/${repoName}`
+  : process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
