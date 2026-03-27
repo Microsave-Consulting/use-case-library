@@ -1,6 +1,8 @@
 "use client";
 // src/components/WhatIsDigitalID.jsx
 
+import { BASE_PATH } from "@/lib/siteConfig";
+
 const FONT =
   '"Albert Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
 
@@ -158,7 +160,7 @@ export default function WhatIsDigitalID() {
 
         <div className="what-is-did__gif-wrap">
           <img
-            src="/home/digital-id.gif"
+            src={`${BASE_PATH}/home/digital-id.gif`}
             alt="Digital ID lifecycle diagram showing enrolment, authentication and service delivery"
             className="what-is-did__gif"
           />
