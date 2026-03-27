@@ -2,6 +2,7 @@
 // src/components/ExploreLibraryBanner.jsx
 
 import { useMemo } from "react";
+import { BASE_PATH } from "@/lib/siteConfig";
 
 const FONT =
   '"Albert Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
@@ -212,7 +213,7 @@ export default function ExploreLibraryBanner({ initialData = [] }) {
       <section className="elb" aria-label="Explore digital ID use case library">
         {/* ── Background SVG — swap filename here ── */}
         <img
-          src="/home/explore-library-bg.svg"
+          src={`${BASE_PATH}/home/explore-library-bg.svg`}
           alt=""
           aria-hidden="true"
           className="elb__bg"

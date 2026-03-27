@@ -1,5 +1,6 @@
 "use client";
 // src/components/PlatformIntro.jsx
+import { BASE_PATH } from "@/lib/siteConfig";
 
 const FONT =
   '"Albert Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
@@ -82,7 +83,7 @@ export default function PlatformIntro() {
 
       <section className="platform-intro" aria-label="Platform introduction">
         <img
-          src="/home/platform-intro.svg"
+          src={`${BASE_PATH}/home/platform-intro.svg`}
           alt=""
           aria-hidden="true"
           className="platform-intro__bg"

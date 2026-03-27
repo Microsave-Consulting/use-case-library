@@ -1,27 +1,27 @@
 "use client";
 // src/components/WhyDigitalID.jsx
-
+import { BASE_PATH } from "@/lib/siteConfig";
 const FONT =
   '"Albert Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
 
 const CARDS = [
   {
-    icon: "/home/convenience.svg",
+    icon: `${BASE_PATH}/home/convenience.svg`,
     title: "Convenience",
     body: "Digital identities can be securely stored and verified online using smartphones or digital devices, reducing the need for multiple physical documents or in-person visits to access services.",
   },
   {
-    icon: "/home/privacy.svg",
+    icon: `${BASE_PATH}/home/privacy.svg`,
     title: "Privacy and security",
     body: "Technologies such as biometrics, encryption, and selective data sharing help protect identity information while preventing fraud.",
   },
   {
-    icon: "/home/efficiency.svg",
+    icon: `${BASE_PATH}/home/efficiency.svg`,
     title: "Efficiency",
     body: "Electronic verification enables faster service delivery by reducing paperwork and manual verification processes.",
   },
   {
-    icon: "/home/realtime.svg",
+    icon: `${BASE_PATH}/home/realtime.svg`,
     title: "Real-time updates",
     body: "Integrating the national digital ID with service delivery enables instant notifications of changes or usage, enhancing transparency and control.",
   },
