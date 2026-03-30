@@ -2,6 +2,7 @@
 // src/components/HackathonCarousel.jsx
 
 import { useEffect, useRef, useState, useCallback } from "react";
+import { BASE_PATH } from "@/lib/siteConfig";
 
 const FONT =
   '"Albert Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
@@ -9,7 +10,7 @@ const FONT =
 function getPartnerLogoSrc(partnerName) {
   if (!partnerName) return null;
   const filename = partnerName.replace(/\s+/g, "_");
-  return `/home/partner/${filename}.svg`;
+  return `${BASE_PATH}/home/partner/${filename}.svg`;
 }
 
 const STATUS_CONFIG = {
