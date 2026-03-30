@@ -125,7 +125,7 @@ export default function HackathonCarousel({ items }) {
           transform: scale(1);
           z-index: 10;
           filter: none;
-          box-shadow: 0 24px 64px rgba(27, 102, 209, 0.14);
+     
           cursor: default;
           border-radius: 20px;
         }
