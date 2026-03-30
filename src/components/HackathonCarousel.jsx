@@ -167,7 +167,7 @@ export default function HackathonCarousel({ items }) {
 
         /* LIVE */
         .hc-card.hc-live {
-          background-image: url('/home/hackathon_background.svg');
+          background-image: url('${BASE_PATH}/home/hackathon_background.svg');
           background-size: cover;
           background-position: center;
           background-repeat: no-repeat;
