@@ -211,7 +211,7 @@ export default function ExploreLibraryBanner({ initialData = [] }) {
       `}</style>
 
       <section className="elb" aria-label="Explore digital ID use case library">
-        {/* ── Background SVG — swap filename here ── */}
+        {/* ── Background SVG — swap filename ── */}
         <img
           src={`${BASE_PATH}/home/explore-library-bg.svg`}
           alt=""
