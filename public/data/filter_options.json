@@ -3,15 +3,15 @@
     "Agriculture",
     "Commerce",
     "Education",
-    "Energy and Climate",
-    "Financial Services",
+    "Energy and climate",
+    "Financial services",
     "Healthcare",
-    "Housing and Land",
-    "Labor and Employment",
+    "Housing and land",
+    "Labor and employment",
     "Legal/ e-Sign",
     "Mobility",
-    "Public Services",
-    "Social Protection",
+    "Public services",
+    "Social protection",
     "Telecom"
   ],
   "Region": [
@@ -36,15 +36,8 @@
     "Togo",
     "Uganda"
   ],
-  "CurrentStatus": [
-    "Idea",
-    "Operational",
-    "Pilot"
-  ],
-  "ModeofAccess": [
-    "Online - In Person",
-    "Online - Remote"
-  ],
+  "CurrentStatus": ["Conceptual", "Operational", "Pilot"],
+  "ModeofAccess": ["Offline", "Online - assisted", "Online - self"],
   "AuthenticationAssuranceLevel": [
     "AAL 0",
     "AAL 1",

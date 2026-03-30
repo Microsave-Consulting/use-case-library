@@ -3,13 +3,17 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { BASE_PATH } from "@/lib/siteConfig";
+import hackathon from "../../public/data/hackathon_urls.json";
 
 const FONT =
   '"Albert Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
 
 function splitValues(value) {
   if (!value) return [];
-  return String(value).split(",").map((v) => v.trim()).filter(Boolean);
+  return String(value)
+    .split(",")
+    .map((v) => v.trim())
+    .filter(Boolean);
 }
 
 function splitMainAndTip(value) {
@@ -27,7 +31,11 @@ function InfoTooltip({ tip }) {
   const [visible, setVisible] = useState(false);
   return (
     <span
-      style={{ position: "relative", display: "inline-flex", alignItems: "center" }}
+      style={{
+        position: "relative",
+        display: "inline-flex",
+        alignItems: "center",
+      }}
       onMouseEnter={() => setVisible(true)}
       onMouseLeave={() => setVisible(false)}
     >
@@ -38,22 +46,44 @@ function InfoTooltip({ tip }) {
         onFocus={() => setVisible(true)}
         onBlur={() => setVisible(false)}
         style={{
-          display: "inline-flex", alignItems: "center", justifyContent: "center",
-          width: 16, height: 16, cursor: "help", userSelect: "none", flexShrink: 0,
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: 16,
+          height: 16,
+          cursor: "help",
+          userSelect: "none",
+          flexShrink: 0,
         }}
       >
-        <img src={`${BASE_PATH}/assets/info.svg`} alt="" width={13} height={13} style={{ display: "block" }} />
+        <img
+          src={`${BASE_PATH}/assets/info.svg`}
+          alt=""
+          width={13}
+          height={13}
+          style={{ display: "block" }}
+        />
       </span>
       {visible && (
         <span
           role="tooltip"
           style={{
-            position: "absolute", left: 0, top: "calc(100% + 8px)",
-            minWidth: 220, maxWidth: 300, padding: "10px 12px",
-            borderRadius: 10, background: "#fff", color: "#111",
-            fontSize: 12, lineHeight: 1.5,
-            boxShadow: "0 8px 30px rgba(0,0,0,0.18)", zIndex: 50,
-            fontFamily: FONT, border: "1px solid rgba(0,0,0,0.07)", whiteSpace: "normal",
+            position: "absolute",
+            left: 0,
+            top: "calc(100% + 8px)",
+            minWidth: 220,
+            maxWidth: 300,
+            padding: "10px 12px",
+            borderRadius: 10,
+            background: "#fff",
+            color: "#111",
+            fontSize: 12,
+            lineHeight: 1.5,
+            boxShadow: "0 8px 30px rgba(0,0,0,0.18)",
+            zIndex: 50,
+            fontFamily: FONT,
+            border: "1px solid rgba(0,0,0,0.07)",
+            whiteSpace: "normal",
           }}
         >
           {tip}
@@ -70,16 +100,28 @@ function MetaItem({ label, value, showTooltip = false }) {
 
   return (
     <div style={{ minWidth: 0, fontFamily: FONT }}>
-      <div style={{
-        fontSize: 13, lineHeight: 1.3, color: "#334155",
-        fontWeight: 500, marginBottom: 4,
-      }}>
+      <div
+        style={{
+          fontSize: 13,
+          lineHeight: 1.3,
+          color: "#334155",
+          fontWeight: 500,
+          marginBottom: 4,
+        }}
+      >
         {label}
       </div>
-      <div style={{
-        display: "inline-flex", alignItems: "center", gap: 4,
-        fontSize: 14, color: "#000000", fontWeight: 500, minWidth: 0,
-      }}>
+      <div
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 4,
+          fontSize: 14,
+          color: "#000000",
+          fontWeight: 500,
+          minWidth: 0,
+        }}
+      >
         <span style={{ overflowWrap: "anywhere", wordBreak: "break-word" }}>
           {main || "—"}
         </span>
@@ -185,43 +227,69 @@ function CountryItem({ value }) {
   );
 }
 
-function SourceRow({ url }) {
+function SourceRow({ url, label }) {
   const [hovered, setHovered] = useState(false);
   const normalized = /^https?:\/\//i.test(url)
     ? url
-    : /^www\./i.test(url) ? `https://${url}` : url;
+    : /^www\./i.test(url)
+      ? `https://${url}`
+      : url;
 
   return (
-  <a
-    href={normalized}
-    target="_blank"
-    rel="noopener noreferrer"
-    onMouseEnter={() => setHovered(true)}
-    onMouseLeave={() => setHovered(false)}
-    style={{
-      display: "flex", alignItems: "center", gap: 10,
-      minHeight: 38, textDecoration: "none", fontFamily: FONT,
-      borderBottom: "1px solid #F1F1F1",
-    }}
-  >
-    <span style={{
-      display: "inline-flex", alignItems: "center", justifyContent: "center",
-      width: 20, height: 20, flexShrink: 0, color: "#0F1B2D",
-    }}>
-      <img src={`${BASE_PATH}/assets/link.svg`} alt="" width={20} height={10} style={{ display: "block" }} />
-    </span>
-    <span style={{
-      fontSize: 14, fontWeight: 500,
-      color: hovered ? "#1F3A6D" : "#0F1B2D",
-      textDecoration: "underline", textDecorationStyle: "solid",
-      textUnderlineOffset: "2px", transition: "color 150ms ease",
-      overflowWrap: "anywhere", wordBreak: "break-all",
-      lineHeight: 1.4, padding: "10px 0",
-    }}>
-      {url}
-    </span>
-  </a>
-);
+    <a
+      href={normalized}
+      target="_blank"
+      rel="noopener noreferrer"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 10,
+        minHeight: 38,
+        textDecoration: "none",
+        fontFamily: FONT,
+        borderBottom: "1px solid #F1F1F1",
+      }}
+    >
+      <span
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: 20,
+          height: 20,
+          flexShrink: 0,
+          color: "#0F1B2D",
+        }}
+      >
+        <img
+          src={`${BASE_PATH}/assets/link.svg`}
+          alt=""
+          width={20}
+          height={10}
+          style={{ display: "block" }}
+        />
+      </span>
+      <span
+        style={{
+          fontSize: 14,
+          fontWeight: 500,
+          color: hovered ? "#1F3A6D" : "#0F1B2D",
+          textDecoration: "underline",
+          textDecorationStyle: "solid",
+          textUnderlineOffset: "2px",
+          transition: "color 150ms ease",
+          overflowWrap: "anywhere",
+          wordBreak: "break-all",
+          lineHeight: 1.4,
+          padding: "10px 0",
+        }}
+      >
+        {label || url}
+      </span>
+    </a>
+  );
 }
 
 function BackButton({ onClick }) {
@@ -234,19 +302,34 @@ function BackButton({ onClick }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        display: "inline-flex", alignItems: "center", gap: 10,
-        height: 44, padding: "10px 16px",
-        borderRadius: 8, border: "none",
-        background:  "#1F3A6D",
-        color: "#fff", fontFamily: FONT, fontSize: 14, fontWeight: 500,
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 10,
+        height: 44,
+        padding: "10px 16px",
+        borderRadius: 8,
+        border: "none",
+        background: "#1F3A6D",
+        color: "#fff",
+        fontFamily: FONT,
+        fontSize: 14,
+        fontWeight: 500,
         cursor: "pointer",
-        transition: "background 250ms ease, box-shadow 250ms ease, transform 250ms ease",
-        flexShrink: 0, boxSizing: "border-box",
-      
+        transition:
+          "background 250ms ease, box-shadow 250ms ease, transform 250ms ease",
+        flexShrink: 0,
+        boxSizing: "border-box",
+
         whiteSpace: "nowrap",
       }}
     >
-      <img src={`${BASE_PATH}/assets/back.svg`} alt="" width={18} height={12} style={{ display: "block" }} />
+      <img
+        src={`${BASE_PATH}/assets/back.svg`}
+        alt=""
+        width={18}
+        height={12}
+        style={{ display: "block" }}
+      />
       <span>Back</span>
     </button>
   );
@@ -257,25 +340,46 @@ function Breadcrumb({ sector, title }) {
     <nav
       aria-label="Breadcrumb"
       style={{
-        display: "flex", alignItems: "center", gap: 6,
-        fontFamily: FONT, fontSize: 14, color: "#6B7280",
-        flexWrap: "wrap", minWidth: 0, flex: 1,
+        display: "flex",
+        alignItems: "center",
+        gap: 6,
+        fontFamily: FONT,
+        fontSize: 14,
+        color: "#6B7280",
+        flexWrap: "wrap",
+        minWidth: 0,
+        flex: 1,
       }}
     >
       <Link
         href="/library"
-        style={{ color: "#334155", fontWeight: 400, textDecoration: "none", whiteSpace: "nowrap" }}
+        style={{
+          color: "#334155",
+          fontWeight: 400,
+          textDecoration: "none",
+          whiteSpace: "nowrap",
+        }}
         onMouseEnter={(e) => (e.currentTarget.style.color = "#1F3A6D")}
         onMouseLeave={(e) => (e.currentTarget.style.color = "#334155")}
       >
         {sector || "Library"}
       </Link>
-      <span aria-hidden="true" style={{ color: "#334155", fontWeight: 400, fontSize: 20 }}>›</span>
-      <span style={{
-        color: "#1F3A6D", fontWeight: 400,
-        overflow: "hidden", textOverflow: "ellipsis",
-        whiteSpace: "nowrap", maxWidth: "55vw",
-      }}>
+      <span
+        aria-hidden="true"
+        style={{ color: "#334155", fontWeight: 400, fontSize: 20 }}
+      >
+        ›
+      </span>
+      <span
+        style={{
+          color: "#1F3A6D",
+          fontWeight: 400,
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+          maxWidth: "55vw",
+        }}
+      >
         {title}
       </span>
     </nav>
@@ -287,22 +391,46 @@ export default function UseCaseDetailClient({ useCase }) {
 
   if (!useCase) {
     return (
-      <div style={{
-        maxWidth: 1440, margin: "0 auto", padding: "2rem 1.5rem",
-        minHeight: "60vh", display: "flex", flexDirection: "column",
-        alignItems: "center", justifyContent: "center", gap: "0.75rem", fontFamily: FONT,
-      }}>
-        <h2 style={{ margin: 0, fontSize: "1.25rem", fontWeight: 800, color: "#111" }}>
+      <div
+        style={{
+          maxWidth: 1440,
+          margin: "0 auto",
+          padding: "2rem 1.5rem",
+          minHeight: "60vh",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "0.75rem",
+          fontFamily: FONT,
+        }}
+      >
+        <h2
+          style={{
+            margin: 0,
+            fontSize: "1.25rem",
+            fontWeight: 800,
+            color: "#111",
+          }}
+        >
           Use case not found
         </h2>
         <p style={{ margin: 0, color: "#6B7280" }}>
           The link may be broken, or the item was removed.
         </p>
-        <Link href="/library" style={{
-          display: "inline-block", padding: "0.6rem 1.2rem",
-          borderRadius: 10, textDecoration: "none",
-          background: "#1F3A6D", color: "#fff", fontWeight: 700, fontFamily: FONT,
-        }}>
+        <Link
+          href="/library"
+          style={{
+            display: "inline-block",
+            padding: "0.6rem 1.2rem",
+            borderRadius: 10,
+            textDecoration: "none",
+            background: "#1F3A6D",
+            color: "#fff",
+            fontWeight: 700,
+            fontFamily: FONT,
+          }}
+        >
           Back to Use Case Library
         </Link>
       </div>
@@ -320,13 +448,26 @@ export default function UseCaseDetailClient({ useCase }) {
   const keyTerms = splitValues(useCase.KeyTerms);
 
   const sources = useMemo(() => {
-    const raw = String(useCase.Source || useCase.Links || "").trim();
-    if (!raw) return [];
-    return raw.split(/\n|,/).map((s) => s.trim()).filter(Boolean);
+    const raw = String(useCase.Source || "").trim();
+    if (raw) {
+      const matched = hackathon.find(
+        (h) => h.Title?.trim().toLowerCase() === raw.toLowerCase(),
+      );
+      if (matched?.URL) return [{ url: matched.URL, label: matched.Title }];
+    }
+
+    const fallback = String(useCase.Links || useCase.Source || "").trim();
+    if (!fallback) return [];
+    return fallback
+      .split(/\n|,/)
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .map((s) => ({ url: s, label: s }));
   }, [useCase.Source, useCase.Links]);
 
   const handleBack = () => {
-    if (typeof window !== "undefined" && window.history.length > 1) router.back();
+    if (typeof window !== "undefined" && window.history.length > 1)
+      router.back();
     else router.push("/library");
   };
 
@@ -562,8 +703,12 @@ export default function UseCaseDetailClient({ useCase }) {
           <h2 className="ucd-section-heading">Sources</h2>
           {sources.length ? (
             <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-              {sources.map((url, idx) => (
-                <SourceRow key={`${url}-${idx}`} url={url} />
+              {sources.map((src, idx) => (
+                <SourceRow
+                  key={`${src.url}-${idx}`}
+                  url={src.url}
+                  label={src.label}
+                />
               ))}
             </div>
           ) : (

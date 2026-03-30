@@ -18,7 +18,7 @@ function getData() {
   );
   const hackathons = JSON.parse(
     readFileSync(
-      path.join(process.cwd(), "public/data/hackathons.json"),
+      path.join(process.cwd(), "public/data/hackathons_2.json"),
       "utf-8",
     ),
   );

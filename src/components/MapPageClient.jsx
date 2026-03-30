@@ -6,6 +6,13 @@ import PlatformIntro from "./PlatformIntro";
 import WhatIsDigitalID from "./WhatIsDigitalID";
 import WhyDigitalID from "./WhyDigitalID";
 import ExploreLibraryBanner from "./ExploreLibraryBanner";
+import ExploreSectors from "./ExploreSectors";
+import UseCaseDotMap from "./UseCaseDotMap";
+import HackathonCarousel from "@/components/HackathonCarousel";
+import hackathons from "../../public/data/hackathons_2.json";
+import WhoIsThisPlatformFor from "./WhoIsThisPlatformFor";
+
+
 
 const FONT =
   '"Albert Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
@@ -22,6 +29,10 @@ export default function MapPageClient({
         <WhatIsDigitalID />
         <WhyDigitalID />
         <ExploreLibraryBanner initialData={initialUseCases} />
+        <ExploreSectors />
+        <UseCaseDotMap items={initialUseCases} />
+        <HackathonCarousel items={hackathons} />
+        <WhoIsThisPlatformFor/>
       </div>
     </div>
   );

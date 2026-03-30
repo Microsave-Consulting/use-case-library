@@ -52,14 +52,11 @@ function getModeValues(uc) {
    Back Button
 ══════════════════════════════════════════════════ */
 function BackButton({ onClick }) {
-  const [hovered, setHovered] = useState(false);
   return (
     <button
       type="button"
       onClick={onClick}
       aria-label="Back"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
       style={{
         display: "inline-flex",
         alignItems: "center",
@@ -142,7 +139,6 @@ function SearchResultsHeader({ query, count }) {
             />
           </svg>
         </span>
-
         <div
           style={{
             display: "flex",
@@ -184,13 +180,7 @@ function SearchResultsHeader({ query, count }) {
               "{query}"
             </span>
           </div>
-          <span
-            style={{
-              fontSize: 13,
-              color: "#6B7280",
-              fontFamily: FONT,
-            }}
-          >
+          <span style={{ fontSize: 13, color: "#6B7280", fontFamily: FONT }}>
             {count === 0
               ? "No use cases found"
               : `${count} use case${count === 1 ? "" : "s"} found`}
@@ -459,6 +449,10 @@ export default function UseCaseLibrary({
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  // ── SSR-safe state: initialise from searchParams (available on server too) ──
+  // searchParams from Next.js useSearchParams() is safe for SSR — no window needed.
+  // This fixes the hydration mismatch that occurred when using window.location.search
+  // inside useState() which returns different values on server vs client.
   const [search, setSearch] = useState(() => searchParams.get("q") || "");
   const [searchInput, setSearchInput] = useState(
     () => searchParams.get("q") || "",
@@ -473,15 +467,27 @@ export default function UseCaseLibrary({
     () => searchParams.get("open") || null,
   );
 
-  // FIX 3 & 4: Use SSR-safe defaults first, then immediately correct on mount
-  // in the same useEffect that sets up the resize listener. This avoids the
-  // hydration mismatch (server has no window) while still preventing the
-  // post-mount reflow — the correction happens before the browser paints.
+  // ── Filters: initialise from searchParams (SSR-safe, no window) ──
+  // Previously used window.location.search inside useState → hydration mismatch crash.
+  // useSearchParams() works identically on server and client → no mismatch.
+  const [filters, setFilters] = useState(() => {
+    const init = {};
+    filterConfig.forEach((f) => {
+      if (f?.id) init[f.id] = [];
+    });
+    // Read f_<id> params via searchParams — works on SSR and client identically
+    filterConfig.forEach((f) => {
+      if (!f?.id) return;
+      const val = searchParams.get(`f_${f.id}`);
+      if (val) init[f.id] = val.split("|").filter(Boolean);
+    });
+    return init;
+  });
+
   const [cols, setCols] = useState(3);
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const [wrapperWidth, setWrapperWidth] = useState(1200);
 
-  // Snapshot for Back button
   const previousStateRef = useRef(null);
 
   useEffect(() => {
@@ -492,26 +498,10 @@ export default function UseCaseLibrary({
       setWrapperWidth(w);
       setCols(getColumns(w, visible));
     };
-    update(); // Correct immediately on mount before first paint
+    update();
     window.addEventListener("resize", update);
     return () => window.removeEventListener("resize", update);
   }, []);
-
-  const [filters, setFilters] = useState(() => {
-    const init = {};
-    filterConfig.forEach((f) => {
-      if (f?.id) init[f.id] = [];
-    });
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      filterConfig.forEach((f) => {
-        if (!f?.id) return;
-        const val = params.get(`f_${f.id}`);
-        if (val) init[f.id] = val.split("|").filter(Boolean);
-      });
-    }
-    return init;
-  });
 
   const useCases = useMemo(() => initialData || [], [initialData]);
 
@@ -619,7 +609,6 @@ export default function UseCaseLibrary({
 
   const pageSize = getPageSize(cols);
 
-  /* ── Sector-drilled view ── */
   const sectorItems = useMemo(() => {
     if (activeSector === "All") return [];
     return filtered.filter(
@@ -628,7 +617,6 @@ export default function UseCaseLibrary({
     );
   }, [filtered, activeSector]);
 
-  /* ── Search results view (paginated flat list) ── */
   const searchPageSize = pageSize;
   const [searchPage, setSearchPage] = useState(1);
   useEffect(() => {
@@ -652,7 +640,6 @@ export default function UseCaseLibrary({
     [],
   );
 
-  /* ── Snapshot helpers ── */
   const saveSnapshot = () => {
     if (previousStateRef.current === null) {
       previousStateRef.current = {
@@ -705,7 +692,6 @@ export default function UseCaseLibrary({
     if (id) router.push(`/use-cases/${id}`);
   };
 
-  /* ── Back button ── */
   const hasActiveFilters =
     search.trim().length > 0 ||
     Object.values(filters).some((vals) => vals && vals.length > 0);
@@ -727,24 +713,24 @@ export default function UseCaseLibrary({
     scrollToTop();
   };
 
-  /* ── View mode ── */
   const isSearchMode = search.trim().length > 0;
   const isAllSectors = activeSector === "All";
 
-  const pagePadding = sidebarVisible
-    ? wrapperWidth >= 1100
-      ? "0 100px"
-      : "0 48px"
-    : wrapperWidth <= 560
-      ? "0 16px"
-      : "0 48px";
+  // ── Padding fix ──
+  // Previously used large fixed padding (up to 100px) that caused excess
+  // left/right whitespace. Now uses consistent moderate padding that scales
+  // responsively without over-compressing on mid-size screens.
+   const pagePadding = sidebarVisible
+     ? wrapperWidth >= 1100
+       ? "0 100px"
+       : "0 48px"
+     : wrapperWidth <= 560
+       ? "0 16px"
+       : "0 48px";
 
   return (
     <>
       <style>{`
-        /* FIX 2: Removed @import url('https://fonts.googleapis.com/...') from here.
-           Third duplicate across the codebase — same font already loaded in layout.js.
-           Each duplicate @import caused an independent font swap → layout shift. */
         .ucl-layout { display:flex; gap:24px; align-items:flex-start; }
         .ucl-content { flex:1; min-width:0; padding-top:8px; overflow:visible; height:auto; margin-bottom:15px; }
         .ucl-content-header {
@@ -797,7 +783,7 @@ export default function UseCaseLibrary({
           marginBottom: 100,
         }}
       >
-        {/* ── Header row: total count left · Back button right ── */}
+        {/* ── Header row ── */}
         <div className="ucl-content-header">
           <span className="ucl-total-count">
             Total {useCases.length} use cases
@@ -805,9 +791,7 @@ export default function UseCaseLibrary({
           {showBackButton && <BackButton onClick={handleBack} />}
         </div>
 
-        {/* ════════════════════════════════════════
-            SEARCH RESULTS MODE
-        ════════════════════════════════════════ */}
+        {/* ════ SEARCH RESULTS MODE ════ */}
         {isSearchMode && (
           <div className="ucl-layout">
             {sidebarVisible && (
@@ -823,7 +807,6 @@ export default function UseCaseLibrary({
                 query={search.trim()}
                 count={filtered.length}
               />
-
               {filtered.length === 0 ? (
                 <div className="ucl-search-empty">
                   <span
@@ -930,9 +913,7 @@ export default function UseCaseLibrary({
           </div>
         )}
 
-        {/* ════════════════════════════════════════
-            NORMAL MODE (grouped / sector drilled)
-        ════════════════════════════════════════ */}
+        {/* ════ NORMAL MODE ════ */}
         {!isSearchMode && (
           <div className="ucl-layout">
             {sidebarVisible && (
@@ -943,9 +924,7 @@ export default function UseCaseLibrary({
                 onSelect={handleSelectSector}
               />
             )}
-
             <div className="ucl-content">
-              {/* All-sectors grouped view */}
               {isAllSectors &&
                 (grouped.length === 0 ? (
                   <EmptyState onClear={clearAll} />
@@ -964,7 +943,6 @@ export default function UseCaseLibrary({
                   ))
                 ))}
 
-              {/* Single-sector drilled view */}
               {!isAllSectors && (
                 <>
                   <div
@@ -1018,7 +996,6 @@ export default function UseCaseLibrary({
                       ({sectorItems.length})
                     </span>
                   </div>
-
                   {pagedItems.length === 0 ? (
                     <EmptyState onClear={clearAll} />
                   ) : (

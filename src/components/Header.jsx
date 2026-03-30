@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import ContactModal from "@/components/ContactModal";
 import { BASE_PATH } from "@/lib/siteConfig";
+import hackathons from "../../public/data/hackathons_2.json";
 
 const FONT = "'Albert Sans', sans-serif";
 
@@ -35,12 +36,10 @@ export default function Header() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700&display=swap');
 
-        /* ── Inner padding — native media queries, no Tailwind ── */
         .hdr-inner { padding: 0 100px; }
         @media (max-width: 1100px) { .hdr-inner { padding: 0 48px; } }
         @media (max-width: 860px) { .hdr-inner { padding: 0 20px; } }
 
-        /* ── Desktop nav links ── */
         .hdr-link {
           position: relative;
           display: inline-flex;
@@ -77,7 +76,6 @@ export default function Header() {
         }
         .hdr-drop-btn:hover { color: #1B66D1; font-weight: 600; }
 
-        /* ── Desktop hackathons dropdown ── */
         .hdr-dropdown {
           position: absolute;
           top: calc(100% + 12px);
@@ -122,52 +120,35 @@ export default function Header() {
         }
         .hdr-dropdown a:hover { background: #EEF2FC; color: #1B66D1; font-weight: 600; }
 
-        /* ── CTA ── */
-        /* ── CTA ── */
-.hdr-cta {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 44px;
-  padding: 0 24px;
-  background: #1F3A6D;
-  color: #ffffff;
-  font-family: 'Albert Sans', sans-serif;
-  font-size: 15px;
-  font-weight: 600;
-  border-radius: 22px;
-  border: none;
-  cursor: pointer;
-  white-space: nowrap;
-  letter-spacing: 0.01em;
+        .hdr-cta {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          height: 44px;
+          padding: 0 24px;
+          background: #1F3A6D;
+          color: #ffffff;
+          font-family: 'Albert Sans', sans-serif;
+          font-size: 15px;
+          font-weight: 600;
+          border-radius: 22px;
+          border: none;
+          cursor: pointer;
+          white-space: nowrap;
+          letter-spacing: 0.01em;
+        }
+        .hdr-cta:hover { background: #1B66D1; }
+        .hdr-cta:active {
+          transform: translateY(0);
+          box-shadow: 0 2px 8px rgba(27, 102, 209, 0.2);
+        }
+        @media (max-width: 860px) {
+          .hdr-cta { display: none; }
+        }
+        @media (max-width: 400px) {
+          .hdr-cta { height: 38px; padding: 0 14px; font-size: 13px; }
+        }
 
-}
-.hdr-cta:hover {
-  background: #1B66D1;
-
-}
-.hdr-cta:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(27, 102, 209, 0.2);
-}
-
-@media (max-width: 860px) {
-  .hdr-cta {
-    height: 40px;
-    padding: 0 18px;
-    font-size: 14px;
-    border-radius: 20px;
-  }
-}
-
-@media (max-width: 400px) {
-  .hdr-cta {
-    height: 38px;
-    padding: 0 14px;
-    font-size: 13px;
-  }
-}
-        /* ── Hamburger — hidden on desktop ── */
         .hdr-ham {
           display: none;
           align-items: center;
@@ -194,16 +175,13 @@ export default function Header() {
         .hdr-ham.open .bar:nth-child(2) { opacity: 0; width: 0; }
         .hdr-ham.open .bar:nth-child(3) { transform: translateY(-5.5px) rotate(-45deg); }
 
-        /* ── Breakpoint ── */
         @media (max-width: 860px) {
           .hdr-nav-links { display: none !important; }
           .hdr-ham { display: inline-flex !important; }
-          /* On mobile: logo flush left, right group flush right */
           .hdr-nav { justify-content: space-between !important; }
           .hdr-logo { margin-right: 0 !important; }
         }
 
-        /* ── Mobile dropdown — white theme ── */
         .mob-drop {
           position: absolute;
           top: calc(100% + 10px);
@@ -270,15 +248,20 @@ export default function Header() {
       `}</style>
 
       <header
-        style={{ fontFamily: FONT }}
-        className="fixed top-0 left-0 right-0 z-[100] w-full bg-white border-b border-[rgba(140,140,140,0.11)]"
+        className="fixed top-0 left-0 right-0 z-[100] w-full border-b border-[rgba(140,140,140,0.11)]"
+        style={{
+          fontFamily: FONT,
+          background: "rgba(255, 255, 255, 0.72)",
+          backdropFilter: "blur(2px)",
+          WebkitBackdropFilter: "blur(16px)",
+        }}
       >
         <div className="hdr-inner">
           <nav
             className="hdr-nav flex items-center justify-between h-[91px]"
             aria-label="Primary"
           >
-            {/* Logo — original styling, untouched */}
+            {/* Logo */}
             <Link
               href="/"
               aria-label="MSC Home"
@@ -327,20 +310,16 @@ export default function Header() {
                   </svg>
                 </button>
                 <div className="hdr-dropdown">
-                  <a
-                    href="https://www.africa.engineering.cmu.edu/research/upanzi/id-hackathon.html"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Digital ID Hackathon Africa
-                  </a>
-                  <a
-                    href="https://digitalidinnovations.com/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    PNG National Digital ID Hackathon
-                  </a>
+                  {hackathons.map((h) => (
+                    <a
+                      key={h.ID}
+                      href={h.URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {h.Title}
+                    </a>
+                  ))}
                 </div>
               </div>
 
@@ -397,34 +376,47 @@ export default function Header() {
                     <div className="mob-drop-divider" />
                     <p className="mob-drop-label">Hackathons</p>
 
-                    <a
-                      href="https://www.africa.engineering.cmu.edu/research/upanzi/id-hackathon.html"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      role="menuitem"
-                      className="mob-drop-item"
-                      onClick={() => setMobileOpen(false)}
-                    >
-                      <span className="mob-dot" />
-                      Digital ID Hackathon Africa
-                    </a>
+                    {hackathons.map((h) => (
+                      <a
+                        key={h.ID}
+                        href={h.URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        role="menuitem"
+                        className="mob-drop-item"
+                        onClick={() => setMobileOpen(false)}
+                      >
+                        <span className="mob-dot" />
+                        {h.Title}
+                      </a>
+                    ))}
 
-                    <a
-                      href="https://digitalidinnovations.com/"
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <div className="mob-drop-divider" />
+                    <button
+                      type="button"
                       role="menuitem"
                       className="mob-drop-item"
-                      onClick={() => setMobileOpen(false)}
+                      style={{
+                        background: "#1F3A6D",
+                        color: "#ffffff",
+                        fontWeight: 600,
+                      }}
+                      onClick={() => {
+                        setMobileOpen(false);
+                        setContactOpen(true);
+                      }}
                     >
-                      <span className="mob-dot" />
-                      PNG National Digital ID Hackathon
-                    </a>
+                      <span
+                        className="mob-dot"
+                        style={{ background: "#ffffff" }}
+                      />
+                      Contact Us
+                    </button>
                   </div>
                 )}
               </div>
 
-              {/* Contact Us */}
+              {/* Contact Us — desktop only */}
               <button
                 type="button"
                 onClick={() => {

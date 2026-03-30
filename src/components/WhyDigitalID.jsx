@@ -89,10 +89,11 @@ export default function WhyDigitalID() {
 
         /* icon floats up slightly */
         .why-did__icon {
-          width: clamp(56px, 4.64vw, 89px);
+          width: clamp(auto, 4.64vw, auto);
           height: clamp(48px, 4.22vw, 81px);
           object-fit: contain;
           display: block;
+         align-self: flex-start;
           flex-shrink: 0;
           transition: transform 350ms cubic-bezier(0.23, 1, 0.32, 1);
         }

@@ -1,7 +1,6 @@
 "use client";
 // src/components/UseCaseDotMap.jsx
 import { useMemo, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import {
   ComposableMap,
   Geographies,
@@ -15,9 +14,11 @@ import enLocale from "i18n-iso-countries/langs/en.json";
 countries.registerLocale(enLocale);
 
 const geoUrl = "https://unpkg.com/world-atlas@2.0.2/countries-110m.json";
-const ALL_SECTORS = "__ALL_SECTORS__";
-const NO_COUNTRY = "";
 
+const FONT =
+  '"Albert Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+
+/* ─── helpers ───────────────────────────────────────────────── */
 function splitValues(value) {
   if (!value) return [];
   return String(value)
@@ -25,14 +26,6 @@ function splitValues(value) {
     .map((v) => v.trim())
     .filter(Boolean);
 }
-
-function getSectorsFromItem(it) {
-  const raw = it?.Sectors ?? it?.sectors ?? it?.Sector ?? it?.sector;
-  if (Array.isArray(raw))
-    return raw.map((s) => String(s).trim()).filter(Boolean);
-  return splitValues(raw);
-}
-
 function getCountriesFromItem(it) {
   const raw =
     it?.countries ??
@@ -46,65 +39,44 @@ function getCountriesFromItem(it) {
     return raw.map((c) => String(c).trim()).filter(Boolean);
   return splitValues(raw);
 }
-
 function flagUrlFromIso2(iso2) {
   if (!iso2) return null;
   return `https://flagcdn.com/w40/${iso2.toLowerCase()}.png`;
 }
-
 function safeUpperLabel(label) {
   const t = String(label || "").toUpperCase();
   return t.length > 22 ? `${t.slice(0, 22)}…` : t;
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   COMPONENT
+═══════════════════════════════════════════════════════════════ */
 export default function UseCaseDotMap({ items }) {
-  const router = useRouter();
-  const [selectedSector, setSelectedSector] = useState(ALL_SECTORS);
-  const [selectedCountry, setSelectedCountry] = useState(NO_COUNTRY);
-  const isSectorSelected = selectedSector !== ALL_SECTORS;
   const [hover, setHover] = useState(null);
 
   const hideTimerRef = useRef(null);
   const scheduleHide = () => {
     if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
-    hideTimerRef.current = setTimeout(() => setHover(null), 120);
+    hideTimerRef.current = setTimeout(() => setHover(null), 150);
   };
   const cancelHide = () => {
     if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
     hideTimerRef.current = null;
   };
 
-  const MAP_W = 1200;
+  // CHANGE 2: Increased MAP_W, MAP_H and scale; adjusted center Y to re-center without Antarctica
+  const MAP_W = 1300;
   const MAP_H = 520;
-  const PROJ_CFG = { scale: 190, center: [0, 12] };
-  const TIP_W = 200;
-  const TIP_H = 64;
+  const PROJ_CFG = { scale: 175, center: [0, 10] };
+  const TIP_W = 220;
+  const TIP_H = 74;
   const TIP_HALF = TIP_W / 2;
 
-  const hoverFill = "rgba(76,98,152,0.51)";
-  const hoverGlow = "drop-shadow(0 0 10px rgba(76,98,152,0.51))";
-
-  const baseGeoStyle = {
-    default: {
-      outline: "none",
-      transition: "fill 160ms ease, filter 160ms ease, opacity 160ms ease",
-    },
-    hover: { outline: "none" },
-    pressed: { outline: "none" },
-  };
-
-  const filteredItems = useMemo(() => {
-    if (!items?.length) return [];
-    if (!isSectorSelected) return items;
-    return items.filter((it) =>
-      getSectorsFromItem(it).includes(selectedSector),
-    );
-  }, [items, isSectorSelected, selectedSector]);
-
+  /* ── build country counts ── */
   const { countsByIso2, labelByIso2 } = useMemo(() => {
-    const counts = {},
-      labels = {};
-    (filteredItems || []).forEach((row) => {
+    const counts = {};
+    const labels = {};
+    (items || []).forEach((row) => {
       getCountriesFromItem(row).forEach((name) => {
         const iso2 = countries.getAlpha2Code(name, "en");
         if (!iso2) return;
@@ -114,315 +86,613 @@ export default function UseCaseDotMap({ items }) {
       });
     });
     return { countsByIso2: counts, labelByIso2: labels };
-  }, [filteredItems]);
+  }, [items]);
 
+  /* ── Navigate to library with country filter applied ── */
   function goToLibraryForCountry(countryLabel) {
     if (!countryLabel) return;
     const params = new URLSearchParams();
-    params.set("country", countryLabel);
-    if (isSectorSelected) params.set("sector", selectedSector);
-    router.push(`/library?${params.toString()}`);
+    params.set("f_Country", countryLabel);
+    window.location.href = `/library?${params.toString()}`;
   }
 
   return (
-    // .ucdm-wrap
-    <div style={{ width: "100%" }}>
-      {/* .ucdm-card.ucdm-card--map */}
-      <div
-        style={{
-          width: "100%",
-          background: "#284181",
-          padding: 0,
-          overflow: "hidden",
-        }}
-      >
-        <ComposableMap
-          projection="geoEquirectangular"
-          projectionConfig={PROJ_CFG}
-          width={MAP_W}
-          height={MAP_H}
-          // .ucdm-map
-          style={{
-            display: "block",
-            width: "100%",
-            height: "auto",
-            background: "#284181",
-          }}
-        >
-          <Geographies geography={geoUrl}>
-            {({ geographies }) => {
-              const wanted = new Set(Object.keys(countsByIso2));
-              const centroidsByIso2 = {};
+    <>
+      <style>{`
+        /* ── Section wrapper ── */
+        .ucdm-section {
+          width: 100vw;
+          margin-left: calc(50% - 50vw);
+          margin-right: calc(50% - 50vw);
+          background: #ffffff;
+          padding: clamp(48px, 5vw, 40px) clamp(20px, 5vw, 80px);
+          box-sizing: border-box;
+          position: relative;
+          overflow: hidden;
+        }
 
-              geographies.forEach((geo) => {
-                const p = geo.properties || {};
-                const geoName = p.name || p.NAME || p.ADMIN || "Unknown";
-                let iso2 = (p.ISO_A2 || p.iso_a2 || p.ISO2 || "").toUpperCase();
-                if (!iso2 && geoName !== "Unknown") {
-                  const resolved = countries.getAlpha2Code(geoName, "en");
-                  if (resolved) iso2 = resolved.toUpperCase();
-                }
-                if (!iso2 || !wanted.has(iso2)) return;
-                const c = geoCentroid(geo);
-                if (
-                  Array.isArray(c) &&
-                  !Number.isNaN(c[0]) &&
-                  !Number.isNaN(c[1])
-                ) {
-                  centroidsByIso2[iso2] = c;
-                }
-              });
+        .ucdm-inner {
+          position: relative;
+          z-index: 1;
+          
+          margin: 0 auto;
+        }
 
-              return (
-                <>
-                  {geographies.map((geo) => {
-                    const p = geo.properties || {};
-                    const geoName = p.name || p.NAME || p.ADMIN || "Unknown";
-                    let iso2 = (
-                      p.ISO_A2 ||
-                      p.iso_a2 ||
-                      p.ISO2 ||
-                      ""
-                    ).toUpperCase();
-                    if (!iso2 && geoName !== "Unknown") {
-                      const resolved = countries.getAlpha2Code(geoName, "en");
-                      if (resolved) iso2 = resolved.toUpperCase();
-                    }
-                    const value = iso2 ? countsByIso2[iso2] || 0 : 0;
-                    const hasData = Boolean(iso2 && value > 0);
-                    const isHovered = Boolean(
-                      hover?.iso2 && iso2 && hover.iso2 === iso2,
-                    );
+        /* ── Header ── */
+        .ucdm-header {
+          text-align: center;
+          /* CHANGE 3: Reduced margin-bottom from clamp(18px, 2vw, 36px) to clamp(4px, 0.5vw, 8px) */
+          margin-bottom: clamp(4px, 0.5vw, 8px);
+        }
+        .ucdm-heading {
+          font-family: ${FONT};
+          font-weight: 700;
+          font-size: clamp(20px, 2.2vw, 36px);
+          line-height: 1.22;
+          color: #1B66D1;
+          margin: 0 0 0px 0;
+          letter-spacing: -0.015em;
+        }
 
-                    return (
-                      <Geography
-                        key={geo.rsmKey}
-                        geography={geo}
-                        fill={isHovered ? hoverFill : "transparent"}
-                        stroke="rgba(193,201,221,0.70)"
-                        strokeWidth={0.85}
-                        strokeDasharray="2,3"
-                        filter={isHovered ? hoverGlow : "none"}
-                        tabIndex={-1}
-                        aria-hidden="true"
-                        onMouseEnter={() => {
-                          if (!hasData) return;
-                          cancelHide();
-                          const label = labelByIso2[iso2] || geoName;
-                          const coords =
-                            centroidsByIso2[iso2] || geoCentroid(geo);
-                          if (!coords) return;
-                          setHover({ iso2, label, value, coords });
-                        }}
-                        onMouseLeave={() => {
-                          if (hasData) scheduleHide();
-                        }}
-                        onClick={() => {
-                          if (hasData)
-                            goToLibraryForCountry(labelByIso2[iso2] || geoName);
-                        }}
-                        style={{
-                          default: {
-                            outline: "none",
-                            cursor: hasData ? "pointer" : "default",
-                            transition:
-                              "fill 160ms ease, filter 160ms ease, opacity 160ms ease",
-                          },
-                          hover: { outline: "none" },
-                          pressed: { outline: "none" },
-                        }}
-                      />
-                    );
-                  })}
+        /* ── Map card ── */
+        .ucdm-card {
+          background: #ffffff;
+          overflow: hidden;
+          position: relative;
+        }
 
-                  {Object.keys(countsByIso2).map((iso2) => {
-                    const coords = centroidsByIso2[iso2];
-                    if (!coords) return null;
-                    const value = countsByIso2[iso2] || 0;
-                    const label = labelByIso2[iso2] || iso2;
-                    return (
-                      <Marker
-                        key={iso2}
-                        coordinates={coords}
-                        onMouseEnter={() => {
-                          cancelHide();
-                          setHover({ iso2, label, value, coords });
-                        }}
-                        onMouseLeave={scheduleHide}
-                        onClick={() => goToLibraryForCountry(label)}
-                      >
-                        {/* .ucdm-dot */}
-                        <g aria-hidden="true">
-                          {/* .ucdm-dot-outer — fill forced inline to beat any global rules */}
-                          <circle r={3.5} style={{ fill: "#c1c9dd" }} />
-                          {/* .ucdm-dot-inner */}
-                          <circle r={2.5} style={{ fill: "#19e65e" }} />
-                        </g>
-                      </Marker>
-                    );
-                  })}
+        .ucdm-map-inner {
+          padding: 4px 0 0;
+          background: #ffffff;
+        }
+        .ucdm-map-inner svg {
+          display: block;
+          width: 100%;
+          height: auto;
+        }
 
-                  {hover?.coords && (
-                    <Marker coordinates={hover.coords}>
-                      {/* .ucdm-bubble-hit */}
-                      <g
-                        onMouseEnter={cancelHide}
-                        onMouseLeave={scheduleHide}
-                        onClick={() => goToLibraryForCountry(hover.label)}
-                        role="button"
-                        tabIndex={0}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" || e.key === " ")
-                            goToLibraryForCountry(hover.label);
-                        }}
-                        aria-label={`View use cases for ${hover.label}`}
-                        style={{ cursor: "pointer" }}
-                      >
-                        {/* .ucdm-dot--front — pointer-events none */}
-                        <g aria-hidden="true" style={{ pointerEvents: "none" }}>
-                          <circle r={3.5} style={{ fill: "#c1c9dd" }} />
-                          <circle r={2.5} style={{ fill: "#19e65e" }} />
-                        </g>
+        /* ── Strip all focus/active outlines from SVG elements ── */
+        .ucdm-map-inner svg *:focus,
+        .ucdm-map-inner svg *:focus-visible,
+        .ucdm-map-inner svg *:active,
+        .ucdm-map-inner g:focus,
+        .ucdm-map-inner path:focus,
+        .ucdm-map-inner circle:focus {
+          outline: none !important;
+          box-shadow: none !important;
+        }
 
-                        {/* Bubble tooltip */}
-                        <g
-                          transform={`translate(${-TIP_HALF}, ${-(TIP_H + 18)})`}
-                        >
-                          {/* .ucdm-bubble-card */}
-                          <rect
-                            x="0"
-                            y="0"
-                            rx="12"
-                            ry="12"
-                            width={TIP_W}
-                            height={TIP_H}
-                            style={{
-                              fill: "#ffffff",
-                              stroke: "rgba(0,0,0,0.08)",
-                              strokeWidth: 1,
-                              filter:
-                                "drop-shadow(0 14px 28px rgba(0,0,0,0.18))",
-                            }}
-                          />
+        /* ── Pulse animation for hovered country dot ── */
+        @keyframes ucdm-pulse {
+          0%   { r: 5;  opacity: 0.9; }
+          70%  { r: 15; opacity: 0;   }
+          100% { r: 15; opacity: 0;   }
+        }
+        .ucdm-pulse { animation: ucdm-pulse 2s ease-out infinite; }
 
-                          {/* flag */}
-                          <image
-                            href={flagUrlFromIso2(hover.iso2)}
-                            x="12"
-                            y="12"
-                            width="22"
-                            height="16"
-                            preserveAspectRatio="xMidYMid slice"
-                          />
+        /* ── Mobile bottom-sheet tooltip ── */
+        .ucdm-mobile-tooltip {
+          display: none;
+          position: fixed;
+          bottom: 24px;
+          left: 50%;
+          transform: translateX(-50%);
+          z-index: 9999;
+          width: calc(100vw - 40px);
+          max-width: 320px;
+          background: #ffffff;
+          border-radius: 16px;
+          box-shadow:
+            0 8px 32px rgba(31, 58, 109, 0.18),
+            0 0 0 1px rgba(31, 58, 109, 0.08);
+          overflow: hidden;
+          cursor: pointer;
+          -webkit-tap-highlight-color: transparent;
+        }
+        .ucdm-mobile-tooltip-inner {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 14px 16px;
+          position: relative;
+        }
+        .ucdm-mobile-tooltip-accent {
+          position: absolute;
+          left: 0; top: 0; bottom: 0;
+          width: 5px;
+          background: #1B66D1;
+          border-radius: 16px 0 0 16px;
+        }
+        .ucdm-mobile-tooltip-flag {
+          width: 36px;
+          height: 24px;
+          object-fit: cover;
+          border-radius: 3px;
+          flex-shrink: 0;
+          margin-left: 5px;
+        }
+        .ucdm-mobile-tooltip-body {
+          flex: 1;
+          min-width: 0;
+        }
+        .ucdm-mobile-tooltip-name {
+          font-family: ${FONT};
+          font-size: 13px;
+          font-weight: 800;
+          color: #1F3A6D;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .ucdm-mobile-tooltip-count {
+          font-family: ${FONT};
+          font-size: 12px;
+          color: #64748b;
+          margin-top: 2px;
+        }
+        .ucdm-mobile-tooltip-count strong {
+          color: #1B66D1;
+          font-weight: 800;
+          font-size: 14px;
+        }
+        .ucdm-mobile-tooltip-arrow {
+          font-family: ${FONT};
+          font-size: 11px;
+          color: #94a3b8;
+          font-style: italic;
+          flex-shrink: 0;
+          white-space: nowrap;
+        }
 
-                          {/* .ucdm-bubble-country */}
-                          <text
-                            x="42"
-                            y="25"
-                            style={{
-                              fontFamily:
-                                'system-ui,-apple-system,"Segoe UI",sans-serif',
-                              fontWeight: 800,
-                              fontSize: 14,
-                              fill: "#0b0b0b",
-                              letterSpacing: "0.02em",
-                            }}
-                          >
-                            {safeUpperLabel(hover.label)}
-                          </text>
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+          .ucdm-section {
+            padding: 32px 16px;
+          }
+          .ucdm-heading {
+            font-size: clamp(18px, 5vw, 26px);
+            margin: 0 0 24px 0;
+          }
+          .ucdm-inner {
+            max-width: 100%;
+          }
+          .ucdm-mobile-tooltip {
+            display: block;
+          }
+        }
 
-                          {/* .ucdm-bubble-uses */}
-                          <text
-                            x="12"
-                            y="48"
-                            style={{
-                              fontFamily:
-                                'system-ui,-apple-system,"Segoe UI",sans-serif',
-                              fontSize: 14,
-                              fill: "#111827",
-                            }}
-                          >
-                            {/* .ucdm-bubble-uses-label */}
-                            <tspan style={{ fontWeight: 500, fill: "#111827" }}>
-                              Use Cases:{" "}
-                            </tspan>
-                            {/* .ucdm-bubble-uses-value */}
-                            <tspan style={{ fontWeight: 800, fill: "#111827" }}>
-                              {hover.value}
-                            </tspan>
-                          </text>
+        @media (max-width: 480px) {
+          .ucdm-section {
+            padding: 24px 12px;
+          }
+          .ucdm-heading {
+            font-size: clamp(16px, 5.5vw, 22px);
+            margin: 0 0 18px 0;
+          }
+          .ucdm-mobile-tooltip-arrow {
+            display: none;
+          }
+        }
+      `}</style>
 
-                          {/* .ucdm-bubble-tip — pointer triangle */}
-                          <path
-                            d={`M ${TIP_HALF - 12} ${TIP_H} L ${TIP_HALF} ${TIP_H + 14} L ${TIP_HALF + 12} ${TIP_H} Z`}
-                            style={{
-                              fill: "#ffffff",
-                              stroke: "rgba(0,0,0,0.08)",
-                              strokeWidth: 1,
-                            }}
-                          />
-                        </g>
-                      </g>
-                    </Marker>
-                  )}
-                </>
-              );
-            }}
-          </Geographies>
-        </ComposableMap>
-
-        {/* Filters — kept but hidden (.ucdm-filters { display: none }) */}
-        <div
-          style={{
-            display: "none",
-            gap: "0.75rem",
-            padding: "0.9rem 1rem 1rem",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <div style={{ minWidth: 220 }}>
-            <select
-              value={selectedSector}
-              onChange={(e) => setSelectedSector(e.target.value)}
-              aria-label="Filter by sector"
-              style={{
-                width: "100%",
-                height: 40,
-                borderRadius: 999,
-                border: "1px solid rgba(255,255,255,0.18)",
-                background: "rgba(255,255,255,0.08)",
-                color: "rgba(255,255,255,0.92)",
-                fontWeight: 700,
-                padding: "0 0.85rem",
-                outline: "none",
-              }}
-            >
-              <option value={ALL_SECTORS}>All Sectors</option>
-            </select>
+      <section className="ucdm-section">
+        <div className="ucdm-inner">
+          {/* ── Header ── */}
+          <div className="ucdm-header">
+            <h2 className="ucdm-heading">
+              Navigate Digital ID use cases across the globe
+            </h2>
           </div>
-          <div style={{ minWidth: 220 }}>
-            <select
-              value={selectedCountry}
-              onChange={(e) => setSelectedCountry(e.target.value)}
-              aria-label="Filter by country"
-              style={{
-                width: "100%",
-                height: 40,
-                borderRadius: 999,
-                border: "1px solid rgba(255,255,255,0.18)",
-                background: "rgba(255,255,255,0.08)",
-                color: "rgba(255,255,255,0.92)",
-                fontWeight: 700,
-                padding: "0 0.85rem",
-                outline: "none",
-              }}
-            >
-              <option value={NO_COUNTRY}>Country</option>
-            </select>
+
+          {/* ── Map card ── */}
+          <div className="ucdm-card">
+            <div className="ucdm-map-inner">
+              <ComposableMap
+                projection="geoEquirectangular"
+                projectionConfig={PROJ_CFG}
+                width={MAP_W}
+                height={MAP_H}
+                style={{ background: "transparent" }}
+              >
+                <defs>
+                  {/* Inactive countries */}
+                  <pattern
+                    id="ucdm-dots"
+                    x="0"
+                    y="0"
+                    width="4"
+                    height="4"
+                    patternUnits="userSpaceOnUse"
+                  >
+                    <circle cx="1.5" cy="1.5" r="1.2" fill="#284181" />
+                  </pattern>
+
+                  {/* Active — has data */}
+                  <pattern
+                    id="ucdm-dots-active"
+                    x="0"
+                    y="0"
+                    width="4"
+                    height="4"
+                    patternUnits="userSpaceOnUse"
+                  >
+                    <circle cx="1.5" cy="1.5" r="1.3" fill="#1F4A9C" />
+                  </pattern>
+
+                  {/* Hovered — brand blue */}
+                  <pattern
+                    id="ucdm-dots-hover"
+                    x="0"
+                    y="0"
+                    width="4"
+                    height="4"
+                    patternUnits="userSpaceOnUse"
+                  >
+                    <circle cx="1.5" cy="1.5" r="1.3" fill="#1B66D1" />
+                  </pattern>
+
+                  {/* Tooltip drop-shadow */}
+                  <filter
+                    id="ucdm-tip-shadow"
+                    x="-25%"
+                    y="-25%"
+                    width="150%"
+                    height="160%"
+                  >
+                    <feDropShadow
+                      dx="0"
+                      dy="6"
+                      stdDeviation="14"
+                      floodColor="#1F3A6D"
+                      floodOpacity="0.20"
+                    />
+                  </filter>
+                </defs>
+
+                <Geographies geography={geoUrl}>
+                  {({ geographies }) => {
+                    const wanted = new Set(Object.keys(countsByIso2));
+                    const centroidsByIso2 = {};
+
+                    geographies.forEach((geo) => {
+                      const p = geo.properties || {};
+                      const geoName = p.name || p.NAME || p.ADMIN || "";
+                      // CHANGE 1: Skip Antarctica in centroid loop
+                      if (geoName === "Antarctica") return;
+                      let iso2 = (
+                        p.ISO_A2 ||
+                        p.iso_a2 ||
+                        p.ISO2 ||
+                        ""
+                      ).toUpperCase();
+                      if (!iso2 && geoName) {
+                        const r = countries.getAlpha2Code(geoName, "en");
+                        if (r) iso2 = r.toUpperCase();
+                      }
+                      if (!iso2 || !wanted.has(iso2)) return;
+                      const c = geoCentroid(geo);
+                      if (
+                        Array.isArray(c) &&
+                        !Number.isNaN(c[0]) &&
+                        !Number.isNaN(c[1])
+                      ) {
+                        centroidsByIso2[iso2] = c;
+                      }
+                    });
+
+                    return (
+                      <>
+                        {/* ── Geography shapes ── */}
+                        {geographies.map((geo) => {
+                          const p = geo.properties || {};
+                          const geoName = p.name || p.NAME || p.ADMIN || "";
+                          // CHANGE 1: Skip Antarctica in render loop
+                          if (geoName === "Antarctica") return null;
+                          let iso2 = (
+                            p.ISO_A2 ||
+                            p.iso_a2 ||
+                            p.ISO2 ||
+                            ""
+                          ).toUpperCase();
+                          if (!iso2 && geoName) {
+                            const r = countries.getAlpha2Code(geoName, "en");
+                            if (r) iso2 = r.toUpperCase();
+                          }
+                          const value = iso2 ? countsByIso2[iso2] || 0 : 0;
+                          const hasData = Boolean(iso2 && value > 0);
+                          const isHov = Boolean(
+                            hover?.iso2 && iso2 && hover.iso2 === iso2,
+                          );
+
+                          return (
+                            <Geography
+                              key={geo.rsmKey}
+                              geography={geo}
+                              fill={
+                                isHov
+                                  ? "url(#ucdm-dots-hover)"
+                                  : hasData
+                                    ? "url(#ucdm-dots-active)"
+                                    : "url(#ucdm-dots)"
+                              }
+                              stroke="#ffffff"
+                              strokeWidth={0.8}
+                              tabIndex={-1}
+                              aria-hidden="true"
+                              onMouseEnter={() => {
+                                if (!hasData) return;
+                                cancelHide();
+                                const label = labelByIso2[iso2] || geoName;
+                                const coords =
+                                  centroidsByIso2[iso2] || geoCentroid(geo);
+                                if (!coords) return;
+                                setHover({ iso2, label, value, coords });
+                              }}
+                              onMouseLeave={() => {
+                                if (hasData) scheduleHide();
+                              }}
+                              onClick={() => {
+                                if (hasData)
+                                  goToLibraryForCountry(
+                                    labelByIso2[iso2] || geoName,
+                                  );
+                              }}
+                              onTouchEnd={(e) => {
+                                if (!hasData) return;
+                                e.preventDefault();
+                                const label = labelByIso2[iso2] || geoName;
+                                const coords =
+                                  centroidsByIso2[iso2] || geoCentroid(geo);
+                                setHover({ iso2, label, value, coords });
+                              }}
+                              style={{
+                                default: {
+                                  outline: "none",
+                                  cursor: hasData ? "pointer" : "default",
+                                },
+                                hover: { outline: "none" },
+                                pressed: { outline: "none" },
+                              }}
+                            />
+                          );
+                        })}
+
+                        {/* ── Active-country dot markers ── */}
+                        {Object.keys(countsByIso2).map((iso2) => {
+                          const coords = centroidsByIso2[iso2];
+                          if (!coords) return null;
+                          const value = countsByIso2[iso2] || 0;
+                          const label = labelByIso2[iso2] || iso2;
+                          const isHov = hover?.iso2 === iso2;
+
+                          return (
+                            <Marker
+                              key={iso2}
+                              coordinates={coords}
+                              onMouseEnter={() => {
+                                cancelHide();
+                                setHover({ iso2, label, value, coords });
+                              }}
+                              onMouseLeave={scheduleHide}
+                              onClick={() => goToLibraryForCountry(label)}
+                              onTouchEnd={(e) => {
+                                e.preventDefault();
+                                setHover({ iso2, label, value, coords });
+                              }}
+                            >
+                              <g
+                                style={{ cursor: "pointer", outline: "none" }}
+                                aria-hidden="true"
+                                tabIndex={-1}
+                              >
+                                {isHov && (
+                                  <circle
+                                    r={5}
+                                    fill="none"
+                                    stroke="#1B66D1"
+                                    strokeWidth={1.5}
+                                    className="ucdm-pulse"
+                                  />
+                                )}
+                                <circle r={5} fill="#ffffff" />
+                                <circle
+                                  r={3}
+                                  fill={isHov ? "#1B66D1" : "#1F3A6D"}
+                                />
+                              </g>
+                            </Marker>
+                          );
+                        })}
+
+                        {/* ── Hover tooltip (desktop) ── */}
+                        {hover?.coords && (
+                          <Marker coordinates={hover.coords}>
+                            <g
+                              onMouseEnter={cancelHide}
+                              onMouseLeave={scheduleHide}
+                              onClick={() => goToLibraryForCountry(hover.label)}
+                              role="button"
+                              tabIndex={-1}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter" || e.key === " ")
+                                  goToLibraryForCountry(hover.label);
+                              }}
+                              aria-label={`View use cases for ${hover.label}`}
+                              style={{
+                                cursor: "pointer",
+                                outline: "none",
+                                WebkitTapHighlightColor: "transparent",
+                              }}
+                            >
+                              <g
+                                aria-hidden="true"
+                                style={{ pointerEvents: "none" }}
+                              >
+                                <circle r={5} fill="#ffffff" />
+                                <circle r={3} fill="#1B66D1" />
+                              </g>
+
+                              <g
+                                transform={`translate(${-TIP_HALF}, ${-(TIP_H + 24)})`}
+                              >
+                                {/* Card background */}
+                                <rect
+                                  x="0"
+                                  y="0"
+                                  rx="14"
+                                  ry="14"
+                                  width={TIP_W}
+                                  height={TIP_H}
+                                  filter="url(#ucdm-tip-shadow)"
+                                  style={{ fill: "#ffffff" }}
+                                />
+
+                                {/* Blue left accent */}
+                                <rect
+                                  x="0"
+                                  y="0"
+                                  rx="14"
+                                  ry="14"
+                                  width={5}
+                                  height={TIP_H}
+                                  style={{ fill: "#1B66D1" }}
+                                />
+                                <rect
+                                  x="0"
+                                  y={TIP_H / 2}
+                                  width={5}
+                                  height={TIP_H / 2}
+                                  style={{ fill: "#1B66D1" }}
+                                />
+
+                                {/* Flag */}
+                                <image
+                                  href={flagUrlFromIso2(hover.iso2)}
+                                  x="16"
+                                  y="13"
+                                  width="26"
+                                  height="18"
+                                  preserveAspectRatio="xMidYMid slice"
+                                />
+
+                                {/* Country name */}
+                                <text
+                                  x="50"
+                                  y="27"
+                                  style={{
+                                    fontFamily: FONT,
+                                    fontWeight: 800,
+                                    fontSize: 12.5,
+                                    fill: "#1F3A6D",
+                                    letterSpacing: "0.05em",
+                                  }}
+                                >
+                                  {safeUpperLabel(hover.label)}
+                                </text>
+
+                                {/* Divider */}
+                                <line
+                                  x1="16"
+                                  y1="39"
+                                  x2={TIP_W - 16}
+                                  y2="39"
+                                  stroke="#EEF2FB"
+                                  strokeWidth="1"
+                                />
+
+                                {/* Use cases count */}
+                                <text
+                                  x="16"
+                                  y="57"
+                                  style={{
+                                    fontFamily: FONT,
+                                    fontSize: 12.5,
+                                    fill: "#64748b",
+                                  }}
+                                >
+                                  <tspan style={{ fontWeight: 500 }}>
+                                    Use Cases:{" "}
+                                  </tspan>
+                                  <tspan
+                                    style={{
+                                      fontWeight: 800,
+                                      fill: "#1B66D1",
+                                      fontSize: 15,
+                                    }}
+                                  >
+                                    {hover.value}
+                                  </tspan>
+                                </text>
+
+                                {/* Click hint */}
+                                <text
+                                  x={TIP_W - 14}
+                                  y="57"
+                                  textAnchor="end"
+                                  style={{
+                                    fontFamily: FONT,
+                                    fontSize: 10,
+                                    fill: "#94a3b8",
+                                    fontStyle: "italic",
+                                  }}
+                                >
+                                  click to explore →
+                                </text>
+
+                                {/* Pointer triangle */}
+                                <path
+                                  d={`M ${TIP_HALF - 10} ${TIP_H} L ${TIP_HALF} ${TIP_H + 13} L ${TIP_HALF + 10} ${TIP_H} Z`}
+                                  style={{ fill: "#ffffff" }}
+                                />
+                              </g>
+                            </g>
+                          </Marker>
+                        )}
+                      </>
+                    );
+                  }}
+                </Geographies>
+              </ComposableMap>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+      </section>
+
+      {/* ── Mobile bottom-sheet tooltip (shown on tap) ── */}
+      {hover && (
+        <div
+          className="ucdm-mobile-tooltip"
+          role="button"
+          tabIndex={0}
+          aria-label={`View use cases for ${hover.label}`}
+          onClick={() => goToLibraryForCountry(hover.label)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ")
+              goToLibraryForCountry(hover.label);
+          }}
+        >
+          <div className="ucdm-mobile-tooltip-inner">
+            <div className="ucdm-mobile-tooltip-accent" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={flagUrlFromIso2(hover.iso2)}
+              alt={hover.label}
+              className="ucdm-mobile-tooltip-flag"
+            />
+            <div className="ucdm-mobile-tooltip-body">
+              <div className="ucdm-mobile-tooltip-name">
+                {safeUpperLabel(hover.label)}
+              </div>
+              <div className="ucdm-mobile-tooltip-count">
+                Use Cases: <strong>{hover.value}</strong>
+              </div>
+            </div>
+            <div className="ucdm-mobile-tooltip-arrow">tap to explore →</div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

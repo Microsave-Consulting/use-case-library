@@ -268,7 +268,17 @@ export default function HeroBanner() {
             <button
               type="button"
               className="hero-btn hero-btn-secondary"
-              onClick={() => router.push("/hackathons")}
+              onClick={() => {
+                const el = document.getElementById("hackathon-carousel");
+                if (el) {
+                  const navbarHeight = 80; // adjust this to match your actual navbar height
+                  const top =
+                    el.getBoundingClientRect().top +
+                    window.scrollY -
+                    navbarHeight;
+                  window.scrollTo({ top, behavior: "smooth" });
+                }
+              }}
               aria-label="View Digital ID Hackathons"
             >
               View Digital ID Hackathons

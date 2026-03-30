@@ -40,11 +40,6 @@ export default function Footer() {
   return (
     <>
       <style>{`
-        /* FIX 1: Removed @import url('https://fonts.googleapis.com/...') from here.
-           It was duplicating the font load from layout.js AND causing the 0.34 CLS
-           because the font swap was triggering a footer layout shift on every page load.
-           Albert Sans is already loaded globally in layout.js — no need to load it again. */
-
         .ftr-root {
           font-family: 'Albert Sans', sans-serif;
           background: #FFFFFF;
@@ -52,32 +47,38 @@ export default function Footer() {
           box-shadow: 0 -1px 0 0 #F1F1F1, 0 4px 4px 0 rgba(0,0,0,0.11);
         }
 
+        /* align-items: center so icons stay vertically centred on all sizes */
         .ftr-grid {
           max-width: 1440px;
           padding: 48px 100px;
-          display: grid;
-          grid-template-columns: 1fr 0.2fr auto;
-          gap: 100px;
-          align-items: start;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 60px;
+          box-sizing: border-box;
         }
 
         @media (max-width: 1300px) {
-          .ftr-grid { gap: 56px; padding: 48px 60px; }
+          .ftr-grid { gap: 40px; padding: 48px 60px; }
         }
         @media (max-width: 1100px) {
-          .ftr-grid { gap: 40px; padding: 40px 48px; }
+          .ftr-grid { gap: 32px; padding: 40px 48px; }
         }
         @media (max-width: 860px) {
-          .ftr-grid { grid-template-columns: 1fr 1fr; gap: 36px 48px; padding: 36px 32px; }
-          .ftr-brand { grid-column: 1 / -1; }
+          .ftr-grid { flex-wrap: wrap; gap: 32px; padding: 36px 32px; }
         }
+
+        /* Mobile: stack icons below brand, left-aligned */
         @media (max-width: 540px) {
-          .ftr-grid { grid-template-columns: 1fr 1fr; gap: 28px 24px; padding: 32px 20px; }
-          .ftr-brand { grid-column: 1 / -1; }
+          .ftr-grid {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 28px 20px;
+          }
         }
         @media (max-width: 360px) {
-          .ftr-grid { grid-template-columns: 1fr; gap: 28px; padding: 28px 16px; }
-          .ftr-brand { grid-column: 1; }
+          .ftr-grid { padding: 24px 16px; gap: 12px; }
         }
 
         .ftr-link {
@@ -114,8 +115,8 @@ export default function Footer() {
 
       <footer className="ftr-root">
         <div className="ftr-grid">
-          {/* ── Brand ── */}
-          <div className="ftr-brand" style={{ maxWidth: 500 }}>
+          {/* Brand */}
+          <div style={{ maxWidth: 400, flex: "1 1 3" }}>
             <img
               src={`${BASE_PATH}/assets/msc-logo.svg`}
               alt="MSC MicroSave Consulting"
@@ -133,122 +134,46 @@ export default function Footer() {
                 color: "#334155",
                 lineHeight: 1.6,
                 letterSpacing: 0,
-                marginBottom: 16,
+                margin: 0,
               }}
             >
               MSC (MicroSave Consulting) is a global consulting firm that
               enables social, financial, and economic inclusion for everyone in
               the digital age.
             </p>
-
-            {/* ── Social icons: fb → linkedin → x → youtube ── */}
-            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <SocialIcon
-                label="Facebook"
-                base="fb"
-                href="https://www.facebook.com/MicroSaveConsulting/"
-              />
-              <SocialIcon
-                label="LinkedIn"
-                base="linkedin"
-                href="https://www.linkedin.com/company/microsave/"
-              />
-              <SocialIcon label="X" base="x" href="https://x.com/MicroSave" />
-              <SocialIcon
-                label="YouTube"
-                base="youtube"
-                href="https://www.youtube.com/user/MicroSaveWorldwide/videos"
-              />
-            </div>
           </div>
 
-          {/* ── Partner With Us ── */}
-          <div>
-            <h4
-              style={{
-                margin: "0 0 12px 0",
-                fontSize: 16,
-                fontWeight: 600,
-                color: "#334155",
-                whiteSpace: "nowrap",
-                lineHeight: "100%",
-                letterSpacing: 0,
-              }}
-            >
-              Partner with us
-            </h4>
-            <ul
-              style={{
-                listStyle: "none",
-                margin: 0,
-                padding: 0,
-                display: "flex",
-                flexDirection: "column",
-                gap: 8,
-              }}
-            >
-              <li>
-                <button
-                  type="button"
-                  onClick={() => setContactOpen(true)}
-                  className="ftr-link"
-                  style={{
-                    background: "transparent",
-                    border: "none",
-                    padding: 0,
-                    margin: 0,
-                    cursor: "pointer",
-                    textAlign: "left",
-                  }}
-                >
-                  Send your Query
-                </button>
-              </li>
-            </ul>
-          </div>
-
-          {/* ── Legal ── */}
-          <div>
-            <h4
-              style={{
-                margin: "0 0 12px 0",
-                fontSize: 16,
-                fontWeight: 600,
-                color: "#334155",
-                whiteSpace: "nowrap",
-                lineHeight: "100%",
-                letterSpacing: 0,
-              }}
-            >
-              Legal
-            </h4>
-            <ul
-              style={{
-                listStyle: "none",
-                margin: 0,
-                padding: 0,
-                display: "flex",
-                flexDirection: "column",
-                gap: 8,
-              }}
-            >
-              <li>
-                <a href="#" className="ftr-link">
-                  Privacy Policy
-                </a>
-              </li>
-              <li>
-                <a href="#" className="ftr-link">
-                  Terms of Use
-                </a>
-              </li>
-            </ul>
+          {/* Social icons */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
+              flexShrink: 0,
+            }}
+          >
+            <SocialIcon
+              label="Facebook"
+              base="fb"
+              href="https://www.facebook.com/MicroSaveConsulting/"
+            />
+            <SocialIcon
+              label="LinkedIn"
+              base="linkedin"
+              href="https://www.linkedin.com/company/microsave/"
+            />
+            <SocialIcon label="X" base="x" href="https://x.com/MicroSave" />
+            <SocialIcon
+              label="YouTube"
+              base="youtube"
+              href="https://www.youtube.com/user/MicroSaveWorldwide/videos"
+            />
           </div>
         </div>
 
-        {/* ── Bottom bar ── */}
+        {/* Bottom bar */}
         <div className="ftr-bottom">
-          <p>© 2026 MicroSave Consulting. All rights reserved.</p>
+          <p>© 2025 Microsave Consulting All rights reserved.</p>
         </div>
       </footer>
 

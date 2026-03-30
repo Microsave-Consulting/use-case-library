@@ -9,7 +9,7 @@ const FONT =
 
 /* ── maturity level → background colour ── */
 const MATURITY_COLORS = {
-  Idea: "#dad4ff",
+  Conceptual: "#dad4ff",
   Pilot: "#f8ebff",
   Operational: "#c8e3fc",
 };
