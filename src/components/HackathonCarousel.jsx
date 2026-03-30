@@ -353,7 +353,7 @@ export default function HackathonCarousel({ items }) {
           }
 
           /* heading */
-          .hc-heading { font-size: clamp(15px, 2.2vw, 24px); }
+          .hc-heading {  font-size: clamp(18px, 5vw, 26px); }
           .hc-header  { margin-bottom: clamp(18px, 2.5vw, 30px); }
 
           /* slots — same 52 / 38 vw ratios, smaller min/max */
@@ -388,7 +388,7 @@ export default function HackathonCarousel({ items }) {
             padding: 15px clamp(14px, 6.3vw, 64px);
           }
 
-          .hc-heading { font-size: clamp(13px, 2.2vw, 18px); }
+          .hc-heading { font-size: clamp(16px, 5.5vw, 22px); }
           .hc-header  { margin-bottom: clamp(14px, 2.5vw, 22px); }
 
           .hc-slot.hc-center { width: clamp(220px, 52vw, 400px); }
@@ -425,7 +425,7 @@ export default function HackathonCarousel({ items }) {
             padding: 12px clamp(12px, 5vw, 24px);
           }
 
-          .hc-heading { font-size: clamp(14px, 4.5vw, 18px); }
+          .hc-heading { font-size: clamp(16px, 5.5vw, 22px); }
           .hc-header  { margin-bottom: clamp(12px, 3vw, 18px); }
 
           .hc-slot.hc-center { position: relative; width: min(92vw, 380px); }
