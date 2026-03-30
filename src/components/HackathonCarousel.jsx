@@ -107,14 +107,14 @@ export default function HackathonCarousel({ items }) {
         }
 
         /* ── Slots ── */
-        .hc-slot {
+      .hc-slot {
           position: absolute;
           transition:
-            transform  0.6s cubic-bezier(0.4, 0, 0.2, 1),
-            opacity    0.6s cubic-bezier(0.4, 0, 0.2, 1),
-            filter     0.6s cubic-bezier(0.4, 0, 0.2, 1),
-            box-shadow 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-          will-change: transform, opacity;
+            transform  1.1s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+            opacity    1.1s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+            filter     1.1s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+            box-shadow 1.1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+          will-change: transform, opacity, filter;
         }
 
         /* CENTER card */
@@ -448,12 +448,7 @@ export default function HackathonCarousel({ items }) {
         }
       `}</style>
 
-      <section
-        id="hackathon-carousel"
-        className="hc-section"
-        onMouseEnter={() => setPaused(true)}
-        onMouseLeave={() => setPaused(false)}
-      >
+      <section id="hackathon-carousel" className="hc-section">
         <div className="hc-inner">
           {/* ── Header ── */}
           <div className="hc-header">
