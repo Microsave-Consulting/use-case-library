@@ -270,14 +270,36 @@ export default function HeroBanner() {
               className="hero-btn hero-btn-secondary"
               onClick={() => {
                 const el = document.getElementById("hackathon-carousel");
-                if (el) {
-                  const navbarHeight = 80; // adjust this to match your actual navbar height
-                  const top =
-                    el.getBoundingClientRect().top +
-                    window.scrollY -
-                    navbarHeight;
-                  window.scrollTo({ top, behavior: "smooth" });
+                if (!el) return;
+
+                const navbarHeight = 80;
+                const targetY =
+                  el.getBoundingClientRect().top +
+                  window.scrollY -
+                  navbarHeight;
+                const startY = window.scrollY;
+                const distance = targetY - startY;
+                const duration = 1400; // ms — increase for slower scroll
+                let startTime = null;
+
+                function easeInOutCubic(t) {
+                  return t < 0.5
+                    ? 4 * t * t * t
+                    : 1 - Math.pow(-2 * t + 2, 3) / 2;
                 }
+
+                function step(timestamp) {
+                  if (!startTime) startTime = timestamp;
+                  const elapsed = timestamp - startTime;
+                  const progress = Math.min(elapsed / duration, 1);
+                  window.scrollTo(
+                    0,
+                    startY + distance * easeInOutCubic(progress),
+                  );
+                  if (progress < 1) requestAnimationFrame(step);
+                }
+
+                requestAnimationFrame(step);
               }}
               aria-label="View Digital ID Hackathons"
             >

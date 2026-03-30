@@ -514,6 +514,8 @@ export default function HackathonCarousel({ items }) {
 
 /* ─── CardInner ─────────────────────────────────────────────── */
 function CardInner({ item, isActive }) {
+  const [logoError, setLogoError] = useState(false);
+
   if (!item) return null;
 
   const status = item.Status || "Completed";
@@ -547,23 +549,19 @@ function CardInner({ item, isActive }) {
         )}
       </div>
 
-      <hr className="hc-divider" />
-
       {item.Partner && (
         <div className="hc-partner">
           <span className="hc-partner-label">Partner</span>
-          <img
-            src={logoSrc}
-            alt={item.Partner}
-            className="hc-partner-logo"
-            onError={(e) => {
-              e.currentTarget.style.display = "none";
-              e.currentTarget.nextSibling.style.display = "block";
-            }}
-          />
-          <span className="hc-partner-name" style={{ display: "none" }}>
-            {item.Partner}
-          </span>
+          {!logoError ? (
+            <img
+              src={logoSrc}
+              alt={item.Partner}
+              className="hc-partner-logo"
+              onError={() => setLogoError(true)}
+            />
+          ) : (
+            <span className="hc-partner-name">{item.Partner}</span>
+          )}
         </div>
       )}
 
