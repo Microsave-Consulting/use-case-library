@@ -9,7 +9,7 @@ const FONT =
 
 function getPartnerLogoSrc(partnerName) {
   if (!partnerName) return null;
-  const filename = partnerName.replace(/\s+/g, "_");
+  const filename = partnerName.replace(/\s+/g, "_").toLowerCase();
   return `${BASE_PATH}/home/partner/${filename}.svg`;
 }
 
