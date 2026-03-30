@@ -173,7 +173,10 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div className="ftr-bottom">
-          <p>© 2025 Microsave Consulting All rights reserved.</p>
+          <p>
+            © {new Date().getFullYear()} Microsave Consulting All rights
+            reserved.
+          </p>
         </div>
       </footer>
 
