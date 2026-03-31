@@ -16,11 +16,19 @@ import { BASE_PATH } from "@/lib/siteConfig";
 const FONT =
   '"Albert Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
 
-const SIDEBAR_WIDTH = 316;
+// Sidebar width as a CSS custom property / clamp for fluid scaling
+// On large screens: ~316px, shrinks slightly on smaller viewports
+const SIDEBAR_WIDTH_PX = 292;
+const SIDEBAR_WIDTH_CSS = "clamp(200px, 15.2vw, 292px)";
 
+/* ─────────────────────────────────────────────────────────────
+   Responsive column calculator
+   Uses numeric sidebar width only for JS math; CSS handles
+   the actual visual width via SIDEBAR_WIDTH_CSS.
+───────────────────────────────────────────────────────────── */
 function getColumns(w, sidebarVisible) {
   if (w <= 480) return 1;
-  const contentWidth = sidebarVisible ? w - SIDEBAR_WIDTH : w;
+  const contentWidth = sidebarVisible ? w - SIDEBAR_WIDTH_PX : w;
   if (contentWidth >= 900) return 4;
   if (contentWidth >= 640) return 3;
   if (contentWidth >= 400) return 2;
@@ -50,6 +58,7 @@ function getModeValues(uc) {
 
 /* ══════════════════════════════════════════════════
    Back Button
+   Fixed pixel sizes → relative units
 ══════════════════════════════════════════════════ */
 function BackButton({ onClick }) {
   return (
@@ -60,15 +69,15 @@ function BackButton({ onClick }) {
       style={{
         display: "inline-flex",
         alignItems: "center",
-        gap: 8,
-        height: 36,
-        padding: "0 14px",
-        borderRadius: 8,
+        gap: "0.5rem", // was: 8px
+        height: "2.25rem", // was: 36px
+        padding: "0 0.875rem", // was: 0 14px
+        borderRadius: "0.5rem", // was: 8px
         border: "none",
         background: "#1F3A6D",
         color: "#fff",
         fontFamily: FONT,
-        fontSize: 13,
+        fontSize: "clamp(0.75rem, 1.2vw, 0.8125rem)", // was: 13px
         fontWeight: 500,
         cursor: "pointer",
         flexShrink: 0,
@@ -81,7 +90,7 @@ function BackButton({ onClick }) {
         alt=""
         width={16}
         height={11}
-        style={{ display: "block" }}
+        style={{ display: "block", width: "1rem", height: "auto" }} // was: width=16 height=11
       />
       <span>Back</span>
     </button>
@@ -97,17 +106,17 @@ function SearchResultsHeader({ query, count }) {
       style={{
         display: "flex",
         flexDirection: "column",
-        gap: 6,
-        padding: "20px 0 18px",
+        gap: "0.375rem", // was: 6px
+        padding: "1.25rem 0 1.125rem", // was: 20px 0 18px
         borderBottom: "1px solid #E5E9F3",
-        marginBottom: 4,
+        marginBottom: "0.25rem", // was: 4px
       }}
     >
       <div
         style={{
           display: "flex",
           alignItems: "center",
-          gap: 10,
+          gap: "0.625rem", // was: 10px
           flexWrap: "wrap",
         }}
       >
@@ -116,16 +125,16 @@ function SearchResultsHeader({ query, count }) {
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
-            width: 32,
-            height: 32,
-            borderRadius: 8,
+            width: "2rem", // was: 32px
+            height: "2rem", // was: 32px
+            borderRadius: "0.5rem", // was: 8px
             background: "#EEF4FF",
             flexShrink: 0,
           }}
         >
           <svg
-            width="16"
-            height="16"
+            width="1rem" // was: 16
+            height="1rem" // was: 16
             viewBox="0 0 24 24"
             fill="none"
             aria-hidden="true"
@@ -143,7 +152,7 @@ function SearchResultsHeader({ query, count }) {
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: 2,
+            gap: "0.125rem", // was: 2px
             minWidth: 0,
           }}
         >
@@ -151,13 +160,13 @@ function SearchResultsHeader({ query, count }) {
             style={{
               display: "flex",
               alignItems: "baseline",
-              gap: 8,
+              gap: "0.5rem", // was: 8px
               flexWrap: "wrap",
             }}
           >
             <span
               style={{
-                fontSize: 16,
+                fontSize: "clamp(0.875rem, 1.5vw, 1rem)", // was: 16px
                 fontWeight: 600,
                 color: "#0F1B2D",
                 fontFamily: FONT,
@@ -167,20 +176,26 @@ function SearchResultsHeader({ query, count }) {
             </span>
             <span
               style={{
-                fontSize: 16,
+                fontSize: "clamp(0.875rem, 1.5vw, 1rem)", // was: 16px
                 fontWeight: 700,
                 color: "#1F3A6D",
                 fontFamily: FONT,
                 background: "#EEF4FF",
-                padding: "2px 10px",
-                borderRadius: 6,
+                padding: "0.125rem 0.625rem", // was: 2px 10px
+                borderRadius: "0.375rem", // was: 6px
                 wordBreak: "break-word",
               }}
             >
               "{query}"
             </span>
           </div>
-          <span style={{ fontSize: 13, color: "#6B7280", fontFamily: FONT }}>
+          <span
+            style={{
+              fontSize: "clamp(0.6875rem, 1.1vw, 0.8125rem)", // was: 13px
+              color: "#6B7280",
+              fontFamily: FONT,
+            }}
+          >
             {count === 0
               ? "No use cases found"
               : `${count} use case${count === 1 ? "" : "s"} found`}
@@ -211,14 +226,62 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
   return (
     <>
       <style>{`
-        .pg-wrap{display:flex;align-items:center;justify-content:center;gap:6px;padding:20px 0 8px;font-family:${FONT};flex-shrink:0;}
-        .pg-btn{display:inline-flex;align-items:center;justify-content:center;min-width:36px;height:36px;padding:0 10px;border-radius:8px;border:1px solid #DDE5F5;background:#fff;color:#334155;font-size:14px;font-weight:500;font-family:${FONT};cursor:pointer;transition:background 150ms ease,border-color 150ms ease,color 150ms ease;user-select:none;}
-        .pg-btn:hover{background:#EEF2FC;border-color:#1B66D1;color:#1B66D1;}
-        .pg-btn.active{background:#1F3A6D;border-color:#1F3A6D;color:#fff;font-weight:600;}
-        .pg-ellipsis{display:inline-flex;align-items:center;justify-content:center;min-width:36px;height:36px;font-size:14px;color:#9CA3AF;font-family:${FONT};user-select:none;}
-        .pg-arrow{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px;border:1px solid #DDE5F5;background:#fff;color:#334155;cursor:pointer;transition:background 150ms ease,border-color 150ms ease,color 150ms ease;}
-        .pg-arrow:hover:not([disabled]){background:#EEF2FC;border-color:#1B66D1;color:#1B66D1;}
-        .pg-arrow[disabled]{opacity:0.38;cursor:not-allowed;pointer-events:none;}
+        .pg-wrap {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.375rem;          /* was: 6px */
+          padding: 1.25rem 0 0.5rem; /* was: 20px 0 8px */
+          font-family: ${FONT};
+          flex-shrink: 0;
+          flex-wrap: wrap;        /* prevents overflow on small screens */
+        }
+        .pg-btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-width: 2.25rem;     /* was: 36px */
+          height: 2.25rem;        /* was: 36px */
+          padding: 0 0.625rem;    /* was: 0 10px */
+          border-radius: 0.5rem;  /* was: 8px */
+          border: 1px solid #DDE5F5;
+          background: #fff;
+          color: #334155;
+          font-size: clamp(0.75rem, 1.2vw, 0.875rem); /* was: 14px */
+          font-weight: 500;
+          font-family: ${FONT};
+          cursor: pointer;
+          transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
+          user-select: none;
+        }
+        .pg-btn:hover { background: #EEF2FC; border-color: #1B66D1; color: #1B66D1; }
+        .pg-btn.active { background: #1F3A6D; border-color: #1F3A6D; color: #fff; font-weight: 600; }
+        .pg-ellipsis {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-width: 2.25rem;     /* was: 36px */
+          height: 2.25rem;        /* was: 36px */
+          font-size: clamp(0.75rem, 1.2vw, 0.875rem); /* was: 14px */
+          color: #9CA3AF;
+          font-family: ${FONT};
+          user-select: none;
+        }
+        .pg-arrow {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 2.25rem;         /* was: 36px */
+          height: 2.25rem;        /* was: 36px */
+          border-radius: 0.5rem;  /* was: 8px */
+          border: 1px solid #DDE5F5;
+          background: #fff;
+          color: #334155;
+          cursor: pointer;
+          transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
+        }
+        .pg-arrow:hover:not([disabled]) { background: #EEF2FC; border-color: #1B66D1; color: #1B66D1; }
+        .pg-arrow[disabled] { opacity: 0.38; cursor: not-allowed; pointer-events: none; }
       `}</style>
       <div className="pg-wrap" role="navigation" aria-label="Pagination">
         <button
@@ -227,7 +290,7 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
           disabled={currentPage === 1}
           aria-label="Previous page"
         >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <svg width="1rem" height="1rem" viewBox="0 0 16 16" fill="none">
             <path
               d="M10 12L6 8L10 4"
               stroke="currentColor"
@@ -260,7 +323,7 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
           disabled={currentPage === totalPages}
           aria-label="Next page"
         >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <svg width="1rem" height="1rem" viewBox="0 0 16 16" fill="none">
             <path
               d="M6 4L10 8L6 12"
               stroke="currentColor"
@@ -301,7 +364,7 @@ function SectorGroup({
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "14px 0",
+          padding: "0.875rem 0", // was: 14px 0
           background: "none",
           border: "none",
           borderBottom: "1px solid #E5E9F3",
@@ -309,12 +372,14 @@ function SectorGroup({
           fontFamily: FONT,
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.625rem" }}>
+          {" "}
+          {/* was: gap:10 */}
           <span
             style={{
-              width: 28,
-              height: 28,
-              borderRadius: 8,
+              width: "1.75rem", // was: 28px
+              height: "1.75rem", // was: 28px
+              borderRadius: "0.5rem", // was: 8px
               display: "inline-flex",
               alignItems: "center",
               justifyContent: "center",
@@ -327,14 +392,12 @@ function SectorGroup({
                 .replace(/\s*\/\s*/g, "_")
                 .replace(/\s+/g, "_")}.svg`}
               alt=""
-              width={28}
-              height={28}
-              style={{ display: "block" }}
+              style={{ display: "block", width: "1.75rem", height: "1.75rem" }} // was: width=28 height=28
             />
           </span>
           <span
             style={{
-              fontSize: 16,
+              fontSize: "clamp(0.875rem, 1.5vw, 1rem)", // was: 16px
               fontWeight: 600,
               color: "#0F1B2D",
               fontFamily: FONT,
@@ -342,13 +405,19 @@ function SectorGroup({
           >
             {sector}
           </span>
-          <span style={{ fontSize: 13, color: "#9CA3AF", fontFamily: FONT }}>
+          <span
+            style={{
+              fontSize: "clamp(0.6875rem, 1.1vw, 0.8125rem)", // was: 13px
+              color: "#9CA3AF",
+              fontFamily: FONT,
+            }}
+          >
             ({items.length})
           </span>
         </div>
         <svg
-          width="20"
-          height="20"
+          width="1.25rem" // was: 20
+          height="1.25rem" // was: 20
           viewBox="0 0 20 20"
           fill="none"
           aria-hidden="true"
@@ -374,8 +443,8 @@ function SectorGroup({
             style={{
               display: "grid",
               gridTemplateColumns: `repeat(${cols}, 1fr)`,
-              gap: 16,
-              padding: "16px 0 12px",
+              gap: "1rem", // was: 16px
+              padding: "1rem 0 0.75rem", // was: 16px 0 12px
             }}
           >
             {preview.map((uc, idx) => (
@@ -391,7 +460,7 @@ function SectorGroup({
               style={{
                 display: "flex",
                 justifyContent: "flex-end",
-                paddingBottom: 16,
+                paddingBottom: "1rem", // was: 16px
               }}
             >
               <button
@@ -400,13 +469,13 @@ function SectorGroup({
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
-                  gap: 8,
-                  padding: "11px 22px",
-                  borderRadius: 26,
+                  gap: "0.5rem", // was: 8px
+                  padding: "0.6875rem 1.375rem", // was: 11px 22px
+                  borderRadius: "1.625rem", // was: 26px
                   border: "none",
                   background: "#1F3A6D",
                   color: "#fff",
-                  fontSize: 14,
+                  fontSize: "clamp(0.75rem, 1.2vw, 0.875rem)", // was: 14px
                   fontWeight: 600,
                   fontFamily: FONT,
                   cursor: "pointer",
@@ -420,7 +489,14 @@ function SectorGroup({
                 }}
               >
                 View all use cases
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <svg
+                  width="0.875rem"
+                  height="0.875rem"
+                  viewBox="0 0 14 14"
+                  fill="none"
+                >
+                  {" "}
+                  {/* was: 14 */}
                   <path
                     d="M3 7h8M7 3l4 4-4 4"
                     stroke="currentColor"
@@ -449,10 +525,6 @@ export default function UseCaseLibrary({
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // ── SSR-safe state: initialise from searchParams (available on server too) ──
-  // searchParams from Next.js useSearchParams() is safe for SSR — no window needed.
-  // This fixes the hydration mismatch that occurred when using window.location.search
-  // inside useState() which returns different values on server vs client.
   const [search, setSearch] = useState(() => searchParams.get("q") || "");
   const [searchInput, setSearchInput] = useState(
     () => searchParams.get("q") || "",
@@ -467,15 +539,11 @@ export default function UseCaseLibrary({
     () => searchParams.get("open") || null,
   );
 
-  // ── Filters: initialise from searchParams (SSR-safe, no window) ──
-  // Previously used window.location.search inside useState → hydration mismatch crash.
-  // useSearchParams() works identically on server and client → no mismatch.
   const [filters, setFilters] = useState(() => {
     const init = {};
     filterConfig.forEach((f) => {
       if (f?.id) init[f.id] = [];
     });
-    // Read f_<id> params via searchParams — works on SSR and client identically
     filterConfig.forEach((f) => {
       if (!f?.id) return;
       const val = searchParams.get(`f_${f.id}`);
@@ -716,32 +784,40 @@ export default function UseCaseLibrary({
   const isSearchMode = search.trim().length > 0;
   const isAllSectors = activeSector === "All";
 
-  // ── Padding fix ──
-  // Previously used large fixed padding (up to 100px) that caused excess
-  // left/right whitespace. Now uses consistent moderate padding that scales
-  // responsively without over-compressing on mid-size screens.
-   const pagePadding = sidebarVisible
-     ? wrapperWidth >= 1100
-       ? "0 100px"
-       : "0 48px"
-     : wrapperWidth <= 560
-       ? "0 16px"
-       : "0 48px";
+  /* ── Responsive page padding ──
+     Uses clamp() so padding scales smoothly between breakpoints
+     instead of hard pixel jumps. Sidebar visible adds extra left
+     space so content doesn't crowd the sidebar edge.
+  */
+  const pagePadding = sidebarVisible
+    ? `0 clamp(1.5rem, 5vw, 6.25rem)` // was: 0 100px / 0 48px
+    : `0 clamp(1rem, 4vw, 3rem)`; // was: 0 16px / 0 48px
 
   return (
     <>
       <style>{`
-        .ucl-layout { display:flex; gap:24px; align-items:flex-start; }
-        .ucl-content { flex:1; min-width:0; padding-top:8px; overflow:visible; height:auto; margin-bottom:15px; }
+        .ucl-layout {
+          display: flex;
+          gap: clamp(0.75rem, 1.5vw, 1.5rem); /* was: gap:24px */
+          align-items: flex-start;
+        }
+        .ucl-content {
+          flex: 1;
+          min-width: 0;
+          padding-top: 0.5rem;  /* was: 8px */
+          overflow: visible;
+          height: auto;
+          margin-bottom: clamp(0.5rem, 1vw, 0.9375rem); /* was: 15px */
+        }
         .ucl-content-header {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 16px 0 12px;
-          gap: 12px;
+          padding: clamp(0.75rem, 1.5vw, 1rem) 0 clamp(0.5rem, 1vw, 0.75rem); /* was: 16px 0 12px */
+          gap: 0.75rem; /* was: 12px */
         }
         .ucl-total-count {
-          font-size: 13px;
+          font-size: clamp(0.6875rem, 1.1vw, 0.8125rem); /* was: 13px */
           color: #6B7280;
           font-family: ${FONT};
           flex-shrink: 0;
@@ -751,9 +827,22 @@ export default function UseCaseLibrary({
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          gap: 12px;
-          padding: 64px 24px;
+          gap: 0.75rem;           /* was: 12px */
+          padding: clamp(2rem, 6vw, 4rem) clamp(1rem, 3vw, 1.5rem); /* was: 64px 24px */
           text-align: center;
+        }
+
+        /* Sidebar fluid width */
+        .ucl-sidebar-wrap {
+          width: ${SIDEBAR_WIDTH_CSS};
+          flex-shrink: 0;
+        }
+
+        /* Responsive grid gap override */
+        .ucl-card-grid {
+          display: grid;
+          gap: clamp(0.5rem, 1.5vw, 1rem); /* was: 16px */
+          padding: clamp(0.75rem, 1.5vw, 1rem) 0; /* was: 16px 0 */
         }
       `}</style>
 
@@ -780,7 +869,7 @@ export default function UseCaseLibrary({
           height: "auto",
           minHeight: 0,
           overflow: "visible",
-          marginBottom: 100,
+          marginBottom: "clamp(3rem, 8vw, 6.25rem)", // was: 100px
         }}
       >
         {/* ── Header row ── */}
@@ -795,12 +884,14 @@ export default function UseCaseLibrary({
         {isSearchMode && (
           <div className="ucl-layout">
             {sidebarVisible && (
-              <SectorSidebar
-                sectorList={sectorList}
-                totalCount={useCases.length}
-                activeSector={activeSector}
-                onSelect={handleSelectSector}
-              />
+              <div className="ucl-sidebar-wrap">
+                <SectorSidebar
+                  sectorList={sectorList}
+                  totalCount={useCases.length}
+                  activeSector={activeSector}
+                  onSelect={handleSelectSector}
+                />
+              </div>
             )}
             <div className="ucl-content">
               <SearchResultsHeader
@@ -814,15 +905,15 @@ export default function UseCaseLibrary({
                       display: "inline-flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      width: 52,
-                      height: 52,
-                      borderRadius: 14,
+                      width: "clamp(2.5rem, 5vw, 3.25rem)", // was: 52px
+                      height: "clamp(2.5rem, 5vw, 3.25rem)", // was: 52px
+                      borderRadius: "0.875rem", // was: 14px
                       background: "#F3F6FF",
                     }}
                   >
                     <svg
-                      width="24"
-                      height="24"
+                      width="1.5rem" // was: 24
+                      height="1.5rem" // was: 24
                       viewBox="0 0 24 24"
                       fill="none"
                       aria-hidden="true"
@@ -845,7 +936,7 @@ export default function UseCaseLibrary({
                   <p
                     style={{
                       margin: 0,
-                      fontSize: 15,
+                      fontSize: "clamp(0.8125rem, 1.3vw, 0.9375rem)", // was: 15px
                       fontWeight: 600,
                       color: "#334155",
                       fontFamily: FONT,
@@ -856,7 +947,7 @@ export default function UseCaseLibrary({
                   <p
                     style={{
                       margin: 0,
-                      fontSize: 13,
+                      fontSize: "clamp(0.6875rem, 1.1vw, 0.8125rem)", // was: 13px
                       color: "#9CA3AF",
                       fontFamily: FONT,
                     }}
@@ -866,13 +957,13 @@ export default function UseCaseLibrary({
                   <button
                     onClick={clearAll}
                     style={{
-                      marginTop: 4,
-                      padding: "9px 20px",
-                      borderRadius: 999,
+                      marginTop: "0.25rem", // was: 4px
+                      padding: "0.5625rem 1.25rem", // was: 9px 20px
+                      borderRadius: "999px",
                       border: "none",
                       background: "#1F3A6D",
                       color: "#fff",
-                      fontSize: 13,
+                      fontSize: "clamp(0.6875rem, 1.1vw, 0.8125rem)", // was: 13px
                       fontWeight: 500,
                       cursor: "pointer",
                       fontFamily: FONT,
@@ -884,11 +975,9 @@ export default function UseCaseLibrary({
               ) : (
                 <>
                   <div
+                    className="ucl-card-grid"
                     style={{
-                      display: "grid",
                       gridTemplateColumns: `repeat(${cols}, 1fr)`,
-                      gap: 16,
-                      padding: "16px 0",
                     }}
                   >
                     {searchPagedItems.map((uc, idx) => (
@@ -917,12 +1006,14 @@ export default function UseCaseLibrary({
         {!isSearchMode && (
           <div className="ucl-layout">
             {sidebarVisible && (
-              <SectorSidebar
-                sectorList={sectorList}
-                totalCount={useCases.length}
-                activeSector={activeSector}
-                onSelect={handleSelectSector}
-              />
+              <div className="ucl-sidebar-wrap">
+                <SectorSidebar
+                  sectorList={sectorList}
+                  totalCount={useCases.length}
+                  activeSector={activeSector}
+                  onSelect={handleSelectSector}
+                />
+              </div>
             )}
             <div className="ucl-content">
               {isAllSectors &&
@@ -949,16 +1040,16 @@ export default function UseCaseLibrary({
                     style={{
                       display: "flex",
                       alignItems: "center",
-                      gap: 10,
-                      padding: "14px 0",
+                      gap: "0.625rem", // was: 10px
+                      padding: "0.875rem 0", // was: 14px 0
                       borderBottom: "1px solid #E5E9F3",
-                      marginBottom: 4,
+                      marginBottom: "0.25rem", // was: 4px
                     }}
                   >
                     <span
                       style={{
-                        width: 28,
-                        height: 28,
+                        width: "1.75rem", // was: 28px
+                        height: "1.75rem", // was: 28px
                         display: "inline-flex",
                         alignItems: "center",
                         justifyContent: "center",
@@ -971,14 +1062,16 @@ export default function UseCaseLibrary({
                           .replace(/\s*\/\s*/g, "_")
                           .replace(/\s+/g, "_")}.svg`}
                         alt=""
-                        width={28}
-                        height={28}
-                        style={{ display: "block" }}
+                        style={{
+                          display: "block",
+                          width: "1.75rem",
+                          height: "1.75rem",
+                        }} // was: width=28 height=28
                       />
                     </span>
                     <span
                       style={{
-                        fontSize: 16,
+                        fontSize: "clamp(0.875rem, 1.5vw, 1rem)", // was: 16px
                         fontWeight: 600,
                         color: "#0F1B2D",
                         fontFamily: FONT,
@@ -988,7 +1081,7 @@ export default function UseCaseLibrary({
                     </span>
                     <span
                       style={{
-                        fontSize: 13,
+                        fontSize: "clamp(0.6875rem, 1.1vw, 0.8125rem)", // was: 13px
                         color: "#9CA3AF",
                         fontFamily: FONT,
                       }}
@@ -1001,11 +1094,9 @@ export default function UseCaseLibrary({
                   ) : (
                     <>
                       <div
+                        className="ucl-card-grid"
                         style={{
-                          display: "grid",
                           gridTemplateColumns: `repeat(${cols}, 1fr)`,
-                          gap: 16,
-                          padding: "16px 0",
                         }}
                       >
                         {pagedItems.map((uc, idx) => (
@@ -1040,14 +1131,14 @@ function EmptyState({ onClear }) {
   return (
     <div
       style={{
-        marginTop: 48,
+        marginTop: "3rem", // was: 48px
         textAlign: "center",
-        fontSize: 14,
+        fontSize: "clamp(0.75rem, 1.2vw, 0.875rem)", // was: 14px
         color: "#6B7280",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        gap: 16,
+        gap: "1rem", // was: 16px
         fontFamily: FONT,
       }}
     >
@@ -1055,12 +1146,12 @@ function EmptyState({ onClear }) {
       <button
         onClick={onClear}
         style={{
-          padding: "8px 20px",
-          borderRadius: 999,
+          padding: "0.5rem 1.25rem", // was: 8px 20px
+          borderRadius: "999px",
           border: "none",
           background: "#1F3A6D",
           color: "#fff",
-          fontSize: 13,
+          fontSize: "clamp(0.6875rem, 1.1vw, 0.8125rem)", // was: 13px
           cursor: "pointer",
           fontFamily: FONT,
         }}

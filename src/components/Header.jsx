@@ -36,39 +36,86 @@ export default function Header() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700&display=swap');
 
-        .hdr-inner { padding: 0 100px; }
-        @media (max-width: 1100px) { .hdr-inner { padding: 0 48px; } }
-        @media (max-width: 860px) { .hdr-inner { padding: 0 20px; } }
+        /* ══════════════════════════════════════════════════════════════
+           HEADER — fluid scaling via clamp()
+           Horizontal padding matches site-wide token:
+             clamp(24px, 6.30vw, 121px)
+           Nav height scales from 64px (mobile) → 91px (desktop).
+        ══════════════════════════════════════════════════════════════ */
+
+        /* ── Inner wrapper ── */
+        .hdr-inner {
+          padding: 0 clamp(24px, 6.30vw, 121px);
+          box-sizing: border-box;
+          width: 100%;
+        }
+
+        /*
+          ── Single height token ──────────────────────────────────────
+          --hdr-h drives the bar, logo, links, and CTA together.
+          clamp(56px, 5.2vw, 72px) means:
+            • never shorter than 56px (small mobile)
+            • 5.2vw at mid viewports → at 1440px = 74.8px ≈ 72px (capped)
+            • at 150% zoom (≈960px viewport) → 5.2×9.6 = 49.9 → floored at 56px
+          So the bar is always 56–72px — compact at every zoom level.
+          ─────────────────────────────────────────────────────────── */
+        :root {
+          --hdr-h:      clamp(64px, 5.8vw, 84px);
+          --hdr-logo-h: clamp(36px, 3.6vw, 54px);
+          --hdr-fs:     clamp(13px, 0.9375vw, 17px);
+          --hdr-cta-h:  clamp(36px, 2.8vw, 44px);
+        }
+
+        /* ── Nav bar ── */
+        .hdr-nav {
+          height: var(--hdr-h);
+        }
+
+        /* ── Logo ── */
+        .hdr-logo-img {
+          height: var(--hdr-logo-h);
+          width: auto;
+          object-fit: contain;
+          display: block;
+        }
+
+        /* ── Desktop nav links ── */
+        .hdr-nav-links {
+          display: flex;
+          align-items: center;
+          height: clamp(22px, 2.2vw, 30px);
+          gap: clamp(6px, 1.04vw, 20px);
+        }
 
         .hdr-link {
           position: relative;
           display: inline-flex;
           align-items: center;
-          font-size: 18px;
+          font-size: var(--hdr-fs);
           font-weight: 400;
           color: #334155;
           text-decoration: none;
           padding: 0 4px;
-          height: 30px;
+          height: 100%;
           white-space: nowrap;
           font-family: 'Albert Sans', sans-serif;
           transition: color 250ms ease, font-weight 250ms ease;
         }
         .hdr-link:hover { color: #1B66D1; font-weight: 600; text-decoration: none; }
-        .hdr-link.active { font-size: 18px; font-weight: 600; color: #1B66D1; text-decoration: none; }
+        .hdr-link.active { font-weight: 600; color: #1B66D1; text-decoration: none; }
 
         .hdr-drop-btn {
           position: relative;
           display: inline-flex;
           align-items: center;
-          gap: 6px;
-          font-size: 18px;
+          gap: 5px;
+          font-size: var(--hdr-fs);
           font-weight: 400;
           color: #334155;
           background: none;
           border: none;
           padding: 0 4px;
-          height: 30px;
+          height: 100%;
           cursor: pointer;
           white-space: nowrap;
           font-family: 'Albert Sans', sans-serif;
@@ -76,12 +123,13 @@ export default function Header() {
         }
         .hdr-drop-btn:hover { color: #1B66D1; font-weight: 600; }
 
+        /* ── Dropdown ── */
         .hdr-dropdown {
           position: absolute;
           top: calc(100% + 12px);
           left: 50%;
           transform: translateX(-50%) translateY(-6px);
-          min-width: 290px;
+          min-width: clamp(200px, 20vw, 290px);
           background: #fff;
           border-radius: 14px;
           box-shadow: 0 16px 48px rgba(0,0,0,0.14), 0 2px 8px rgba(0,0,0,0.06);
@@ -94,22 +142,26 @@ export default function Header() {
         }
         .hdr-drop-group:hover .hdr-dropdown,
         .hdr-drop-group:focus-within .hdr-dropdown {
-          opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0);
+          opacity: 1;
+          visibility: visible;
+          transform: translateX(-50%) translateY(0);
         }
         .hdr-dropdown::before {
           content: '';
           position: absolute;
-          top: -5px; left: 50%;
+          top: -5px;
+          left: 50%;
           transform: translateX(-50%) rotate(45deg);
-          width: 10px; height: 10px;
+          width: 10px;
+          height: 10px;
           background: #fff;
           border-left: 1px solid rgba(0,0,0,0.07);
           border-top: 1px solid rgba(0,0,0,0.07);
         }
         .hdr-dropdown a {
           display: block;
-          padding: 10px 16px;
-          font-size: 14px;
+          padding: clamp(8px, 0.52vw, 10px) clamp(12px, 0.83vw, 16px);
+          font-size: clamp(12px, 0.73vw, 14px);
           font-weight: 400;
           color: #374151;
           text-decoration: none;
@@ -120,40 +172,35 @@ export default function Header() {
         }
         .hdr-dropdown a:hover { background: #EEF2FC; color: #1B66D1; font-weight: 600; }
 
+        /* ── CTA button — tracks --hdr-cta-h ── */
         .hdr-cta {
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          height: 44px;
-          padding: 0 24px;
+          height: var(--hdr-cta-h);
+          padding: 0 clamp(14px, 1.56vw, 22px);
           background: #1F3A6D;
           color: #ffffff;
           font-family: 'Albert Sans', sans-serif;
-          font-size: 15px;
+          font-size: var(--hdr-fs);
           font-weight: 600;
-          border-radius: 22px;
+          border-radius: 999px;
           border: none;
           cursor: pointer;
           white-space: nowrap;
           letter-spacing: 0.01em;
+          transition: background 200ms ease, transform 150ms ease;
         }
         .hdr-cta:hover { background: #1B66D1; }
-        .hdr-cta:active {
-          transform: translateY(0);
-          box-shadow: 0 2px 8px rgba(27, 102, 209, 0.2);
-        }
-        @media (max-width: 860px) {
-          .hdr-cta { display: none; }
-        }
-        @media (max-width: 400px) {
-          .hdr-cta { height: 38px; padding: 0 14px; font-size: 13px; }
-        }
+        .hdr-cta:active { transform: translateY(1px); }
 
+        /* ── Hamburger button — tracks --hdr-cta-h ── */
         .hdr-ham {
           display: none;
           align-items: center;
           justify-content: center;
-          width: 40px; height: 40px;
+          width: var(--hdr-cta-h);
+          height: var(--hdr-cta-h);
           border-radius: 10px;
           background: #ffffff;
           border: 1.5px solid #DDE5F5;
@@ -164,7 +211,8 @@ export default function Header() {
         .hdr-ham:hover { background: #EEF2FC; border-color: #1B66D1; }
         .hdr-ham .bar {
           display: block;
-          width: 17px; height: 1.5px;
+          width: 17px;
+          height: 1.5px;
           background: #1F3A6D;
           border-radius: 2px;
           transition: transform 260ms ease, opacity 200ms ease, width 200ms ease;
@@ -175,18 +223,20 @@ export default function Header() {
         .hdr-ham.open .bar:nth-child(2) { opacity: 0; width: 0; }
         .hdr-ham.open .bar:nth-child(3) { transform: translateY(-5.5px) rotate(-45deg); }
 
+        /* ── Responsive breakpoints ── */
+        /* Hide desktop nav + show hamburger below 860px */
         @media (max-width: 860px) {
           .hdr-nav-links { display: none !important; }
-          .hdr-ham { display: inline-flex !important; }
-          .hdr-nav { justify-content: space-between !important; }
-          .hdr-logo { margin-right: 0 !important; }
+          .hdr-ham       { display: inline-flex !important; }
+          .hdr-cta       { display: none; }
         }
 
+        /* ── Mobile dropdown panel ── */
         .mob-drop {
           position: absolute;
           top: calc(100% + 10px);
           right: 0;
-          width: 232px;
+          width: clamp(200px, 60vw, 232px);
           background: #ffffff;
           border-radius: 14px;
           box-shadow: 0 16px 48px rgba(31,58,109,0.14), 0 2px 8px rgba(0,0,0,0.07);
@@ -194,12 +244,13 @@ export default function Header() {
           padding: 8px;
           z-index: 200;
           transform-origin: top right;
-          animation: mobDropIn 180ms cubic-bezier(0.34,1.3,0.64,1) forwards;
+          animation: mobDropIn 180ms cubic-bezier(0.34, 1.3, 0.64, 1) forwards;
         }
         @keyframes mobDropIn {
           from { opacity: 0; transform: scale(0.93) translateY(-8px); }
-          to   { opacity: 1; transform: scale(1) translateY(0); }
+          to   { opacity: 1; transform: scale(1)    translateY(0);    }
         }
+
         .mob-drop-label {
           font-size: 10px;
           font-weight: 700;
@@ -229,8 +280,9 @@ export default function Header() {
           box-sizing: border-box;
           transition: background 150ms ease, color 150ms ease;
         }
-        .mob-drop-item:hover { background: #EEF2FC; color: #1B66D1; }
+        .mob-drop-item:hover  { background: #EEF2FC; color: #1B66D1; }
         .mob-drop-item.mob-active { background: #EEF2FC; color: #1B66D1; font-weight: 600; }
+
         .mob-dot {
           width: 6px; height: 6px;
           border-radius: 50%;
@@ -238,8 +290,9 @@ export default function Header() {
           flex-shrink: 0;
           transition: background 150ms ease;
         }
-        .mob-drop-item:hover .mob-dot { background: #1B66D1; }
+        .mob-drop-item:hover .mob-dot      { background: #1B66D1; }
         .mob-drop-item.mob-active .mob-dot { background: #1B66D1; }
+
         .mob-drop-divider {
           height: 1px;
           background: #EEF2FC;
@@ -258,7 +311,7 @@ export default function Header() {
       >
         <div className="hdr-inner">
           <nav
-            className="hdr-nav flex items-center justify-between h-[91px]"
+            className="hdr-nav flex items-center justify-between"
             aria-label="Primary"
           >
             {/* Logo */}
@@ -270,15 +323,12 @@ export default function Header() {
               <img
                 src={`${BASE_PATH}/assets/msc-logo.svg`}
                 alt="MSC"
-                className="h-[59px] w-[100px] object-contain block"
+                className="hdr-logo-img"
               />
             </Link>
 
             {/* Desktop nav links */}
-            <div
-              className="hdr-nav-links flex items-center h-[32px]"
-              style={{ gap: 16 }}
-            >
+            <div className="hdr-nav-links">
               <Link
                 href="/"
                 className={`hdr-link${isActive("/") ? " active" : ""}`}
@@ -287,42 +337,41 @@ export default function Header() {
               </Link>
 
               <div className="hdr-drop-group relative">
-                <button
-                  type="button"
-                  aria-haspopup="true"
-                  className="hdr-drop-btn"
-                >
-                  Hackathons
-                  <svg
-                    width="12"
-                    height="7.41"
-                    viewBox="0 0 12 7.41"
-                    fill="none"
-                    style={{ color: "#334155", flexShrink: 0 }}
-                  >
-                    <path
-                      d="M1 1l5 5.41L11 1"
-                      stroke="currentColor"
-                      strokeWidth="1.6"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </button>
-                <div className="hdr-dropdown">
-                  {hackathons.map((h) => (
-                    <a
-                      key={h.ID}
-                      href={h.URL}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {h.Title}
-                    </a>
-                  ))}
-                </div>
-              </div>
-
+  <button
+    type="button"
+    aria-haspopup="true"
+    className="hdr-drop-btn"
+  >
+    Hackathons
+    <svg
+      width="0.75em"     
+      height="0.463em"   
+      viewBox="0 0 12 7.41"
+      fill="none"
+      style={{ color: "#334155", flexShrink: 0 }}
+    >
+      <path
+        d="M1 1l5 5.41L11 1"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  </button>
+  <div className="hdr-dropdown">
+    {hackathons.map((h) => (
+      <a
+        key={h.ID}
+        href={h.URL}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {h.Title}
+      </a>
+    ))}
+  </div>
+</div>
               <Link
                 href="/library"
                 className={`hdr-link${isActive("/library") ? " active" : ""}`}
@@ -331,7 +380,7 @@ export default function Header() {
               </Link>
             </div>
 
-            {/* Right side: hamburger (mobile only) + Contact Us */}
+            {/* Right side: hamburger (mobile) + Contact Us (desktop) */}
             <div className="flex items-center shrink-0 gap-3" ref={dropRef}>
               {/* Hamburger wrapper */}
               <div style={{ position: "relative" }}>

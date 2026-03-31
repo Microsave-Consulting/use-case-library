@@ -3,25 +3,44 @@
 
 import { useRouter } from "next/navigation";
 import { BASE_PATH } from "@/lib/siteConfig";
+import filterOptions from "../../public/data/filter_options.json";
 
 const FONT =
   '"Albert Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
 
-const SECTORS = [
-  { label: "Financial services", icon: "financial_services.svg" },
-  { label: "Telecom", icon: "telecom.svg" },
-  { label: "Legal/ e-Sign", icon: "legal_e-sign.svg" },
-  { label: "Housing and Land", icon: "housing_and_land.svg" },
-  { label: "Commerce", icon: "commerce.svg" },
-  { label: "Energy and climate", icon: "energy_and_climate.svg" },
-  { label: "Healthcare", icon: "healthcare.svg" },
-  { label: "Social Protection", icon: "social_protection.svg" },
-  { label: "Education", icon: "education.svg" },
-  { label: "Mobility", icon: "mobility.svg" },
-  { label: "Agriculture", icon: "agriculture.svg" },
-  { label: "Labor and employment", icon: "labor_and_employment.svg" },
-  { label: "Public Services", icon: "public_services.svg" },
-];
+/*
+  Icon filename derivation — mirrors the actual filenames in
+  public/assets/sector_icons/ exactly:
+
+  1. Lowercase the label
+  2. Replace every run of spaces with "_"
+  3. Replace "/" (used in "Legal/ e-Sign") with "-"  →  "legal_e-sign"
+  4. Append ".svg"
+
+  Examples:
+    "Financial services"   → financial_services.svg
+    "Energy and climate"   → energy_and_climate.svg
+    "Legal/ e-Sign"        → legal_e-sign.svg
+    "Labor and employment" → labor_and_employment.svg
+    "Housing and land"     → housing_and_land.svg
+    "Social protection"    → social_protection.svg
+    "Public services"      → public_services.svg
+*/
+function labelToIcon(label) {
+  return (
+    label
+      .toLowerCase()
+      .replace(/\s*\/\s*/g, "_")
+      .replace(/\s+/g, "_") + // spaces → underscores
+    ".svg"
+  );
+}
+
+// Build sector list directly from the JSON — no hardcoded array needed.
+const SECTORS = (filterOptions.Sector || []).map((label) => ({
+  label,
+  icon: labelToIcon(label),
+}));
 
 export default function ExploreSectors() {
   const router = useRouter();
@@ -66,10 +85,7 @@ export default function ExploreSectors() {
           color: #1b66d1;
         }
 
-        /* ── Grid: 5 cols ─────────────────────────────────────────────
-           card width 281.33 / 1920 = 14.65vw
-           gap = (1529 - 5×281) / 4 = 124/4 = 31px → 31/1920 = 1.61vw
-        ──────────────────────────────────────────────────────────────── */
+        /* ── Grid: 5 cols ── */
         .exp-sectors__grid {
           display: grid;
           grid-template-columns: repeat(5, 1fr);
@@ -78,11 +94,7 @@ export default function ExploreSectors() {
           max-width: 1529px;
         }
 
-        /* ── Card ──────────────────────────────────────────────────────
-           281 × 170px base
-           border 1px #BAC6D1 (resting)
-           shadow: x3 y3 blur6 #25343D 20%
-        ──────────────────────────────────────────────────────────────── */
+        /* ── Card ── */
         .exp-sectors__card {
           display: flex;
           flex-direction: column;
@@ -92,41 +104,30 @@ export default function ExploreSectors() {
           background: #ffffff;
           border-radius: 10px;
           border: 1px solid #bac6d1;
-         
           padding: clamp(16px, 1.46vw, 28px) clamp(10px, 1.04vw, 20px);
           min-height: clamp(110px, 8.85vw, 170px);
           box-sizing: border-box;
           cursor: pointer;
           text-align: center;
-
-          /* transitions for lift + border colour */
           transition:
             transform 320ms cubic-bezier(0.23, 1, 0.32, 1),
             box-shadow 320ms cubic-bezier(0.23, 1, 0.32, 1),
             border-color 320ms ease;
-
           will-change: transform;
         }
 
-        /* ── Hover colour cycle via nth-child ─────────────────────────
-           Pattern: #1B66D1 (odd) → #8A6CFF (even)
-        ──────────────────────────────────────────────────────────────── */
-
-        /* odd cards (1, 3, 5...) → #1B66D1 */
         .exp-sectors__card:nth-child(odd):hover {
           transform: translateY(-8px);
           border-color: #1b66d1;
           box-shadow: 6px 6px 9px 0px rgba(27, 102, 209, 0.20);
         }
-
-        /* even cards (2, 4, 6...) → #8A6CFF */
         .exp-sectors__card:nth-child(even):hover {
           transform: translateY(-8px);
           border-color: #8a6cff;
           box-shadow: 9px 9px 12px 0px rgba(138, 108, 255, 0.20);
         }
 
-        /* ── Icon: 74 × 72.55px → 74/1920 = 3.85vw ── */
+        /* ── Icon ── */
         .exp-sectors__icon {
           width: clamp(44px, 3.85vw, 74px);
           height: clamp(42px, 3.78vw, 73px);
@@ -135,12 +136,11 @@ export default function ExploreSectors() {
           flex-shrink: 0;
           transition: transform 320ms cubic-bezier(0.23, 1, 0.32, 1);
         }
-
         .exp-sectors__card:hover .exp-sectors__icon {
           transform: translateY(-3px) scale(1.06);
         }
 
-        /* ── Label: Albert Sans 700, 18px, #000000 ── */
+        /* ── Label ── */
         .exp-sectors__label {
           margin: 0;
           font-family: ${FONT};
@@ -170,9 +170,7 @@ export default function ExploreSectors() {
         ════════════════════════════════════════════════════════════ */
 
         @media (max-width: 1280px) {
-          .exp-sectors__grid {
-            grid-template-columns: repeat(5, 1fr);
-          }
+          .exp-sectors__grid { grid-template-columns: repeat(5, 1fr); }
         }
 
         @media (max-width: 1024px) {
@@ -180,15 +178,11 @@ export default function ExploreSectors() {
             grid-template-columns: repeat(4, 1fr);
             gap: clamp(10px, 1.8vw, 24px);
           }
-          .exp-sectors__card {
-            min-height: clamp(100px, 14vw, 150px);
-          }
+          .exp-sectors__card { min-height: clamp(100px, 14vw, 150px); }
         }
 
         @media (max-width: 768px) {
-          .exp-sectors {
-            padding: 8vw 6vw;
-          }
+          .exp-sectors { padding: 8vw 6vw; }
           .exp-sectors__title {
             font-size: clamp(20px, 3.5vw, 28px);
             margin-bottom: clamp(16px, 3vw, 28px);
@@ -205,15 +199,11 @@ export default function ExploreSectors() {
             width: clamp(36px, 7vw, 56px);
             height: clamp(34px, 6.8vw, 54px);
           }
-          .exp-sectors__label {
-            font-size: clamp(11px, 1.8vw, 15px);
-          }
+          .exp-sectors__label { font-size: clamp(11px, 1.8vw, 15px); }
         }
 
         @media (max-width: 480px) {
-          .exp-sectors {
-            padding: 10vw 5vw;
-          }
+          .exp-sectors { padding: 10vw 5vw; }
           .exp-sectors__grid {
             grid-template-columns: repeat(2, 1fr);
             gap: clamp(8px, 3vw, 14px);
@@ -222,16 +212,9 @@ export default function ExploreSectors() {
             min-height: clamp(90px, 26vw, 130px);
             padding: 14px 10px;
           }
-          .exp-sectors__icon {
-            width: clamp(36px, 10vw, 52px);
-            height: auto;
-          }
-          .exp-sectors__label {
-            font-size: clamp(11px, 3vw, 14px);
-          }
-          .exp-sectors__title {
-            font-size: clamp(20px, 6vw, 26px);
-          }
+          .exp-sectors__icon { width: clamp(36px, 10vw, 52px); height: auto; }
+          .exp-sectors__label { font-size: clamp(11px, 3vw, 14px); }
+          .exp-sectors__title { font-size: clamp(20px, 6vw, 26px); }
         }
       `}</style>
 

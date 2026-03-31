@@ -18,17 +18,12 @@ function SocialIcon({ label, base, href }) {
       rel={href ? "noopener noreferrer" : undefined}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      style={{ display: "inline-flex", width: 26, height: 26, flexShrink: 0 }}
+      className="ftr-social-link"
     >
       <img
         src={`${SOCIAL_ICON_PATH}/${hovered ? hoverName : base}.svg`}
         alt={label}
-        style={{
-          width: 24,
-          height: 24,
-          display: "block",
-          transition: "opacity 200ms ease",
-        }}
+        className="ftr-social-img"
       />
     </a>
   );
@@ -40,103 +35,173 @@ export default function Footer() {
   return (
     <>
       <style>{`
+        /* ══════════════════════════════════════════════════════════════
+           FOOTER — fluid scaling via clamp(), matching the site's
+           standard horizontal padding: clamp(24px, 6.30vw, 121px)
+           (same token used in ExploreSectors & HackathonCarousel)
+        ══════════════════════════════════════════════════════════════ */
+
         .ftr-root {
           font-family: 'Albert Sans', sans-serif;
           background: #FFFFFF;
           border-top: 1px solid #F1F1F1;
           box-shadow: 0 -1px 0 0 #F1F1F1, 0 4px 4px 0 rgba(0,0,0,0.11);
-        }
-
-        /* align-items: center so icons stay vertically centred on all sizes */
-        .ftr-grid {
-          max-width: 1440px;
-          padding: 48px 100px;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 60px;
+          width: 100%;
           box-sizing: border-box;
         }
 
-        @media (max-width: 1300px) {
-          .ftr-grid { gap: 40px; padding: 48px 60px; }
-        }
-        @media (max-width: 1100px) {
-          .ftr-grid { gap: 32px; padding: 40px 48px; }
-        }
-        @media (max-width: 860px) {
-          .ftr-grid { flex-wrap: wrap; gap: 32px; padding: 36px 32px; }
-        }
-
-        /* Mobile: stack icons below brand, left-aligned */
-        @media (max-width: 540px) {
-          .ftr-grid {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 14px;
-            padding: 28px 20px;
-          }
-        }
-        @media (max-width: 360px) {
-          .ftr-grid { padding: 24px 16px; gap: 12px; }
+        /* ── Main grid row ── */
+        .ftr-grid {
+          width: 100%;
+          /* Same horizontal padding token as every other section */
+          padding:
+            clamp(28px, 3.33vw, 64px)   /* top */
+            clamp(24px, 6.30vw, 121px)  /* right */
+            clamp(28px, 3.33vw, 64px)   /* bottom */
+            clamp(24px, 6.30vw, 121px); /* left */
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: clamp(24px, 3.13vw, 60px);
+          box-sizing: border-box;
         }
 
+        /* ── Brand block ── */
+        .ftr-brand {
+          flex: 1 1 auto;
+          max-width: clamp(220px, 28vw, 420px);
+        }
+
+        .ftr-logo {
+          height: clamp(36px, 4.1vw, 64px);
+          width: auto;
+          display: block;
+          margin-bottom: clamp(8px, 0.83vw, 16px);
+        }
+
+        .ftr-tagline {
+          font-size: clamp(12px, 0.83vw, 16px);
+          font-weight: 400;
+          color: #334155;
+          line-height: 1.6;
+          letter-spacing: 0;
+          margin: 0;
+        }
+
+        /* ── Social icons row ── */
+        .ftr-socials {
+          display: flex;
+          align-items: center;
+          gap: clamp(8px, 0.83vw, 16px);
+          flex-shrink: 0;
+        }
+
+        .ftr-social-link {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: clamp(20px, 1.56vw, 30px);
+          height: clamp(20px, 1.56vw, 30px);
+          flex-shrink: 0;
+        }
+
+        .ftr-social-img {
+          width: clamp(18px, 1.46vw, 28px);
+          height: clamp(18px, 1.46vw, 28px);
+          display: block;
+          transition: opacity 200ms ease;
+        }
+
+        /* ── Bottom bar ── */
+        .ftr-bottom {
+          background: #FBFBFB;
+          border-top: 1px solid #F1F1F1;
+          padding: clamp(12px, 1.25vw, 24px) clamp(24px, 6.30vw, 121px);
+        }
+
+        .ftr-bottom p {
+          margin: 0;
+          text-align: center;
+          font-family: 'Albert Sans', sans-serif;
+          font-size: clamp(12px, 0.78vw, 15px);
+          font-weight: 400;
+          color: #334155;
+          line-height: 1;
+        }
+
+        /* ── Link style (kept for any future nav links) ── */
         .ftr-link {
           color: #334155;
           text-decoration: none;
-          font-size: 14px;
+          font-size: clamp(12px, 0.73vw, 14px);
           font-weight: 400;
-          line-height: 100%;
+          line-height: 1;
           white-space: nowrap;
           font-family: 'Albert Sans', sans-serif;
           transition: color 150ms ease;
         }
         .ftr-link:hover { color: #1F3A6D; }
 
-        .ftr-bottom {
-          background: #FBFBFB;
-          border-top: 1px solid #F1F1F1;
-          padding: 18px 20px;
-        }
-        .ftr-bottom p {
-          margin: 0;
-          text-align: center;
-          font-family: 'Albert Sans', sans-serif;
-          font-size: 15px;
-          font-weight: 400;
-          color: #334155;
-          line-height: 100%;
-        }
-
+        /* ── Mobile (≤ 480px) — stack brand + icons vertically ── */
         @media (max-width: 480px) {
-          .ftr-bottom p { font-size: 13px; }
+          .ftr-grid {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 16px;
+            padding:
+              clamp(20px, 5vw, 28px)
+              clamp(16px, 5vw, 24px)
+              clamp(20px, 5vw, 28px)
+              clamp(16px, 5vw, 24px);
+          }
+
+          .ftr-brand {
+            max-width: 100%;
+          }
+
+          .ftr-logo {
+            height: clamp(32px, 9vw, 44px);
+            margin-bottom: 10px;
+          }
+
+          .ftr-tagline {
+            font-size: clamp(12px, 3.2vw, 14px);
+          }
+
+          .ftr-socials {
+            gap: clamp(8px, 2.5vw, 14px);
+          }
+
+          .ftr-social-link {
+            width: clamp(20px, 5.5vw, 28px);
+            height: clamp(20px, 5.5vw, 28px);
+          }
+
+          .ftr-social-img {
+            width: clamp(18px, 5vw, 26px);
+            height: clamp(18px, 5vw, 26px);
+          }
+
+          .ftr-bottom {
+            padding: clamp(10px, 3vw, 16px) clamp(16px, 5vw, 24px);
+          }
+
+          .ftr-bottom p {
+            font-size: clamp(11px, 3vw, 13px);
+          }
         }
       `}</style>
 
       <footer className="ftr-root">
         <div className="ftr-grid">
           {/* Brand */}
-          <div style={{ maxWidth: 400, flex: "1 1 3" }}>
+          <div className="ftr-brand">
             <img
               src={`${BASE_PATH}/assets/msc-logo.svg`}
               alt="MSC MicroSave Consulting"
-              style={{
-                height: 59,
-                width: 100,
-                display: "block",
-                marginBottom: 12,
-              }}
+              className="ftr-logo"
             />
-            <p
-              style={{
-                fontSize: 14,
-                fontWeight: 400,
-                color: "#334155",
-                lineHeight: 1.6,
-                letterSpacing: 0,
-                margin: 0,
-              }}
-            >
+            <p className="ftr-tagline">
               MSC (MicroSave Consulting) is a global consulting firm that
               enables social, financial, and economic inclusion for everyone in
               the digital age.
@@ -144,14 +209,7 @@ export default function Footer() {
           </div>
 
           {/* Social icons */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 12,
-              flexShrink: 0,
-            }}
-          >
+          <div className="ftr-socials">
             <SocialIcon
               label="Facebook"
               base="fb"

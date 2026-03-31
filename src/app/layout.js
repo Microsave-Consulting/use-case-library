@@ -70,9 +70,6 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        {/* FIX 2: Added crossOrigin="anonymous" to fonts.googleapis.com preconnect.
-            Without it the browser opens a non-CORS connection first, then a CORS one,
-            wasting the preconnect entirely. Lighthouse flagged this explicitly. */}
         <link
           rel="preconnect"
           href="https://fonts.googleapis.com"
@@ -83,16 +80,11 @@ export default function RootLayout({ children }) {
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
-
-        {/* FIX 3: Added preconnect for cdn.jsdelivr.net.
-            react-country-flag loads flag SVGs from jsDelivr CDN.
-            Lighthouse flagged this as a 90ms LCP saving opportunity. */}
         <link
           rel="preconnect"
           href="https://cdn.jsdelivr.net"
           crossOrigin="anonymous"
         />
-
         <link
           href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap"
           rel="stylesheet"
@@ -111,7 +103,13 @@ export default function RootLayout({ children }) {
         }}
       >
         <Header />
-        <div style={{ paddingTop: "91px" }}>
+        {/*
+          paddingTop: "var(--hdr-h)" — uses the same CSS custom property
+          defined in Header.jsx's :root block, so this offset always
+          matches the actual header height at every viewport width and
+          zoom level. No more hardcoded 91px that drifts from the real height.
+        */}
+        <div style={{ paddingTop: "var(--hdr-h)" }}>
           <main>{children}</main>
           <Footer />
         </div>

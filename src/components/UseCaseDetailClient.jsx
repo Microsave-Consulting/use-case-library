@@ -49,8 +49,8 @@ function InfoTooltip({ tip }) {
           display: "inline-flex",
           alignItems: "center",
           justifyContent: "center",
-          width: 16,
-          height: 16,
+          width: "1rem",
+          height: "1rem",
           cursor: "help",
           userSelect: "none",
           flexShrink: 0,
@@ -70,16 +70,16 @@ function InfoTooltip({ tip }) {
           style={{
             position: "absolute",
             left: 0,
-            top: "calc(100% + 8px)",
-            minWidth: 220,
-            maxWidth: 300,
-            padding: "10px 12px",
-            borderRadius: 10,
+            top: "calc(100% + 0.5rem)",
+            minWidth: "13.75rem",
+            maxWidth: "18.75rem",
+            padding: "0.625rem 0.75rem",
+            borderRadius: "0.625rem",
             background: "#fff",
             color: "#111",
-            fontSize: 12,
+            fontSize: "0.75rem",
             lineHeight: 1.5,
-            boxShadow: "0 8px 30px rgba(0,0,0,0.18)",
+            boxShadow: "0 0.5rem 1.875rem rgba(0,0,0,0.18)",
             zIndex: 50,
             fontFamily: FONT,
             border: "1px solid rgba(0,0,0,0.07)",
@@ -102,11 +102,11 @@ function MetaItem({ label, value, showTooltip = false }) {
     <div style={{ minWidth: 0, fontFamily: FONT }}>
       <div
         style={{
-          fontSize: 13,
+          fontSize: "0.8125rem",
           lineHeight: 1.3,
           color: "#334155",
           fontWeight: 500,
-          marginBottom: 4,
+          marginBottom: "0.25rem",
         }}
       >
         {label}
@@ -115,8 +115,8 @@ function MetaItem({ label, value, showTooltip = false }) {
         style={{
           display: "inline-flex",
           alignItems: "center",
-          gap: 4,
-          fontSize: 14,
+          gap: "0.25rem",
+          fontSize: "0.875rem",
           color: "#000000",
           fontWeight: 500,
           minWidth: 0,
@@ -145,21 +145,23 @@ function ModeAccessItem({ value }) {
     <div style={{ minWidth: 0, fontFamily: FONT }}>
       <div
         style={{
-          fontSize: 13,
+          fontSize: "0.8125rem",
           lineHeight: 1.3,
           color: "#334155",
           fontWeight: 500,
-          marginBottom: 4,
+          marginBottom: "0.25rem",
         }}
       >
         Mode of Access
       </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+      <div
+        style={{ display: "flex", flexDirection: "column", gap: "0.125rem" }}
+      >
         {display.map((v, i) => (
           <div
             key={i}
             style={{
-              fontSize: 14,
+              fontSize: "0.875rem",
               color: "#000000",
               fontWeight: 500,
               lineHeight: 1.4,
@@ -193,21 +195,23 @@ function CountryItem({ value }) {
     <div style={{ minWidth: 0, fontFamily: FONT }}>
       <div
         style={{
-          fontSize: 13,
+          fontSize: "0.8125rem",
           lineHeight: 1.3,
           color: "#334155",
           fontWeight: 500,
-          marginBottom: 4,
+          marginBottom: "0.25rem",
         }}
       >
         Country
       </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+      <div
+        style={{ display: "flex", flexDirection: "column", gap: "0.125rem" }}
+      >
         {display.map((v, i) => (
           <div
             key={i}
             style={{
-              fontSize: 14,
+              fontSize: "0.875rem",
               color: "#000000",
               fontWeight: 500,
               lineHeight: 1.4,
@@ -245,8 +249,8 @@ function SourceRow({ url, label }) {
       style={{
         display: "flex",
         alignItems: "center",
-        gap: 10,
-        minHeight: 38,
+        gap: "0.625rem",
+        minHeight: "2.375rem",
         textDecoration: "none",
         fontFamily: FONT,
         borderBottom: "1px solid #F1F1F1",
@@ -257,8 +261,8 @@ function SourceRow({ url, label }) {
           display: "inline-flex",
           alignItems: "center",
           justifyContent: "center",
-          width: 20,
-          height: 20,
+          width: "1.25rem",
+          height: "1.25rem",
           flexShrink: 0,
           color: "#0F1B2D",
         }}
@@ -273,7 +277,7 @@ function SourceRow({ url, label }) {
       </span>
       <span
         style={{
-          fontSize: 14,
+          fontSize: "0.875rem",
           fontWeight: 500,
           color: hovered ? "#1F3A6D" : "#0F1B2D",
           textDecoration: "underline",
@@ -283,7 +287,7 @@ function SourceRow({ url, label }) {
           overflowWrap: "anywhere",
           wordBreak: "break-all",
           lineHeight: 1.4,
-          padding: "10px 0",
+          padding: "0.625rem 0",
         }}
       >
         {label || url}
@@ -304,22 +308,21 @@ function BackButton({ onClick }) {
       style={{
         display: "inline-flex",
         alignItems: "center",
-        gap: 10,
-        height: 44,
-        padding: "10px 16px",
-        borderRadius: 8,
+        gap: "0.625rem",
+        height: "2.75rem",
+        padding: "0.625rem 1rem",
+        borderRadius: "0.5rem",
         border: "none",
         background: "#1F3A6D",
         color: "#fff",
         fontFamily: FONT,
-        fontSize: 14,
+        fontSize: "0.875rem",
         fontWeight: 500,
         cursor: "pointer",
         transition:
           "background 250ms ease, box-shadow 250ms ease, transform 250ms ease",
         flexShrink: 0,
         boxSizing: "border-box",
-
         whiteSpace: "nowrap",
       }}
     >
@@ -342,9 +345,9 @@ function Breadcrumb({ sector, title }) {
       style={{
         display: "flex",
         alignItems: "center",
-        gap: 6,
+        gap: "0.375rem",
         fontFamily: FONT,
-        fontSize: 14,
+        fontSize: "0.875rem",
         color: "#6B7280",
         flexWrap: "wrap",
         minWidth: 0,
@@ -366,7 +369,7 @@ function Breadcrumb({ sector, title }) {
       </Link>
       <span
         aria-hidden="true"
-        style={{ color: "#334155", fontWeight: 400, fontSize: 20 }}
+        style={{ color: "#334155", fontWeight: 400, fontSize: "1.25rem" }}
       >
         ›
       </span>
@@ -393,7 +396,7 @@ export default function UseCaseDetailClient({ useCase }) {
     return (
       <div
         style={{
-          maxWidth: 1440,
+          maxWidth: "90rem",
           margin: "0 auto",
           padding: "2rem 1.5rem",
           minHeight: "60vh",
@@ -423,7 +426,7 @@ export default function UseCaseDetailClient({ useCase }) {
           style={{
             display: "inline-block",
             padding: "0.6rem 1.2rem",
-            borderRadius: 10,
+            borderRadius: "0.625rem",
             textDecoration: "none",
             background: "#1F3A6D",
             color: "#fff",
@@ -476,63 +479,65 @@ export default function UseCaseDetailClient({ useCase }) {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700&display=swap');
 
-        /* ── Meta strip: matches library breakpoints ── */
+        /* ── Meta strip ── */
         .ucd-meta-strip {
           display: grid;
           grid-template-columns: repeat(6, minmax(0, 1fr));
-          gap: 20px 16px;
+          gap: 1.25rem 1rem;
         }
-        @media (max-width: 900px) {
+        @media (max-width: 56.25rem) {          /* 900px */
           .ucd-meta-strip {
             grid-template-columns: repeat(3, minmax(0, 1fr));
           }
         }
-        @media (max-width: 560px) {
+        @media (max-width: 35rem) {             /* 560px */
           .ucd-meta-strip {
             grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 16px 12px;
+            gap: 1rem 0.75rem;
           }
         }
-        @media (max-width: 360px) {
+        @media (max-width: 22.5rem) {           /* 360px */
           .ucd-meta-strip {
             grid-template-columns: 1fr;
           }
         }
 
-        /* ── Page wrapper padding: mirrors library pagePadding logic ── */
+        /* ── Page wrapper ── */
         .ucd-page-wrap {
-          max-width: 1440px;
+          max-width: 90rem;
           margin: 0 auto;
-          padding: 40px 100px 60px;
+          /* laptop baseline: 40px 100px — converted to rem */
+          padding: 2.5rem 6.25rem 3.75rem;
           box-sizing: border-box;
         }
-        @media (max-width: 1100px) {
-          .ucd-page-wrap { padding: 32px 48px 60px; }
+        @media (max-width: 68.75rem) {          /* 1100px */
+          .ucd-page-wrap { padding: 2rem 3rem 3.75rem; }
         }
-        @media (max-width: 860px) {
-          .ucd-page-wrap { padding: 28px 48px 48px; }
+        @media (max-width: 53.75rem) {          /* 860px */
+          .ucd-page-wrap { padding: 1.75rem 3rem 3rem; }
         }
-        @media (max-width: 560px) {
-          .ucd-page-wrap { padding: 20px 16px 40px; }
+        @media (max-width: 35rem) {             /* 560px */
+          .ucd-page-wrap { padding: 1.25rem 1rem 2.5rem; }
         }
 
         /* ── Back + breadcrumb row ── */
         .ucd-nav-row {
           display: flex;
           align-items: center;
-          gap: 16px;
-          margin-bottom: 28px;
+          gap: 1rem;
+          margin-bottom: 1.75rem;
           flex-wrap: nowrap;
           min-width: 0;
         }
-        @media (max-width: 560px) {
-          .ucd-nav-row { gap: 10px; margin-bottom: 20px; }
+        @media (max-width: 35rem) {
+          .ucd-nav-row { gap: 0.625rem; margin-bottom: 1.25rem; }
         }
 
         /* ── Title ── */
         .ucd-title {
-          margin: 0 0 16px;
-          font-size: 24px;
+          margin: 0 0 1rem;
+          /* clamp: min 1.0625rem (17px) → preferred → max 1.5rem (24px) */
+          font-size: clamp(1.0625rem, 2vw, 1.5rem);
           font-weight: 700;
           line-height: 1.2;
           color: #0F1B2D;
@@ -540,19 +545,13 @@ export default function UseCaseDetailClient({ useCase }) {
           overflow-wrap: anywhere;
           word-break: break-word;
         }
-        @media (max-width: 860px) {
-          .ucd-title { font-size: 22px; }
-        }
-        @media (max-width: 560px) {
-          .ucd-title { font-size: 19px; margin-bottom: 12px; }
-        }
-        @media (max-width: 360px) {
-          .ucd-title { font-size: 17px; }
+        @media (max-width: 35rem) {
+          .ucd-title { margin-bottom: 0.75rem; }
         }
 
         /* ── Description ── */
         .ucd-desc {
-          font-size: 16px;
+          font-size: clamp(0.875rem, 1.2vw, 0.9375rem);
           font-weight: 400;
           line-height: 1.6;
           color: #334155;
@@ -560,14 +559,11 @@ export default function UseCaseDetailClient({ useCase }) {
           overflow-wrap: anywhere;
           margin: 0;
         }
-        @media (max-width: 560px) {
-          .ucd-desc { font-size: 15px; }
-        }
 
         /* ── Section headings ── */
         .ucd-section-heading {
-          margin: 0 0 16px;
-          font-size: 16px;
+          margin: 0 0 1rem;
+          font-size: clamp(0.9375rem, 1.2vw, 1rem);
           font-weight: 600;
           color: #0F1B2D;
           font-family: ${FONT};
@@ -578,46 +574,46 @@ export default function UseCaseDetailClient({ useCase }) {
         .ucd-terms-wrap {
           display: flex;
           flex-wrap: wrap;
-          gap: 8px;
+          gap: 0.5rem;
         }
         .ucd-term {
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          padding: 10px 14px;
-          border-radius: 12px;
+          padding: 0.625rem 0.875rem;
+          border-radius: 0.75rem;
           background: #EEF4FF;
-          font-size: 14px;
+          font-size: clamp(0.8125rem, 1vw, 0.875rem);
           font-weight: 400;
           color: #334155;
           font-family: ${FONT};
           white-space: nowrap;
-          height: 38px;
+          height: 2.375rem;
           box-sizing: border-box;
         }
-        @media (max-width: 560px) {
-          .ucd-term { font-size: 13px; padding: 8px 12px; height: 34px; }
+        @media (max-width: 35rem) {
+          .ucd-term { padding: 0.5rem 0.75rem; height: 2.125rem; }
         }
 
         /* ── Meta strip container ── */
         .ucd-meta-container {
           background: #EEF4FF;
-          border-radius: 8px;
+          border-radius: 0.5rem;
           border: 1px solid #F7FAFF;
-          padding: 24px;
-          margin-bottom: 32px;
+          padding: 1.5rem;
+          margin-bottom: 2rem;
           box-sizing: border-box;
         }
-        @media (max-width: 560px) {
-          .ucd-meta-container { padding: 16px; margin-bottom: 24px; }
+        @media (max-width: 35rem) {
+          .ucd-meta-container { padding: 1rem; margin-bottom: 1.5rem; }
         }
 
-        /* ── Sections spacing ── */
+        /* ── Section spacing ── */
         .ucd-section {
-          margin-bottom: 32px;
+          margin-bottom: 2rem;
         }
-        @media (max-width: 560px) {
-          .ucd-section { margin-bottom: 24px; }
+        @media (max-width: 35rem) {
+          .ucd-section { margin-bottom: 1.5rem; }
         }
       `}</style>
 
@@ -648,7 +644,7 @@ export default function UseCaseDetailClient({ useCase }) {
                 <p
                   key={idx}
                   className="ucd-desc"
-                  style={{ marginTop: idx === 0 ? 0 : 12 }}
+                  style={{ marginTop: idx === 0 ? 0 : "0.75rem" }}
                 >
                   {para.trim()}
                 </p>
@@ -702,7 +698,13 @@ export default function UseCaseDetailClient({ useCase }) {
         <section className="ucd-section">
           <h2 className="ucd-section-heading">Sources</h2>
           {sources.length ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.25rem",
+              }}
+            >
               {sources.map((src, idx) => (
                 <SourceRow
                   key={`${src.url}-${idx}`}

@@ -27,7 +27,7 @@ function resolveOptions(f, staticOptions, filterOptions) {
 }
 
 /* ══════════════════════════════════════════════════
-   Multi-select FilterDropdown (existing filters)
+   Multi-select FilterDropdown
 ══════════════════════════════════════════════════ */
 function FilterDropdown({ id, label, options = [], selected = [], onChange }) {
   const [open, setOpen] = useState(false);
@@ -107,50 +107,19 @@ function FilterDropdown({ id, label, options = [], selected = [], onChange }) {
         aria-haspopup="listbox"
         aria-expanded={open}
         onClick={() => (open ? setOpen(false) : openDropdown())}
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          gap: 8,
-          height: 51,
-          padding: "12px 16px",
-          borderRadius: 34,
-          border: `1px solid ${hasSelection ? "#ABB5D0" : "#DDE5F5"}`,
-          background: hasSelection ? "#EEF2FC" : "#F7FAFF",
-          cursor: "pointer",
-          whiteSpace: "nowrap",
-          fontFamily: FONT,
-          fontSize: 14,
-          fontWeight: 500,
-          lineHeight: "100%",
-          letterSpacing: 0,
-          color: hasSelection ? "#1F3A6D" : "#334155",
-          transition: "border-color 150ms ease, background 150ms ease",
-          boxSizing: "border-box",
-          flexShrink: 0,
-        }}
+        className="fbar-pill"
+        data-active={hasSelection ? "true" : undefined}
       >
-        <span
-          style={{
-            flex: 1,
-            textAlign: "left",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-          }}
-        >
-          {pillLabel}
-        </span>
+        <span className="fbar-pill-label">{pillLabel}</span>
+        {/* SVG chevron: width/height in em so it scales with pill font-size */}
         <svg
-          width="12"
-          height="12"
+          width="0.75em" /* was: 12px */
+          height="0.75em" /* was: 12px */
           viewBox="0 0 12 12"
           fill="none"
           aria-hidden="true"
-          style={{
-            transition: "transform 200ms ease",
-            transform: open ? "rotate(180deg)" : "rotate(0deg)",
-            flexShrink: 0,
-          }}
+          className="fbar-pill-chevron"
+          style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)" }}
         >
           <path
             d="M2 4L6 8L10 4"
@@ -167,28 +136,11 @@ function FilterDropdown({ id, label, options = [], selected = [], onChange }) {
           ref={dropRef}
           role="listbox"
           aria-multiselectable="true"
-          style={{
-            position: "fixed",
-            top: dropdownPos.top,
-            left: dropdownPos.left,
-            zIndex: 9999,
-            minWidth: 220,
-            maxHeight: 280,
-            overflowY: "auto",
-            background: "#fff",
-            borderRadius: 14,
-            border: "1px solid #DDE5F5",
-            boxShadow: "0 12px 32px rgba(0,0,0,0.16)",
-            padding: 6,
-            fontFamily: FONT,
-          }}
+          className="fbar-dropdown"
+          style={{ top: dropdownPos.top, left: dropdownPos.left }}
         >
           {options.length === 0 && (
-            <div
-              style={{ padding: "8px 12px", fontSize: 13, color: "#9CA3AF" }}
-            >
-              No options
-            </div>
+            <div className="fbar-drop-empty">No options</div>
           )}
           {options.map((opt) => {
             const active = selected.includes(opt);
@@ -205,47 +157,16 @@ function FilterDropdown({ id, label, options = [], selected = [], onChange }) {
                   }
                 }}
                 tabIndex={0}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                  padding: "9px 12px",
-                  borderRadius: 9,
-                  cursor: "pointer",
-                  fontSize: 13,
-                  fontWeight: 400,
-                  color: active ? "#1F3A6D" : "#334155",
-                  background: active ? "#EEF2FC" : "transparent",
-                  transition: "background 120ms ease",
-                  fontFamily: FONT,
-                  outline: "none",
-                }}
-                onMouseEnter={(e) => {
-                  if (!active) e.currentTarget.style.background = "#F7FAFF";
-                }}
-                onMouseLeave={(e) => {
-                  if (!active) e.currentTarget.style.background = "transparent";
-                }}
+                className={`fbar-drop-item${active ? " fbar-drop-item--active" : ""}`}
               >
                 <span
-                  style={{
-                    width: 16,
-                    height: 16,
-                    borderRadius: 4,
-                    border: `1.5px solid ${active ? "#1F3A6D" : "#ABB5D0"}`,
-                    background: active ? "#1F3A6D" : "#fff",
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    flexShrink: 0,
-                    transition:
-                      "background 120ms ease, border-color 120ms ease",
-                  }}
+                  className={`fbar-checkbox${active ? " fbar-checkbox--active" : ""}`}
                 >
                   {active && (
+                    /* checkmark SVG: em units — scales with dropdown font-size */
                     <svg
-                      width="10"
-                      height="8"
+                      width="0.625em" /* was: 10px */
+                      height="0.5em" /* was: 8px  */
                       viewBox="0 0 10 8"
                       fill="none"
                       aria-hidden="true"
@@ -271,7 +192,7 @@ function FilterDropdown({ id, label, options = [], selected = [], onChange }) {
 }
 
 /* ══════════════════════════════════════════════════
-   Single-select SectorDropdown (mobile/tablet only)
+   Single-select SectorDropdown
 ══════════════════════════════════════════════════ */
 function SectorDropdown({ sectorList = [], activeSector = "All", onSelect }) {
   const [open, setOpen] = useState(false);
@@ -344,48 +265,19 @@ function SectorDropdown({ sectorList = [], activeSector = "All", onSelect }) {
         aria-haspopup="listbox"
         aria-expanded={open}
         onClick={() => (open ? setOpen(false) : openDropdown())}
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          gap: 8,
-          height: 51,
-          padding: "12px 16px",
-          borderRadius: 34,
-          border: `1px solid ${hasSelection ? "#ABB5D0" : "#DDE5F5"}`,
-          background: hasSelection ? "#EEF2FC" : "#F7FAFF",
-          cursor: "pointer",
-          whiteSpace: "nowrap",
-          fontFamily: FONT,
-          fontSize: 14,
-          fontWeight: 500,
-          lineHeight: "100%",
-          letterSpacing: 0,
-          color: hasSelection ? "#1F3A6D" : "#334155",
-          transition: "border-color 150ms ease, background 150ms ease",
-          boxSizing: "border-box",
-          flexShrink: 0,
-        }}
+        className="fbar-pill"
+        data-active={hasSelection ? "true" : undefined}
       >
-        <span
-          style={{
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-          }}
-        >
-          {pillLabel}
-        </span>
+        <span className="fbar-pill-label">{pillLabel}</span>
+        {/* SVG chevron: em units */}
         <svg
-          width="12"
-          height="12"
+          width="0.75em" /* was: 12px */
+          height="0.75em" /* was: 12px */
           viewBox="0 0 12 12"
           fill="none"
           aria-hidden="true"
-          style={{
-            transition: "transform 200ms ease",
-            transform: open ? "rotate(180deg)" : "rotate(0deg)",
-            flexShrink: 0,
-          }}
+          className="fbar-pill-chevron"
+          style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)" }}
         >
           <path
             d="M2 4L6 8L10 4"
@@ -401,20 +293,11 @@ function SectorDropdown({ sectorList = [], activeSector = "All", onSelect }) {
         <div
           ref={dropRef}
           role="listbox"
+          className="fbar-dropdown"
           style={{
-            position: "fixed",
             top: dropdownPos.top,
             left: dropdownPos.left,
-            zIndex: 9999,
-            minWidth: 220,
-            maxHeight: 320,
-            overflowY: "auto",
-            background: "#fff",
-            borderRadius: 14,
-            border: "1px solid #DDE5F5",
-            boxShadow: "0 12px 32px rgba(0,0,0,0.16)",
-            padding: 6,
-            fontFamily: FONT,
+            maxHeight: "20rem" /* was: 320px */,
           }}
         >
           {[["All", null], ...sectorList].map(([sector, count]) => {
@@ -432,44 +315,12 @@ function SectorDropdown({ sectorList = [], activeSector = "All", onSelect }) {
                   }
                 }}
                 tabIndex={0}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  padding: "9px 12px",
-                  borderRadius: 9,
-                  cursor: "pointer",
-                  fontSize: 13,
-                  fontWeight: isActive ? 600 : 400,
-                  color: isActive ? "#1F3A6D" : "#334155",
-                  background: isActive ? "#EEF2FC" : "transparent",
-                  transition: "background 120ms ease",
-                  fontFamily: FONT,
-                  outline: "none",
-                  gap: 8,
-                }}
-                onMouseEnter={(e) => {
-                  if (!isActive) e.currentTarget.style.background = "#F7FAFF";
-                }}
-                onMouseLeave={(e) => {
-                  if (!isActive)
-                    e.currentTarget.style.background = isActive
-                      ? "#EEF2FC"
-                      : "transparent";
-                }}
+                className={`fbar-drop-item fbar-drop-item--spaced${isActive ? " fbar-drop-item--active" : ""}`}
               >
                 <span>{sector === "All" ? "All Sectors" : sector}</span>
                 {count !== null && (
                   <span
-                    style={{
-                      fontSize: 12,
-                      fontWeight: 500,
-                      color: isActive ? "#1F3A6D" : "#9CA3AF",
-                      background: isActive ? "#D6E4FF" : "#F3F4F6",
-                      padding: "2px 8px",
-                      borderRadius: 999,
-                      flexShrink: 0,
-                    }}
+                    className={`fbar-count${isActive ? " fbar-count--active" : ""}`}
                   >
                     {String(count).padStart(2, "0")}
                   </span>
@@ -509,38 +360,66 @@ export default function FilterBar({
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600&display=swap');
 
+        /* ══════════════════════════════════════════════════════════════
+           FILTER BAR
+           All sizes use clamp(min, Nvw, max) — same pattern as
+           WhyDigitalID so the bar scales smoothly at every zoom level.
+        ══════════════════════════════════════════════════════════════ */
+
         .fbar-wrap {
           width: 100%;
           background: #F8F8F8;
           border-bottom: 1px solid rgba(0,0,0,0.05);
           position: sticky;
-          top: 91px;
+          top: var(--hdr-h);
           z-index: 50;
+          box-sizing: border-box;
         }
 
-        /* ── Desktop layout: single row ── */
+        /* ── Main row ── */
         .fbar-inner {
-          padding: 16px 100px;
+          padding:
+            clamp(0.625rem, 1.04vw, 1rem)        /* top    — was 10px→16px */
+            clamp(1.5rem,   6.30vw, 7.5625rem)   /* right  — was 24px→121px, site-wide token */
+            clamp(0.625rem, 1.04vw, 1rem)        /* bottom */
+            clamp(1.5rem,   6.30vw, 7.5625rem);  /* left */
           display: flex;
           align-items: center;
-          gap: 16px;
-          min-height: 83px;
+          gap: clamp(0.625rem, 1.04vw, 1rem);    /* was: 10px→16px */
+          min-height: clamp(3.75rem, 5.73vw, 5.1875rem); /* was: 60px→83px */
           box-sizing: border-box;
           flex-wrap: nowrap;
         }
 
+        /* ── Search bar ── */
         .fbar-search {
           display: flex;
           align-items: center;
-          gap: 8px;
-          width: 377px;
-          height: 51px;
+          gap: clamp(0.375rem, 0.52vw, 0.5rem);  /* was: 8px */
+          width: clamp(15rem, 26.2vw, 23.5625rem); /* was: 240px→377px */
+          height: clamp(2.375rem, 3.54vw, 3.1875rem); /* was: 38px→51px */
           flex-shrink: 0;
-          padding: 8px;
-          border-radius: 33px;
+          padding: clamp(0.375rem, 0.52vw, 0.5rem); /* was: 6px→8px */
+          border-radius: 2.0625rem;                /* was: 33px */
           border: 1px solid #EEEEFA;
           background: #FFFFFF;
           box-sizing: border-box;
+        }
+
+        /* search icon wrapper — keeps icon centred at all scales */
+        .fbar-search-icon {
+          flex-shrink: 0;
+          margin-left: clamp(0.125rem, 0.26vw, 0.25rem); /* was: 4px */
+          width: clamp(0.875rem, 1.25vw, 1.125rem);       /* was: 18px */
+          height: clamp(0.875rem, 1.25vw, 1.125rem);      /* was: 18px */
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        /* SVG inside uses 100% so it fills the wrapper */
+        .fbar-search-icon svg {
+          width: 100%;
+          height: 100%;
         }
 
         .fbar-search-input {
@@ -549,10 +428,10 @@ export default function FilterBar({
           background: transparent;
           outline: none;
           font-family: ${FONT};
-          font-size: 14px;
+          font-size: clamp(0.75rem, 0.73vw, 0.875rem); /* was: 12px→14px */
           font-weight: 400;
           color: #334155;
-          padding: 0 4px;
+          padding: 0 clamp(0.125rem, 0.26vw, 0.25rem); /* was: 0 4px */
           min-width: 0;
         }
         .fbar-search-input::placeholder { color: #9CA3AF; }
@@ -561,50 +440,169 @@ export default function FilterBar({
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          width: 87px;
-          height: 35px;
-          flex-shrink: 0;
-          padding: 8px 18px;
-          border-radius: 25px;
+          height: clamp(1.625rem, 2.29vw, 2.1875rem); /* was: 26px→35px */
+          padding:
+            clamp(0.375rem, 0.42vw, 0.5rem)           /* top/bottom — was 6px→8px */
+            clamp(0.75rem,  1.25vw, 1.125rem);         /* left/right — was 12px→18px */
+          border-radius: 1.5625rem;                    /* was: 25px */
           border: 1px solid #EEF2FC;
           background: #EBEFF9;
           font-family: ${FONT};
-          font-size: 16px;
+          font-size: clamp(0.75rem, 0.83vw, 1rem);     /* was: 13px→16px */
           font-weight: 600;
           color: #1F3A6D;
           cursor: pointer;
           transition: background 150ms ease;
           white-space: nowrap;
           box-sizing: border-box;
+          flex-shrink: 0;
         }
         .fbar-search-btn:hover { background: #DDE5F5; }
 
-        /* filter pills row — horizontal scroll, no wrap on desktop */
+        /* ── Filter pills row ── */
         .fbar-filters {
           display: flex;
           align-items: center;
-          gap: 12px;
+          gap: clamp(0.5rem, 0.83vw, 0.75rem);          /* was: 8px→12px */
           flex: 1;
-          height: 51px;
+          height: clamp(2.375rem, 3.54vw, 3.1875rem);   /* was: 38px→51px */
           overflow-x: auto;
           scrollbar-width: none;
           flex-wrap: nowrap;
         }
         .fbar-filters::-webkit-scrollbar { display: none; }
 
-        /* ── Large tablet (≤1100px): reduce side padding ── */
-        @media (max-width: 1100px) {
-          .fbar-inner {
-            padding: 16px 48px;
-          }
+        /* ── Pill button ── */
+        .fbar-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: clamp(0.375rem, 0.52vw, 0.5rem);          /* was: 8px */
+          height: clamp(2.125rem, 3.54vw, 3.1875rem);    /* was: 34px→51px */
+          padding:
+            clamp(0.5rem,  0.63vw, 0.75rem)              /* top/bottom — was 8px→12px */
+            clamp(0.75rem, 1.04vw, 1rem);                /* left/right — was 12px→16px */
+          border-radius: 2.125rem;                        /* was: 34px */
+          border: 1px solid #DDE5F5;
+          background: #F7FAFF;
+          cursor: pointer;
+          white-space: nowrap;
+          font-family: ${FONT};
+          font-size: clamp(0.75rem, 0.73vw, 0.875rem);   /* was: 12px→14px */
+          font-weight: 500;
+          line-height: 1;
+          color: #334155;
+          transition: border-color 150ms ease, background 150ms ease;
+          box-sizing: border-box;
+          flex-shrink: 0;
+        }
+        .fbar-pill[data-active] {
+          border-color: #ABB5D0;
+          background: #EEF2FC;
+          color: #1F3A6D;
         }
 
-        /* ── Tablet (≤960px): 2 rows, sidebar hides at same breakpoint ── */
+        .fbar-pill-label {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .fbar-pill-chevron {
+          flex-shrink: 0;
+          transition: transform 200ms ease;
+        }
+
+        /* ── Shared dropdown panel ── */
+        .fbar-dropdown {
+          position: fixed;
+          z-index: 9999;
+          min-width: clamp(11.25rem, 15vw, 13.75rem);   /* was: 180px→220px */
+          max-height: clamp(12rem, 20vw, 17.5rem);       /* was: 280px */
+          overflow-y: auto;
+          background: #fff;
+          border-radius: clamp(0.625rem, 0.83vw, 0.875rem); /* was: 14px */
+          border: 1px solid #DDE5F5;
+          box-shadow: 0 clamp(0.5rem, 0.83vw, 0.75rem) clamp(1.25rem, 2.08vw, 2rem) rgba(0,0,0,0.16);
+          padding: clamp(0.25rem, 0.31vw, 0.375rem);    /* was: 6px */
+          font-family: ${FONT};
+        }
+
+        .fbar-drop-empty {
+          padding: clamp(0.375rem, 0.42vw, 0.5rem) clamp(0.625rem, 0.63vw, 0.75rem); /* was: 8px 12px */
+          font-size: clamp(0.75rem, 0.68vw, 0.8125rem); /* was: 13px */
+          color: #9CA3AF;
+        }
+
+        .fbar-drop-item {
+          display: flex;
+          align-items: center;
+          gap: clamp(0.5rem, 0.52vw, 0.625rem);          /* was: 10px */
+          padding:
+            clamp(0.4375rem, 0.47vw, 0.5625rem)          /* top/bottom — was 7px→9px */
+            clamp(0.625rem,  0.63vw, 0.75rem);           /* left/right — was 12px */
+          border-radius: clamp(0.5rem, 0.47vw, 0.5625rem); /* was: 9px */
+          cursor: pointer;
+          font-size: clamp(0.6875rem, 0.68vw, 0.8125rem); /* was: 12px→13px */
+          font-weight: 400;
+          color: #334155;
+          background: transparent;
+          transition: background 120ms ease;
+          font-family: ${FONT};
+          outline: none;
+        }
+        .fbar-drop-item:hover { background: #F7FAFF; }
+        .fbar-drop-item--active {
+          color: #1F3A6D;
+          background: #EEF2FC;
+          font-weight: 600;
+        }
+        .fbar-drop-item--active:hover { background: #EEF2FC; }
+
+        .fbar-drop-item--spaced {
+          justify-content: space-between;
+        }
+
+        /* ── Checkbox ── */
+        .fbar-checkbox {
+          width: clamp(0.875rem, 0.83vw, 1rem);          /* was: 16px */
+          height: clamp(0.875rem, 0.83vw, 1rem);         /* was: 16px */
+          border-radius: clamp(0.1875rem, 0.21vw, 0.25rem); /* was: 4px */
+          border: 1.5px solid #ABB5D0;
+          background: #fff;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          transition: background 120ms ease, border-color 120ms ease;
+        }
+        .fbar-checkbox--active {
+          border-color: #1F3A6D;
+          background: #1F3A6D;
+        }
+
+        /* ── Count badge ── */
+        .fbar-count {
+          font-size: clamp(0.6875rem, 0.63vw, 0.75rem);  /* was: 12px */
+          font-weight: 500;
+          color: #9CA3AF;
+          background: #F3F4F6;
+          padding: clamp(0.0625rem, 0.1vw, 0.125rem) clamp(0.375rem, 0.42vw, 0.5rem); /* was: 2px 8px */
+          border-radius: 999px;
+          flex-shrink: 0;
+        }
+        .fbar-count--active {
+          color: #1F3A6D;
+          background: #D6E4FF;
+        }
+
+        /* ════════════════════════════════════════════════════════════
+           RESPONSIVE
+        ════════════════════════════════════════════════════════════ */
+
         @media (max-width: 960px) {
           .fbar-inner {
-            padding: 12px 48px;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: clamp(0.5rem, 1.5vw, 0.75rem);
             min-height: auto;
           }
           .fbar-search {
@@ -615,14 +613,32 @@ export default function FilterBar({
             width: 100%;
             flex: 0 0 100%;
             height: auto;
-            padding-bottom: 4px;
+            padding-bottom: clamp(0.125rem, 0.42vw, 0.25rem); /* was: 4px */
           }
         }
 
-        /* ── Mobile (≤560px) ── */
         @media (max-width: 560px) {
-          .fbar-inner { padding: 10px 16px; }
-          .fbar-search { width: 100%; }
+          .fbar-inner {
+            padding:
+              clamp(0.5rem, 2.5vw, 0.75rem)
+              clamp(1rem, 5vw, 1.5rem)
+              clamp(0.5rem, 2.5vw, 0.75rem)
+              clamp(1rem, 5vw, 1.5rem);
+          }
+          .fbar-pill {
+            font-size: clamp(0.6875rem, 3vw, 0.8125rem); /* was: 11px→13px */
+            height: clamp(2rem, 8.5vw, 2.5rem);           /* was: 32px→40px */
+            padding: 0.5rem 0.75rem;
+          }
+          .fbar-search {
+            height: clamp(2.25rem, 9.5vw, 2.75rem);       /* was: 36px→44px */
+          }
+          .fbar-search-input { font-size: 0.8125rem; }     /* was: 13px */
+          .fbar-search-btn   {
+            font-size: 0.8125rem;                          /* was: 13px */
+            height: 1.625rem;                              /* was: 26px */
+            padding: 0.3125rem 0.75rem;                    /* was: 5px 12px */
+          }
         }
       `}</style>
 
@@ -630,22 +646,27 @@ export default function FilterBar({
         <div className="fbar-inner">
           {/* ── Search bar ── */}
           <div className="fbar-search">
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              aria-hidden="true"
-              style={{ flexShrink: 0, marginLeft: 4 }}
-            >
-              <circle cx="11" cy="11" r="7" stroke="#9CA3AF" strokeWidth="2" />
-              <path
-                d="M20 20L16.65 16.65"
-                stroke="#9CA3AF"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-            </svg>
+            {/* wrapper div controls icon size via CSS; SVG fills it with 100% */}
+            <div className="fbar-search-icon" aria-hidden="true">
+              <svg
+                viewBox="0 0 24 24" /* no fixed width/height — fills .fbar-search-icon */
+                fill="none"
+              >
+                <circle
+                  cx="11"
+                  cy="11"
+                  r="7"
+                  stroke="#9CA3AF"
+                  strokeWidth="2"
+                />
+                <path
+                  d="M20 20L16.65 16.65"
+                  stroke="#9CA3AF"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </div>
             <input
               type="text"
               className="fbar-search-input"

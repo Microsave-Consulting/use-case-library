@@ -17,33 +17,30 @@ export default function SectorSidebar({
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700&display=swap');
 
-        /* ── Wrapper ──
-           Figma: 292px fixed, 1px border #DDE5F5, radius 14px, padding 16px, bg #FFFFFF */
+        /* ── Wrapper ── */
         .ssb-wrap {
-          width: auto;
+          width: clamp(200px, 15.2vw, 292px);
           flex-shrink: 0;
           background: #FFFFFF;
           border: 1px solid #DDE5F5;
-          
-          padding: 16px;
+          padding: clamp(10px, 0.83vw, 16px);
           box-sizing: border-box;
           font-family: ${FONT};
           align-self: flex-start;
           position: sticky;
-          gap: 16px;
+          gap: clamp(10px, 0.83vw, 16px);
           top: 100px;
         }
 
-        /* ── "Sector" heading ──
-           Figma: 55×22 hug, Albert Sans 600 SemiBold 18px, #0F1B2D */
+        /* ── "Sector" heading ── */
         .ssb-heading {
-          font-size: 18px;
+          font-size: clamp(14px, 0.9375vw, 18px);
           font-weight: 600;
           color: #0F1B2D;
           font-family: ${FONT};
           line-height: 100%;
           letter-spacing: 0;
-          margin-bottom: 16px;
+          margin-bottom: clamp(10px, 0.83vw, 16px);
         }
 
         /* ── Shared row base ── */
@@ -60,28 +57,23 @@ export default function SectorSidebar({
           background: transparent;
         }
 
-        /* ── All Sectors row ──
-           Figma: 260px fill, 49px hug, radius 14px,
-           padding T12 R16 B12 L16, gap 16px, bg #F8F8F8,
-           border-bottom 1px, mb 4px */
+        /* ── All Sectors row ── */
         .ssb-all {
-          padding: 12px 16px;
-          border-radius: 14px;
+          padding: clamp(8px, 0.625vw, 12px) clamp(10px, 0.83vw, 16px);
+          border-radius: clamp(10px, 0.73vw, 14px);
           background: #F8F8F8;
           border-bottom: 1px solid #EEF2FC;
-          gap: 16px;
-          min-height: 49px;
-          margin-bottom: 16px;
+          gap: clamp(10px, 0.83vw, 16px);
+          min-height: clamp(36px, 2.55vw, 49px);
+          margin-bottom: clamp(10px, 0.83vw, 16px);
           transition: background 150ms ease;
         }
         .ssb-all:hover { background: #EEF2FC; }
         .ssb-all.active { background: #EEF2FC; }
 
-        /* ── All Sectors label ──
-           Figma: 70×17 hug, Albert Sans 500 Medium 14px
-           inactive: #334155 / active: #1B66D1 */
+        /* ── All Sectors label ── */
         .ssb-all-label {
-          font-size: 14px;
+          font-size: clamp(12px, 0.73vw, 14px);
           font-weight: 500;
           line-height: 100%;
           letter-spacing: 0;
@@ -96,23 +88,19 @@ export default function SectorSidebar({
         }
         .ssb-all-label.active { color: #1B66D1; font-weight: 600; }
 
-        /* ── All Sectors badge ──
-           Figma: 37×25 fixed, radius 28px, border 1px #DDE5F5,
-           padding T4 R10 B4 L10, gap 10px
-           inactive bg: #EEEEEE, color: #334155
-           active bg: #1F3A6D, border: #1F3A6D, color: #fff */
+        /* ── All Sectors badge ── */
         .ssb-all-badge {
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          min-width: 37px;
-          height: 25px;
+          min-width: clamp(28px, 1.93vw, 37px);
+          height: clamp(20px, 1.3vw, 25px);
           flex-shrink: 0;
-          padding: 4px 10px;
+          padding: clamp(3px, 0.21vw, 4px) clamp(7px, 0.52vw, 10px);
           border-radius: 28px;
           border: 1px solid #DDE5F5;
           background: #EEEEEE;
-          font-size: 14px;
+          font-size: clamp(11px, 0.73vw, 14px);
           font-weight: 500;
           line-height: 100%;
           letter-spacing: 0;
@@ -127,25 +115,22 @@ export default function SectorSidebar({
           color: #fff;
         }
 
-        /* ── Regular sector row ──
-           Figma: 260px fill, 41px hug, border-bottom 1px #F3F6FF,
-           padding T8 R16 B8 L16, gap 16px */
+        /* ── Regular sector row ── */
         .ssb-item {
-          padding: 8px 16px;
-          border-radius: 14px;
-          margin-bottom: 16px;
-          gap: 16px;
-          min-height: 41px;
+          padding: clamp(6px, 0.42vw, 8px) clamp(10px, 0.83vw, 16px);
+          border-radius: clamp(10px, 0.73vw, 14px);
+          margin-bottom: clamp(8px, 0.63vw, 16px);
+          gap: clamp(10px, 0.83vw, 16px);
+          min-height: clamp(32px, 2.14vw, 41px);
           transition: background 150ms ease;
         }
         .ssb-item:last-of-type { border-bottom: none; }
         .ssb-item:hover { background: #F7FAFF; }
         .ssb-item.active { background: #EEF2FC; }
 
-        /* ── Sector label ──
-           Figma: Albert Sans 500 Medium 14px, #334155 / active #1B66D1 */
+        /* ── Sector label ── */
         .ssb-label {
-          font-size: 14px;
+          font-size: clamp(12px, 0.73vw, 14px);
           font-weight: 500;
           line-height: 100%;
           letter-spacing: 0;
@@ -160,27 +145,52 @@ export default function SectorSidebar({
         }
         .ssb-label.active { color: #1B66D1; font-weight: 600; }
 
-        /* ── Count badge (regular rows) ──
-           Figma: 37×25 fixed, radius 28px, border 1px #DDE5F5,
-           padding T4 R10 B4 L10, gap 10px, bg #F7FAFF, color #334155 */
+        /* ── Count badge (regular rows) ── */
         .ssb-badge {
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          min-width: 37px;
-          height: 25px;
+          min-width: clamp(28px, 1.93vw, 37px);
+          height: clamp(20px, 1.3vw, 25px);
           flex-shrink: 0;
-          padding: 4px 10px;
+          padding: clamp(3px, 0.21vw, 4px) clamp(7px, 0.52vw, 10px);
           border-radius: 28px;
           border: 1px solid #DDE5F5;
           background: #F7FAFF;
-          font-size: 14px;
+          font-size: clamp(11px, 0.73vw, 14px);
           font-weight: 500;
           line-height: 100%;
           letter-spacing: 0;
           color: #334155;
           font-family: ${FONT};
           box-sizing: border-box;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 1100px) {
+          .ssb-wrap {
+            width: clamp(180px, 18vw, 240px);
+          }
+        }
+
+        @media (max-width: 860px) {
+          .ssb-wrap {
+            width: 100%;
+            position: static;
+            border-radius: 12px;
+          }
+          .ssb-heading { font-size: 15px; }
+          .ssb-all-label,
+          .ssb-label { font-size: 13px; }
+          .ssb-all-badge,
+          .ssb-badge { font-size: 12px; }
+        }
+
+        @media (max-width: 480px) {
+          .ssb-wrap { padding: 12px; }
+          .ssb-heading { font-size: 14px; margin-bottom: 10px; }
+          .ssb-all { min-height: 40px; margin-bottom: 10px; }
+          .ssb-item { min-height: 36px; margin-bottom: 6px; }
         }
       `}</style>
 

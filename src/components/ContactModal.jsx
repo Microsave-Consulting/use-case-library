@@ -8,7 +8,6 @@ export default function ContactModal({ isOpen, onClose }) {
   const closeBtnRef = useRef(null);
   const lastActiveElRef = useRef(null);
 
-  /* ── open: store last focused element, focus close btn ── */
   useEffect(() => {
     if (isOpen) {
       lastActiveElRef.current = document.activeElement;
@@ -18,7 +17,6 @@ export default function ContactModal({ isOpen, onClose }) {
     }
   }, [isOpen]);
 
-  /* ── focus trap + Escape ── */
   useEffect(() => {
     if (!isOpen) return;
     const onKeyDown = (e) => {
@@ -63,13 +61,13 @@ export default function ContactModal({ isOpen, onClose }) {
           to   { opacity: 1; }
         }
         @keyframes cm-card-in {
-          from { opacity: 0; transform: translateY(24px) scale(0.96); }
-          to   { opacity: 1; transform: translateY(0)    scale(1); }
+          from { opacity: 0; transform: translateY(clamp(0.75rem, 1.25vw, 1.5rem)) scale(0.96); }
+          to   { opacity: 1; transform: translateY(0) scale(1); }
         }
         @keyframes cm-icon-pop {
           0%   { transform: scale(0.5) rotate(-15deg); opacity: 0; }
-          70%  { transform: scale(1.1) rotate(4deg);  opacity: 1; }
-          100% { transform: scale(1)   rotate(0deg);  opacity: 1; }
+          70%  { transform: scale(1.1) rotate(4deg);   opacity: 1; }
+          100% { transform: scale(1)   rotate(0deg);   opacity: 1; }
         }
         @keyframes cm-ring-pulse {
           0%   { transform: scale(1);   opacity: 0.35; }
@@ -83,59 +81,70 @@ export default function ContactModal({ isOpen, onClose }) {
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 1rem;
-          /* layered backdrop: dark tint + strong blur */
+          padding: clamp(0.5rem, 2vw, 1rem);
           background: rgba(10, 18, 40, 0.55);
           backdrop-filter: blur(4px) saturate(160%);
           -webkit-backdrop-filter: blur(14px) saturate(160%);
           animation: cm-backdrop-in 220ms ease forwards;
         }
 
+        /*
+         * aspect-ratio: 4/5 locks height = 5/4 × width at every zoom level.
+         * Width is purely vw-based so the card scales uniformly — no more
+         * "wide rectangle" at higher screen scale / zoom.
+         * max-height: 95vh is a safety net on very short screens.
+         * Top accent band has been removed.
+         */
         .cm-card {
           position: relative;
-          width: min(460px, 100%);
+          width: min(clamp(17rem, 24vw, 26rem), 90vw);
+          
+          max-height: 95vh;
           background: #ffffff;
-          border-radius: 24px;
+          border-radius: clamp(1rem, 1.67vw, 1.5rem);
           overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
           box-shadow:
             0 0 0 1px rgba(31, 58, 109, 0.08),
-            0 8px 32px rgba(31, 58, 109, 0.12),
-            0 32px 80px rgba(10, 18, 40, 0.2);
+            0 clamp(0.25rem, 0.42vw, 0.5rem) clamp(1rem, 1.67vw, 2rem) rgba(31, 58, 109, 0.12),
+            0 clamp(1rem, 2.08vw, 2rem) clamp(2.5rem, 4.17vw, 5rem) rgba(10, 18, 40, 0.2);
           animation: cm-card-in 320ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
           font-family: 'Albert Sans', sans-serif;
         }
 
-        /* ── decorative top band ── */
-        .cm-top-band {
-          height: 6px;
-          background: linear-gradient(90deg, #1F3A6D 0%, #1B66D1 55%, #5b9ef4 100%);
-        }
-
-        /* ── subtle mesh pattern in card background ── */
+        /* subtle mesh pattern */
         .cm-card::before {
           content: '';
           position: absolute;
           top: 0; right: 0;
-          width: 220px; height: 220px;
+          width: clamp(8rem, 11.46vw, 13.75rem);
+          height: clamp(8rem, 11.46vw, 13.75rem);
           border-radius: 50%;
           background: radial-gradient(circle, rgba(27,102,209,0.06) 0%, transparent 70%);
           transform: translate(40%, -40%);
           pointer-events: none;
         }
 
+        /* body fills card height, centres content vertically */
         .cm-body {
-          padding: 2.25rem 2.25rem 2rem;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: clamp(1.25rem, 2.08vw, 2.25rem);
           text-align: center;
           position: relative;
           z-index: 1;
         }
 
-        /* ── icon wrapper with pulsing ring ── */
         .cm-icon-wrap {
           position: relative;
-          width: 64px;
-          height: 64px;
-          margin: 0 auto 20px;
+          width: clamp(3rem, 3.33vw, 4rem);
+          height: clamp(3rem, 3.33vw, 4rem);
+          margin: 0 auto clamp(0.75rem, 1.04vw, 1.25rem);
         }
         .cm-icon-ring {
           position: absolute;
@@ -146,46 +155,41 @@ export default function ContactModal({ isOpen, onClose }) {
         }
         .cm-icon-circle {
           position: relative;
-          width: 64px;
-          height: 64px;
+          width: 100%;
+          height: 100%;
           border-radius: 50%;
           background: linear-gradient(135deg, #1F3A6D 0%, #1B66D1 100%);
           display: flex;
           align-items: center;
           justify-content: center;
-          box-shadow: 0 8px 28px rgba(27, 102, 209, 0.38);
+          box-shadow: 0 clamp(0.25rem, 0.42vw, 0.5rem) clamp(1rem, 1.46vw, 1.75rem) rgba(27, 102, 209, 0.38);
           animation: cm-icon-pop 420ms cubic-bezier(0.34, 1.56, 0.64, 1) 120ms both;
+        }
+        .cm-icon-circle svg {
+          width: clamp(1.125rem, 1.35vw, 1.625rem);
+          height: clamp(1.125rem, 1.35vw, 1.625rem);
         }
 
         .cm-title {
-          margin: 0 0 6px;
-          font-size: 1.35rem;
+          margin: 0 0 clamp(0.25rem, 0.31vw, 0.375rem);
+          font-size: clamp(1.0625rem, 1.25vw, 1.35rem);
           font-weight: 700;
           color: #0f1b2d;
           letter-spacing: -0.02em;
           line-height: 1.2;
         }
 
-        .cm-subtitle {
-          margin: 0 0 6px;
-          font-size: 0.82rem;
-          font-weight: 500;
-          color: #1B66D1;
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
-        }
-
         .cm-divider {
-          width: 40px;
+          width: clamp(1.75rem, 2.08vw, 2.5rem);
           height: 2px;
           background: linear-gradient(90deg, #1F3A6D, #1B66D1);
           border-radius: 2px;
-          margin: 14px auto 20px;
+          margin: clamp(0.625rem, 0.73vw, 0.875rem) auto clamp(0.75rem, 1.04vw, 1.25rem);
         }
 
         .cm-desc {
-          margin: 0 0 28px;
-          font-size: 0.92rem;
+          margin: 0 0 clamp(1rem, 1.46vw, 1.5rem);
+          font-size: clamp(0.8125rem, 0.83vw, 0.92rem);
           color: #4b5563;
           line-height: 1.65;
         }
@@ -193,59 +197,26 @@ export default function ContactModal({ isOpen, onClose }) {
         .cm-email-link {
           display: inline-flex;
           align-items: center;
-          gap: 6px;
-          margin-top: 10px;
-          padding: 10px 20px;
-         
-       
-          
+          gap: clamp(0.25rem, 0.31vw, 0.375rem);
+          padding: clamp(0.5rem, 0.52vw, 0.625rem) clamp(0.875rem, 1.04vw, 1.25rem);
           color: #1F3A6D;
-          font-size: 0.88rem;
+          font-size: clamp(0.75rem, 0.73vw, 0.88rem);
           font-weight: 600;
           text-decoration: none;
-          
           font-family: 'Albert Sans', sans-serif;
         }
-       
-
-        /* ── footer area ── */
-        .cm-footer {
-          padding: 0 2.25rem 2rem;
-          position: relative;
-          z-index: 1;
-        }
-
-        .cm-close-btn {
-          width: 100%;
-          height: 48px;
-          background: linear-gradient(135deg, #1F3A6D 0%, #1B66D1 100%);
-          color: #fff;
-          border: none;
-          border-radius: 14px;
-          cursor: pointer;
-          font-size: 0.95rem;
-          font-weight: 600;
-          font-family: 'Albert Sans', sans-serif;
-          letter-spacing: 0.01em;
-          transition: opacity 200ms ease, transform 200ms ease, box-shadow 200ms ease;
-          box-shadow: 0 4px 16px rgba(27, 102, 209, 0.3);
-        }
-        .cm-close-btn:hover {
-          opacity: 0.92;
-          transform: translateY(-1px);
-          box-shadow: 0 8px 24px rgba(27, 102, 209, 0.4);
-        }
-        .cm-close-btn:active {
-          transform: translateY(0);
-          opacity: 1;
+        .cm-email-link svg {
+          width: 1em;
+          height: 1em;
+          flex-shrink: 0;
         }
 
         .cm-close-x {
           position: absolute;
-          top: 16px;
-          right: 16px;
-          width: 32px;
-          height: 32px;
+          top: clamp(0.625rem, 0.83vw, 1rem);
+          right: clamp(0.625rem, 0.83vw, 1rem);
+          width: clamp(1.5rem, 1.67vw, 2rem);
+          height: clamp(1.5rem, 1.67vw, 2rem);
           border-radius: 50%;
           border: none;
           background: rgba(15, 27, 45, 0.06);
@@ -256,7 +227,7 @@ export default function ContactModal({ isOpen, onClose }) {
           justify-content: center;
           transition: background 200ms ease, color 200ms ease;
           z-index: 10;
-          font-size: 16px;
+          font-size: clamp(0.75rem, 0.83vw, 1rem);
           line-height: 1;
         }
         .cm-close-x:hover {
@@ -265,7 +236,6 @@ export default function ContactModal({ isOpen, onClose }) {
         }
       `}</style>
 
-      {/* Backdrop */}
       <div
         className="cm-backdrop"
         onMouseDown={(e) => {
@@ -281,8 +251,8 @@ export default function ContactModal({ isOpen, onClose }) {
           tabIndex={-1}
           onMouseDown={(e) => e.stopPropagation()}
         >
-          {/* X close button */}
           <button
+            ref={closeBtnRef}
             type="button"
             onClick={onClose}
             aria-label="Close"
@@ -291,15 +261,11 @@ export default function ContactModal({ isOpen, onClose }) {
             ✕
           </button>
 
-          {/* Body */}
           <div className="cm-body">
-            {/* Icon with pulsing ring */}
             <div className="cm-icon-wrap">
               <div className="cm-icon-ring" />
               <div className="cm-icon-circle">
                 <svg
-                  width="26"
-                  height="26"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="white"
@@ -328,8 +294,6 @@ export default function ContactModal({ isOpen, onClose }) {
               className="cm-email-link"
             >
               <svg
-                width="15"
-                height="15"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -343,8 +307,6 @@ export default function ContactModal({ isOpen, onClose }) {
               arnav.nigam@microsave.net
             </a>
           </div>
-
-          {/* Footer */}
         </div>
       </div>
     </>
