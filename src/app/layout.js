@@ -6,27 +6,57 @@ import Footer from "@/components/Footer";
 
 export const metadata = {
   title: {
-    default: "Digital ID Use Cases | MSC",
-    template: "%s | MSC Use Cases",
+    default: "Digital ID Use Cases & Innovation Platform",
+    template: "%s | Digital ID Use Cases & Innovation Platform",
   },
   description:
-    "Explore a global repository of Digital ID use cases across Africa, Oceania, and beyond. Browse implementations across healthcare, agriculture, finance, transportation and more.",
+    "Explore real-world digital identity use cases across countries and sectors. Discover how digital ID powers public services, finance, healthcare, and innovation through regional, continental and national hackathons.",
   keywords: [
-    "Digital ID",
-    "Digital Identity",
-    "Use Cases",
-    "MSC",
-    "MicroSave Consulting",
-    "Identity Assurance",
-    "Authentication",
-    "Africa Digital ID",
-    "Financial Inclusion",
-    "MOSIP",
-    "eKYC",
-    "Biometric Authentication",
-    "Digital Innovation",
-    "Healthcare Digital ID",
-    "Agriculture Digital ID",
+    // Home
+    "Digital ID use cases",
+    "Digital identity systems",
+    "Digital identity innovation",
+    "Digital ID applications",
+    "Digital identity platform",
+    "Digital public infrastructure digital identity",
+    "Identity systems across countries",
+    "Digital identity solutions",
+    "Real-world digital identity use cases",
+    "Examples of digital ID in different countries",
+    "How digital identity systems are used globally",
+    "Digital ID applications in banking, healthcare, and government",
+    "Use cases of Aadhaar-like systems",
+    "Digital identity for public service delivery",
+    "Digital ID in developing countries",
+    "Digital ID in the global south",
+    "Digital identity implementation case studies",
+    // Use Case Library
+    "Digital identity in banking",
+    "eKYC digital identity",
+    "Identity verification fintech",
+    "Digital ID in agriculture",
+    "Digital ID in climate",
+    "Digital ID in healthcare systems",
+    "Patient identity management digital",
+    "Digital identity for government services",
+    "E-governance identity systems",
+    "Digital ID for welfare schemes",
+    "Identity in social protection programs",
+    "Digital identity in education systems",
+    "Digital identity case study platform",
+    "Digital ID knowledge repository",
+    "Identity innovation library",
+    "Digital identity research platform",
+    // Hackathon
+    "Digital identity hackathon",
+    "Digital ID Hackathon",
+    "Africa Digital ID Hackathon",
+    "Digital ID innovation challenge",
+    "Identity Technology Hackathon",
+    "Build digital ID applications",
+    "Student Hackathon Digital Identity",
+    "Digital public infrastructure hackathon",
+    "Innovation in digital identity systems",
   ],
   authors: [{ name: "MicroSave Consulting" }],
   creator: "MicroSave Consulting",
@@ -36,24 +66,24 @@ export const metadata = {
     type: "website",
     locale: "en_US",
     url: "https://yoursite.com",
-    siteName: "Digital ID Use Cases | MSC",
-    title: "Digital ID Use Cases | MSC",
+    siteName: "Digital ID Use Cases & Innovation Platform",
+    title: "Digital ID Use Cases & Innovation Platform",
     description:
-      "Explore a global repository of Digital ID use cases across Africa, Oceania, and beyond.",
+      "Explore real-world digital identity use cases across countries and sectors. Discover how digital ID powers public services, finance, healthcare, and innovation through regional, continental and national hackathons.",
     images: [
       {
         url: "/images/og-image.png",
         width: 1200,
         height: 630,
-        alt: "MSC Digital ID Use Cases",
+        alt: "Digital ID Use Cases & Innovation Platform",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Digital ID Use Cases | MSC",
+    title: "Digital ID Use Cases & Innovation Platform",
     description:
-      "Explore a global repository of Digital ID use cases across Africa, Oceania, and beyond.",
+      "Explore real-world digital identity use cases across countries and sectors. Discover how digital ID powers public services, finance, healthcare, and innovation through regional, continental and national hackathons.",
     images: ["/images/og-image.png"],
   },
   robots: {
@@ -103,12 +133,6 @@ export default function RootLayout({ children }) {
         }}
       >
         <Header />
-        {/*
-          paddingTop: "var(--hdr-h)" — uses the same CSS custom property
-          defined in Header.jsx's :root block, so this offset always
-          matches the actual header height at every viewport width and
-          zoom level. No more hardcoded 91px that drifts from the real height.
-        */}
         <div style={{ paddingTop: "var(--hdr-h)" }}>
           <main>{children}</main>
           <Footer />

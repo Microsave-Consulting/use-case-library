@@ -5,9 +5,43 @@ import { Suspense } from "react";
 import UseCaseLibrary from "@/components/UseCaseLibrary";
 
 export const metadata = {
-  title: "Use Case Library",
+  title: "Digital ID Use Case Library",
   description:
-    "Browse and filter hundreds of real-world Digital ID use cases from around the globe.",
+    "Browse a comprehensive library of digital identity use cases across banking, healthcare, agriculture, government, and education. A global research platform for digital ID innovation.",
+  keywords: [
+    "Digital identity in banking",
+    "eKYC digital identity",
+    "Identity verification fintech",
+    "Digital ID in agriculture",
+    "Digital ID in climate",
+    "Digital ID in healthcare systems",
+    "Patient identity management digital",
+    "Digital identity for government services",
+    "E-governance identity systems",
+    "Digital ID for welfare schemes",
+    "Identity in social protection programs",
+    "Digital identity in education systems",
+    "Digital identity case study platform",
+    "Digital ID knowledge repository",
+    "Identity innovation library",
+    "Digital identity research platform",
+  ],
+  openGraph: {
+    title:
+      "Digital ID Use Case Library | Digital ID Use Cases & Innovation Platform",
+    description:
+      "Browse a comprehensive library of digital identity use cases across banking, healthcare, agriculture, government, and education. A global research platform for digital ID innovation.",
+    url: "https://yoursite.com/library",
+  },
+  twitter: {
+    title:
+      "Digital ID Use Case Library | Digital ID Use Cases & Innovation Platform",
+    description:
+      "Browse a comprehensive library of digital identity use cases across banking, healthcare, agriculture, government, and education. A global research platform for digital ID innovation.",
+  },
+  alternates: {
+    canonical: "https://yoursite.com/library",
+  },
 };
 
 function getData() {

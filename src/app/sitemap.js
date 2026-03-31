@@ -12,18 +12,43 @@ export default function sitemap() {
       "utf-8",
     ),
   );
-  return [
-    { url: SITE_URL, priority: 1.0 },
+
+  const now = new Date();
+
+  const staticRoutes = [
+    {
+      url: SITE_URL,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 1.0,
+    },
     {
       url: `${SITE_URL}/library`,
-      priority: 0.9,
+      lastModified: now,
       changeFrequency: "daily",
+      priority: 0.9,
     },
-    ...data.map((uc) => ({
-      url: `${SITE_URL}/use-cases/${uc.ID ?? uc.Id}`,
-      lastModified: new Date(uc.Modified ?? Date.now()),
-      changeFrequency: "weekly",
-      priority: 0.8,
-    })),
+    {
+      url: `${SITE_URL}/hackathon`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
   ];
+
+  const useCaseRoutes = data.map((uc) => {
+    const id = uc.ID ?? uc.Id;
+    const rawDate = uc.Modified ?? null;
+    const lastModified =
+      rawDate && !isNaN(new Date(rawDate)) ? new Date(rawDate) : now;
+
+    return {
+      url: `${SITE_URL}/use-cases/${id}`,
+      lastModified,
+      changeFrequency: "weekly",
+      priority: 0.6,
+    };
+  });
+
+  return [...staticRoutes, ...useCaseRoutes];
 }
