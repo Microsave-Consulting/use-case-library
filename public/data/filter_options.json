@@ -20,11 +20,16 @@
     "Africa - Southern Africa",
     "Africa - Western Africa",
     "Asia - South Asia",
+    "Europe - Northern Europe",
+    "Latin America & Caribbean - South America",
     "Oceania - Pacific"
   ],
   "Country": [
+    "Bangladesh",
     "Benin",
     "Botswana",
+    "Brazil",
+    "Estonia",
     "India",
     "Kenya",
     "Malawi",
@@ -36,13 +41,22 @@
     "Togo",
     "Uganda"
   ],
-  "CurrentStatus": ["Conceptual", "Operational", "Pilot"],
-  "ModeofAccess": ["Offline", "Online - assisted", "Online - self"],
+  "CurrentStatus": [
+    "Conceptual",
+    "Operational",
+    "Pilot"
+  ],
+  "ModeofAccess": [
+    "Offline",
+    "Online - assisted",
+    "Online - self"
+  ],
   "AuthenticationAssuranceLevel": [
     "AAL 0",
     "AAL 1",
     "AAL 2",
     "AAL 3",
+    "N/A",
     "Not available"
   ]
 }
