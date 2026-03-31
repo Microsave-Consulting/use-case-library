@@ -63,7 +63,7 @@ export default function HackathonCarousel({ items }) {
           font-family: ${FONT};
         }
 
-        /* ── Inner wrapper — matches ExploreSectors exactly ── */
+        /* ── Inner wrapper ── */
         .hc-inner {
           width: 100%;
           margin: 0;
@@ -71,7 +71,7 @@ export default function HackathonCarousel({ items }) {
           box-sizing: border-box;
         }
 
-        /* ── Stage clip — bleeds to section edges, re-adds same padding ── */
+        /* ── Stage clip ── */
         .hc-stage-clip {
           overflow: hidden;
           margin: 0 calc(-1 * clamp(24px, 6.30vw, 121px));
@@ -107,11 +107,6 @@ export default function HackathonCarousel({ items }) {
         }
 
         /* ── Slots ── */
-        /*
-          Single easing token used everywhere: a gentle expo-out that starts
-          fast and decelerates smoothly — no bounce, no overshoot.
-          Duration 600ms feels snappy but never rushed.
-        */
         .hc-slot {
           position: absolute;
           transition:
@@ -122,7 +117,6 @@ export default function HackathonCarousel({ items }) {
           will-change: transform, opacity, filter;
         }
 
-        /* CENTER card — fluid from 400px → 720px */
         .hc-slot.hc-center {
           position: relative;
           width: clamp(280px, 37.5vw, 720px);
@@ -134,7 +128,6 @@ export default function HackathonCarousel({ items }) {
           border-radius: 20px;
         }
 
-        /* SIDE cards — ~74% of center width */
         .hc-slot.hc-side {
           width: clamp(210px, 27.5vw, 530px);
           opacity: 0.55;
@@ -148,7 +141,6 @@ export default function HackathonCarousel({ items }) {
             filter     400ms cubic-bezier(0.16, 1, 0.3, 1),
             scale      600ms cubic-bezier(0.16, 1, 0.3, 1);
         }
-        /* Side card hover: snap blur away and lift opacity quickly */
         .hc-slot.hc-side:hover {
           opacity: 0.82;
           filter: blur(0px);
@@ -159,29 +151,31 @@ export default function HackathonCarousel({ items }) {
             scale      600ms cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /*
-          Side-card offset = half of center card width + half of side card width + gap.
-          Using the same vw basis keeps spacing proportional at every viewport width.
-          clamp(left, mid, right) mirrors the card widths above.
-        */
         .hc-slot.hc-left  { transform: translateX(clamp(-400px, -36vw, -220px)) scale(0.88); }
         .hc-slot.hc-right { transform: translateX(clamp(220px,  36vw,  400px))  scale(0.88); }
 
-        /* ── Card ── */
+        /* ── Card — gap:0, controlled per-child via margin ── */
         .hc-card {
           width: 100%;
           box-sizing: border-box;
           border-radius: 20px;
-          padding: clamp(16px, 1.46vw, 28px) clamp(16px, 1.46vw, 28px) clamp(14px, 1.25vw, 24px);
+          padding: clamp(1rem, 1.46vw, 1.75rem) clamp(1rem, 1.46vw, 1.75rem) clamp(0.875rem, 1.25vw, 1.5rem);
           min-height: clamp(220px, 22vw, 400px);
           display: flex;
           flex-direction: column;
-          gap: clamp(6px, 0.52vw, 10px);
+          gap: 0;
           position: relative;
           overflow: hidden;
         }
 
-        /* Fade the card content in when it becomes the active center card */
+        /* Per-child spacing — tight and consistent */
+        .hc-card .hc-badge   { margin-bottom: clamp(0.5rem, 0.63vw, 0.75rem); }
+        .hc-card .hc-title   { margin-bottom: clamp(0.25rem, 0.31vw, 0.375rem); }
+        .hc-card .hc-desc    { margin-bottom: clamp(0.5rem, 0.63vw, 0.75rem); flex: .5; }
+        .hc-card .hc-meta    { margin-bottom: clamp(0.5rem, 0.63vw, 0.75rem); flex: .5; }
+        .hc-card .hc-partner { margin-bottom: clamp(0.375rem, 0.52vw, 0.625rem); }
+
+        /* Fade in center card content */
         .hc-slot.hc-center .hc-card {
           animation: hc-content-in 480ms cubic-bezier(0.16, 1, 0.3, 1) both;
         }
@@ -276,7 +270,6 @@ export default function HackathonCarousel({ items }) {
           color: #2F3A45;
           line-height: 1.65;
           margin: 0;
-          flex: 1;
           font-weight: 500;
         }
 
@@ -296,7 +289,7 @@ export default function HackathonCarousel({ items }) {
         }
 
         /* ── Divider ── */
-        .hc-divider { border: none; border-top: 1px solid #e2e8f0; margin: 2px 0; }
+        .hc-divider { border: none; border-top: 1px solid #e2e8f0; }
 
         /* ── Partner ── */
         .hc-partner { display: flex; align-items: center; gap: 12px; }
@@ -308,8 +301,8 @@ export default function HackathonCarousel({ items }) {
           white-space: nowrap;
         }
         .hc-partner-logo {
-          height: clamp(20px, 1.875vw, 36px);
-          max-width: clamp(80px, 7.8vw, 150px);
+          height: clamp(28px, 2.92vw, 56px);
+          max-width: clamp(100px, 11vw, 210px);
           object-fit: contain;
         }
         .hc-partner-name { font-size: clamp(11px, 0.68vw, 13px); color: #2F3A45; font-weight: 500; }
@@ -319,7 +312,6 @@ export default function HackathonCarousel({ items }) {
           display: inline-flex;
           align-items: center;
           gap: 6px;
-          margin-top: 6px;
           padding: clamp(8px, 0.57vw, 11px) clamp(16px, 1.35vw, 26px);
           border-radius: 999px;
           background: #1F3A6D;
@@ -337,7 +329,7 @@ export default function HackathonCarousel({ items }) {
         .hc-btn:active { transform: translateY(0); transition-duration: 80ms; }
         .hc-btn:disabled { opacity: 0.5; cursor: default; transform: none; }
 
-        /* ── Respect reduced-motion preference ── */
+        /* ── Reduced motion ── */
         @media (prefers-reduced-motion: reduce) {
           .hc-slot,
           .hc-slot.hc-side,
@@ -395,7 +387,7 @@ export default function HackathonCarousel({ items }) {
           width: clamp(16px, 1.25vw, 24px);
         }
 
-        /* ── Mobile (≤ 480px) — single card only ── */
+        /* ── Mobile (≤ 480px) ── */
         @media (max-width: 480px) {
           .hc-slot.hc-side { display: none; }
 
@@ -420,10 +412,15 @@ export default function HackathonCarousel({ items }) {
           .hc-stage { min-height: 0; padding: 6px 0; }
 
           .hc-card {
-            padding: 14px 14px 12px;
+            padding: 0.875rem 0.875rem 0.75rem;
             min-height: 0;
-            gap: 6px;
           }
+          .hc-card .hc-badge   { margin-bottom: 0.375rem; }
+          .hc-card .hc-title   { margin-bottom: 0.25rem; }
+          .hc-card .hc-desc    { margin-bottom: 0.5rem; }
+          .hc-card .hc-meta    { margin-bottom: 0.375rem; }
+          .hc-card .hc-partner { margin-bottom: 0.375rem; }
+
           .hc-title       { font-size: clamp(14px, 4vw, 17px); }
           .hc-desc        { font-size: 12px; line-height: 1.55; }
           .hc-meta        { gap: 14px; }
@@ -431,8 +428,8 @@ export default function HackathonCarousel({ items }) {
           .hc-meta-value,
           .hc-partner-label { font-size: 12px; }
           .hc-badge       { font-size: 10px; padding: 3px 9px; }
-          .hc-partner-logo  { height: 18px; max-width: 76px; }
-          .hc-btn           { font-size: 12px; padding: 7px 14px; margin-top: 2px; }
+          .hc-partner-logo  { height: 24px; max-width: 100px; }
+          .hc-btn           { font-size: 12px; padding: 7px 14px; }
           .hc-nav           { margin-top: 12px; gap: 8px; }
           .hc-arrow         { width: 28px; height: 28px; font-size: 13px; }
           .hc-dot           { width: 6px; height: 6px; }
