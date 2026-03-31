@@ -9,6 +9,9 @@ export const metadata = {
     default: "Digital ID Use Cases & Innovation Platform",
     template: "%s | Digital ID Use Cases & Innovation Platform",
   },
+  verification: {
+    google: "google2649d990eb64b54b.html",
+  },
   description:
     "Explore real-world digital identity use cases across countries and sectors. Discover how digital ID powers public services, finance, healthcare, and innovation through regional, continental and national hackathons.",
   keywords: [
