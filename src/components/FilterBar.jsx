@@ -6,24 +6,33 @@ import { useState, useRef, useEffect } from "react";
 const FONT =
   '"Albert Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
 
+  function sortWithNaLast(options) {
+    return [...options].sort((a, b) => {
+      if (a === "N/A") return 1;
+      if (b === "N/A") return -1;
+      return 0;
+    });
+  }
+
 function resolveOptions(f, staticOptions, filterOptions) {
   if (!staticOptions || typeof staticOptions !== "object") {
-    return filterOptions?.[f.id] || [];
+    return sortWithNaLast(filterOptions?.[f.id] || []);
   }
   const keys = Object.keys(staticOptions);
-  if (staticOptions[f.id]?.length) return staticOptions[f.id];
-  if (f.field && staticOptions[f.field]?.length) return staticOptions[f.field];
+  if (staticOptions[f.id]?.length) return sortWithNaLast(staticOptions[f.id]);
+  if (f.field && staticOptions[f.field]?.length)
+    return sortWithNaLast(staticOptions[f.field]);
   const idLower = f.id?.toLowerCase();
   const matchById = keys.find((k) => k.toLowerCase() === idLower);
   if (matchById && staticOptions[matchById]?.length)
-    return staticOptions[matchById];
+    return sortWithNaLast(staticOptions[matchById]);
   if (f.field) {
     const fieldLower = f.field.toLowerCase();
     const matchByField = keys.find((k) => k.toLowerCase() === fieldLower);
     if (matchByField && staticOptions[matchByField]?.length)
-      return staticOptions[matchByField];
+      return sortWithNaLast(staticOptions[matchByField]);
   }
-  return filterOptions?.[f.id] || [];
+  return sortWithNaLast(filterOptions?.[f.id] || []);
 }
 
 /* ══════════════════════════════════════════════════

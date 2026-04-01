@@ -1,8 +1,8 @@
 // src/app/layout.js
 import "./globals.css";
-
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { SITE_URL } from "@/lib/siteConfig";
 
 export const metadata = {
   title: {
@@ -64,11 +64,11 @@ export const metadata = {
   authors: [{ name: "MicroSave Consulting" }],
   creator: "MicroSave Consulting",
   publisher: "MicroSave Consulting",
-  metadataBase: new URL("https://yoursite.com"),
+  metadataBase: new URL(SITE_URL),   // ✅ dynamic, no more yoursite.com
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://yoursite.com",
+    url: SITE_URL,                   // ✅ dynamic
     siteName: "Digital ID Use Cases & Innovation Platform",
     title: "Digital ID Use Cases & Innovation Platform",
     description:
@@ -122,7 +122,7 @@ export default function RootLayout({ children }) {
           href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap"
           rel="stylesheet"
         />
-        <link rel="canonical" href="https://yoursite.com" />
+        {/* ✅ canonical removed from here — Next.js handles it per-page via metadata */}
       </head>
       <body
         style={{
@@ -144,3 +144,4 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
+

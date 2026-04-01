@@ -355,7 +355,7 @@ function Breadcrumb({ sector, title }) {
       }}
     >
       <Link
-        href="/library"
+        href={`/library?sector=${encodeURIComponent(sector || "")}`}
         style={{
           color: "#334155",
           fontWeight: 400,

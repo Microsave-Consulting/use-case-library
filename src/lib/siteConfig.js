@@ -5,4 +5,5 @@ export const BASE_PATH = isGitHubPages ? `/${repoName}` : "";
 
 export const SITE_URL = isGitHubPages
   ? `https://microsave-consulting.github.io/${repoName}`
-  : process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  : process.env.NEXT_PUBLIC_SITE_URL || "https://digitalidinnovations.com";
+//                                        ☝️ replace localhost with real domain
