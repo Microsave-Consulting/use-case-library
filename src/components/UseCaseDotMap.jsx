@@ -10,6 +10,7 @@ import {
 import { geoCentroid } from "d3-geo";
 import countries from "i18n-iso-countries";
 import enLocale from "i18n-iso-countries/langs/en.json";
+import { BASE_PATH } from "@/lib/siteConfig";
 
 countries.registerLocale(enLocale);
 
@@ -93,7 +94,7 @@ export default function UseCaseDotMap({ items }) {
     if (!countryLabel) return;
     const params = new URLSearchParams();
     params.set("f_Country", countryLabel);
-    window.location.href = `/library?${params.toString()}`;
+    window.location.href = `${BASE_PATH}/library?${params.toString()}`;
   }
 
   return (
