@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 
 const isGitHubPages = process.env.NEXT_PUBLIC_DEPLOY_TARGET === "gh-pages";
-const repoName = "use-case-library";
+const repoName = ""; // root user/org Pages site — no subpath
 
 const nextConfig = {
   images: {
@@ -9,8 +9,8 @@ const nextConfig = {
   },
   ...(isGitHubPages && {
     output: "export",
-    basePath: `/${repoName}`,
-    assetPrefix: `/${repoName}/`,
+    basePath: repoName ? `/${repoName}` : "",
+    assetPrefix: repoName ? `/${repoName}/` : "",
   }),
 };
 
