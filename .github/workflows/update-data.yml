@@ -1,0 +1,84 @@
+name: Update Data JSONs
+
+# Fetches fresh data from the APIs and commits the updated JSON files to main,
+# which automatically triggers the "Deploy to GitHub Pages" workflow.
+#
+# Required repository secrets (Settings → Secrets and variables → Actions):
+#
+#   DATA_URL_USE_CASES       — Full API URL that returns the use-cases JSON
+#   DATA_URL_HACKATHONS      — Full API URL that returns the hackathons_2 JSON
+#   DATA_URL_HACKATHON_URLS  — Full API URL that returns the hackathon_urls JSON
+#   DATA_URL_FILTER_OPTIONS  — Full API URL that returns the filter_options JSON
+#
+# NOTE: All data APIs are treated as anonymous (no Authorization header).
+
+on:
+  schedule:
+    # TODO: adjust this cron expression to your preferred schedule.
+    # Examples:
+    #   '0 2 * * *'    — daily at 02:00 UTC
+    #   '0 */6 * * *'  — every 6 hours
+    #   '0 2 * * 1'    — weekly on Monday at 02:00 UTC
+    - cron: '*/10 * * * *'
+  workflow_dispatch: # allow manual runs from the Actions tab
+
+permissions:
+  contents: write  # needed to commit + push updated JSON files
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── 1. use_cases ────────────────────────────────────────────────────────
+      - name: Fetch use_cases
+        env:
+          DATA_URL: ${{ secrets.DATA_URL_USE_CASES }}
+        run: |
+          curl -f -sS -L "$DATA_URL" -o public/data/use_cases.json
+          echo "use_cases.json: $(wc -l < public/data/use_cases.json) lines"
+
+      # ── 2. hackathons_2 ─────────────────────────────────────────────────────
+      - name: Fetch hackathons_2
+        env:
+          DATA_URL: ${{ secrets.DATA_URL_HACKATHONS }}
+        run: |
+          curl -f -sS -L "$DATA_URL" -o public/data/hackathons_2.json
+          echo "hackathons_2.json: $(wc -l < public/data/hackathons_2.json) lines"
+
+      # ── 3. hackathon_urls ────────────────────────────────────────────────────
+      - name: Fetch hackathon_urls
+        env:
+          DATA_URL: ${{ secrets.DATA_URL_HACKATHON_URLS }}
+        run: |
+          curl -f -sS -L "$DATA_URL" -o public/data/hackathon_urls.json
+          echo "hackathon_urls.json: $(wc -l < public/data/hackathon_urls.json) lines"
+
+      # ── 4. filter_options ───────────────────────────────────────────────────
+      - name: Fetch filter_options
+        env:
+          DATA_URL: ${{ secrets.DATA_URL_FILTER_OPTIONS }}
+        run: |
+          curl -f -sS -L "$DATA_URL" -o public/data/filter_options.json
+          echo "filter_options.json: $(wc -l < public/data/filter_options.json) lines"
+
+      # ── Commit & push if anything changed ───────────────────────────────────
+      - name: Commit updated data files
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add \
+            public/data/use_cases.json \
+            public/data/hackathons_2.json \
+            public/data/hackathon_urls.json \
+            public/data/filter_options.json
+          if git diff --cached --quiet; then
+            echo "No data changes detected — skipping commit."
+          else
+            git commit -m "chore(data): automated refresh $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git push
+            echo "Changes committed and pushed. Deploy workflow will trigger automatically."
+          fi
