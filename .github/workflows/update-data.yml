@@ -19,7 +19,7 @@ on:
     #   '0 2 * * *'    — daily at 02:00 UTC
     #   '0 */6 * * *'  — every 6 hours
     #   '0 2 * * 1'    — weekly on Monday at 02:00 UTC
-    - cron: '*/30 * * * *'
+    - cron: '0 2 * * *'
   workflow_dispatch: # allow manual runs from the Actions tab
 
 permissions:
