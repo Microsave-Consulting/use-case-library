@@ -46,6 +46,7 @@ const COUNTRY_CODES = {
   "DR Congo": "CD",
   Ecuador: "EC",
   Egypt: "EG",
+  Estonia: "EE",
   Ethiopia: "ET",
   Finland: "FI",
   France: "FR",
