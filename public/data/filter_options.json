@@ -20,6 +20,7 @@
     "Africa - Southern Africa",
     "Africa - Western Africa",
     "Asia - South Asia",
+    "Asia - Southeast Asia",
     "Europe - Northern Europe",
     "Latin America & Caribbean - South America",
     "Oceania - Pacific"
@@ -30,14 +31,21 @@
     "Botswana",
     "Brazil",
     "Estonia",
+    "Ethiopia",
     "India",
+    "Indonesia",
     "Kenya",
     "Malawi",
     "Morocco",
     "N/A",
+    "Nigeria",
     "Papua New Guinea",
+    "Philippines",
     "Rwanda",
     "Senegal",
+    "Singapore",
+    "Tanzania",
+    "Thailand",
     "Togo",
     "Uganda"
   ],
@@ -56,6 +64,7 @@
     "AAL 1",
     "AAL 2",
     "AAL 3",
+    "AAL1",
     "N/A",
     "Not available"
   ]
