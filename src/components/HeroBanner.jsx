@@ -238,6 +238,8 @@ export default function HeroBanner() {
           alt=""
           aria-hidden="true"
           className="hero-bg"
+          fetchPriority="high"
+          decoding="async"
         />
 
         <div className="hero-content">
