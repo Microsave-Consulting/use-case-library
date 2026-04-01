@@ -32,6 +32,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
 
       # ── 1. use_cases ────────────────────────────────────────────────────────
       - name: Fetch use_cases
