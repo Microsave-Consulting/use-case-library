@@ -1,6 +1,6 @@
-"use client";
-// src/components/WhyDigitalID.jsx
+import { useEffect, useRef } from "react";
 import { BASE_PATH } from "@/lib/siteConfig";
+
 const FONT =
   '"Albert Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
 
@@ -28,9 +28,67 @@ const CARDS = [
 ];
 
 export default function WhyDigitalID() {
+  const gridRef = useRef(null);
+
+  useEffect(() => {
+    const cards = gridRef.current?.querySelectorAll(".why-did__card");
+    if (!cards?.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            // unobserve so animation only fires once
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      {
+        threshold: 0.15, // card must be 15% visible before triggering
+        rootMargin: "0px 0px -40px 0px", // trigger slightly before fully in view
+      },
+    );
+
+    cards.forEach((card) => observer.observe(card));
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <>
       <style>{`
+        /* ── Scroll entrance ──────────────────────────────────────── */
+        @keyframes cardEntrance {
+          from {
+            opacity: 0;
+            transform: translateY(32px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .why-did__card {
+          opacity: 0;
+        }
+
+        .why-did__card.is-visible {
+          animation: cardEntrance 0.55s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        }
+
+        .why-did__card.is-visible:nth-child(1) { animation-delay: 0ms;   }
+        .why-did__card.is-visible:nth-child(2) { animation-delay: 220ms; }
+        .why-did__card.is-visible:nth-child(3) { animation-delay: 440ms; }
+        .why-did__card.is-visible:nth-child(4) { animation-delay: 660ms; }
+
+        @media (prefers-reduced-motion: reduce) {
+          .why-did__card        { opacity: 1; }
+          .why-did__card.is-visible { animation: none; }
+        }
+
+        /* ── Existing styles below — unchanged ───────────────────── */
         .why-did {
           width: 100vw;
           margin-left: calc(50% - 50vw);
@@ -61,7 +119,6 @@ export default function WhyDigitalID() {
           perspective: 1000px;
         }
 
-        /* ── Card — only transform + shadow animate ─────────────────── */
         .why-did__card {
           background: #ffffff;
           border-radius: 12px;
@@ -79,21 +136,19 @@ export default function WhyDigitalID() {
             box-shadow 350ms cubic-bezier(0.23, 1, 0.32, 1);
         }
 
-        /* 3D lift — no colour change at all */
         .why-did__card:hover {
-          transform: translateY(-5px)  scale(1.02);
+          transform: translateY(-5px) scale(1.02);
           box-shadow:
             0px 20px 40px rgba(37, 52, 61, 0.14),
             0px 8px 16px rgba(37, 52, 61, 0.10);
         }
 
-        /* icon floats up slightly */
         .why-did__icon {
           width: clamp(auto, 4.64vw, auto);
           height: clamp(48px, 4.22vw, 81px);
           object-fit: contain;
           display: block;
-         align-self: flex-start;
+          align-self: flex-start;
           flex-shrink: 0;
           transition: transform 350ms cubic-bezier(0.23, 1, 0.32, 1);
         }
@@ -122,7 +177,6 @@ export default function WhyDigitalID() {
           color: #2f3a45;
         }
 
-        /* disable hover on touch screens */
         @media (hover: none) {
           .why-did__card:hover {
             transform: none;
@@ -177,7 +231,7 @@ export default function WhyDigitalID() {
           Why Digital ID
         </h2>
 
-        <div className="why-did__grid">
+        <div className="why-did__grid" ref={gridRef}>
           {CARDS.map((card) => (
             <div className="why-did__card" key={card.title}>
               <img

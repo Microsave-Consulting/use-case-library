@@ -1,6 +1,5 @@
 "use client";
-// src/components/ExploreSectors.jsx
-
+import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { BASE_PATH } from "@/lib/siteConfig";
 import filterOptions from "../../public/data/filter_options.json";
@@ -8,35 +7,15 @@ import filterOptions from "../../public/data/filter_options.json";
 const FONT =
   '"Albert Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
 
-/*
-  Icon filename derivation — mirrors the actual filenames in
-  public/assets/sector_icons/ exactly:
-
-  1. Lowercase the label
-  2. Replace every run of spaces with "_"
-  3. Replace "/" (used in "Legal/ e-Sign") with "-"  →  "legal_e-sign"
-  4. Append ".svg"
-
-  Examples:
-    "Financial services"   → financial_services.svg
-    "Energy and climate"   → energy_and_climate.svg
-    "Legal/ e-Sign"        → legal_e-sign.svg
-    "Labor and employment" → labor_and_employment.svg
-    "Housing and land"     → housing_and_land.svg
-    "Social protection"    → social_protection.svg
-    "Public services"      → public_services.svg
-*/
 function labelToIcon(label) {
   return (
     label
       .toLowerCase()
       .replace(/\s*\/\s*/g, "_")
-      .replace(/\s+/g, "_") + // spaces → underscores
-    ".svg"
+      .replace(/\s+/g, "_") + ".svg"
   );
 }
 
-// Build sector list directly from the JSON — no hardcoded array needed.
 const SECTORS = (filterOptions.Sector || []).map((label) => ({
   label,
   icon: labelToIcon(label),
@@ -44,27 +23,79 @@ const SECTORS = (filterOptions.Sector || []).map((label) => ({
 
 export default function ExploreSectors() {
   const router = useRouter();
+  const gridRef = useRef(null);
+
+  useEffect(() => {
+    const cards = gridRef.current?.querySelectorAll(".exp-sectors__card");
+    if (!cards?.length) return;
+
+    // Determine columns count from computed style
+    const getColCount = () => {
+      const style = window.getComputedStyle(gridRef.current);
+      return style.gridTemplateColumns.split(" ").length;
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+
+          const cols = getColCount();
+          const allCards = Array.from(cards);
+
+          allCards.forEach((card, i) => {
+            const col = i % cols; // column index
+            const row = Math.floor(i / cols); // row index
+            // wave by column first, then row within column
+            const delay = col * 120 + row * 60;
+
+            setTimeout(() => {
+              card.classList.add("is-visible");
+            }, delay);
+          });
+
+          observer.disconnect(); // fire once only
+        });
+      },
+      {
+        threshold: 0.08,
+        rootMargin: "0px 0px -30px 0px",
+      },
+    );
+
+    observer.observe(gridRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <>
       <style>{`
-        /* ═══════════════════════════════════════════════════════════════
-           EXPLORE THE SECTORS
-           ─────────────────────────────────────────────────────────────
-           Figma @ 1920px:
-             Section bg  : #FFFFFF
-             Left pad    : 121px → 6.30vw
-             Title       : Albert Sans 700, 36px, #1B66D1, lh 100%
-             Grid group  : 1529.45 × 592.07px, left 118.76px
-             Card        : 281.33 × 170.29px
-                           bg #FFFFFF, border 1px #BAC6D1
-                           shadow x3 y3 blur6 spread0 #25343D 20%
-                           center alignment
-             Icon        : 74 × 72.55px
-             Label       : Albert Sans 700, 18px, #000000,
-                           center, lh 100%, ls 0%
-        ═══════════════════════════════════════════════════════════════ */
+        /* ── Entrance animation ───────────────────────────────────── */
+        @keyframes cardRise {
+          from {
+            opacity: 0;
+            transform: translateY(28px) scale(0.96);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
 
+        .exp-sectors__card {
+          opacity: 0;
+        }
+
+        .exp-sectors__card.is-visible {
+          animation: cardRise 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .exp-sectors__card        { opacity: 1; }
+          .exp-sectors__card.is-visible { animation: none; }
+        }
+
+        /* ── Existing styles — unchanged ─────────────────────────── */
         .exp-sectors {
           width: 100vw;
           margin-left: calc(50% - 50vw);
@@ -74,7 +105,6 @@ export default function ExploreSectors() {
           box-sizing: border-box;
         }
 
-        /* ── Title ── */
         .exp-sectors__title {
           margin: 0 0 clamp(32px, 3.64vw, 70px) 0;
           font-family: ${FONT};
@@ -85,7 +115,6 @@ export default function ExploreSectors() {
           color: #1b66d1;
         }
 
-        /* ── Grid: 5 cols ── */
         .exp-sectors__grid {
           display: grid;
           grid-template-columns: repeat(5, 1fr);
@@ -94,7 +123,6 @@ export default function ExploreSectors() {
           max-width: 1529px;
         }
 
-        /* ── Card ── */
         .exp-sectors__card {
           display: flex;
           flex-direction: column;
@@ -127,7 +155,6 @@ export default function ExploreSectors() {
           box-shadow: 9px 9px 12px 0px rgba(138, 108, 255, 0.20);
         }
 
-        /* ── Icon ── */
         .exp-sectors__icon {
           width: clamp(44px, 3.85vw, 74px);
           height: clamp(42px, 3.78vw, 73px);
@@ -140,7 +167,6 @@ export default function ExploreSectors() {
           transform: translateY(-3px) scale(1.06);
         }
 
-        /* ── Label ── */
         .exp-sectors__label {
           margin: 0;
           font-family: ${FONT};
@@ -152,7 +178,6 @@ export default function ExploreSectors() {
           text-align: center;
         }
 
-        /* disable hover on touch */
         @media (hover: none) {
           .exp-sectors__card:nth-child(odd):hover,
           .exp-sectors__card:nth-child(even):hover {
@@ -164,10 +189,6 @@ export default function ExploreSectors() {
             transform: none;
           }
         }
-
-        /* ════════════════════════════════════════════════════════════
-           RESPONSIVE
-        ════════════════════════════════════════════════════════════ */
 
         @media (max-width: 1280px) {
           .exp-sectors__grid { grid-template-columns: repeat(5, 1fr); }
@@ -223,7 +244,7 @@ export default function ExploreSectors() {
           Explore the sectors
         </h2>
 
-        <div className="exp-sectors__grid">
+        <div className="exp-sectors__grid" ref={gridRef}>
           {SECTORS.map((s) => (
             <button
               key={s.label}

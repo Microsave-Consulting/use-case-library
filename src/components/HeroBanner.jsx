@@ -68,7 +68,7 @@ export default function HeroBanner() {
         .hero-title-line1 {
           font-family: ${FONT};
           font-weight: 800;
-          font-size: clamp(22px, 2.08vw, 40px);
+         font-size: clamp(32px, 2.50vw, 48px);
           line-height: 1.1;
           color: #334155;
           letter-spacing: 0;
@@ -77,7 +77,7 @@ export default function HeroBanner() {
         .hero-title-line2 {
           font-family: ${FONT};
           font-weight: 800;
-          font-size: clamp(22px, 2.08vw, 40px);
+      font-size: clamp(32px, 2.50vw, 48px);
           line-height: 1.1;
           color: #1b66d1;
           letter-spacing: 0;
@@ -88,7 +88,7 @@ export default function HeroBanner() {
           flex-direction: column;
           align-items: center;
           gap: clamp(10px, 1.04vw, 20px);
-          max-width: clamp(240px, 22.76vw, 437px);
+          max-width: clamp(240px, 28.76vw, 630px);
           width: 100%;
         }
 
@@ -96,7 +96,7 @@ export default function HeroBanner() {
           margin: 0;
           font-family: ${FONT};
           font-weight: 500;
-          font-size: clamp(12px, 0.83vw, 16px);
+       font-size: clamp(16px, 1.04vw, 20px);
           line-height: 1.45;
           color: #2f3a45;
           text-align: center;
@@ -106,7 +106,7 @@ export default function HeroBanner() {
           margin: 0;
           font-family: ${FONT};
           font-weight: 500;
-          font-size: clamp(11px, 0.73vw, 14px);
+          font-size: clamp(13px, 0.83vw, 16px);
           line-height: 1;
           color: #5a6266;
           text-align: center;
@@ -133,7 +133,7 @@ export default function HeroBanner() {
           border: 0.5px solid #1f3a6d;
           font-family: ${FONT};
           font-weight: 500;
-          font-size: clamp(11px, 0.73vw, 14px);
+          font-size: clamp(11px, 0.73vw, 16px);
           line-height: 1;
           cursor: pointer;
           white-space: nowrap;
@@ -169,6 +169,13 @@ export default function HeroBanner() {
           }
           .hero-btn-primary   { width: clamp(140px, 18vw, 200px); }
           .hero-btn-secondary { width: clamp(155px, 19vw, 215px); }
+          .hero-title-line1,
+  .hero-title-line2 {
+    font-size: clamp(30px, 3.8vw, 44px);
+  }
+  .hero-subtitle   { font-size: clamp(15px, 1.6vw, 19px); }
+  .hero-initiative { font-size: clamp(13px, 1.2vw, 16px); }
+}
         }
 
         @media (max-width: 768px) {
@@ -177,15 +184,16 @@ export default function HeroBanner() {
             gap: clamp(8px, 1.5vw, 14px);
           }
           .hero-title-line1,
-          .hero-title-line2 {
-            font-size: clamp(20px, 3.5vw, 34px);
-          }
+.hero-title-line2 {
+  font-size: clamp(26px, 4.5vw, 42px);
+}
+.hero-subtitle   { font-size: clamp(15px, 2.2vw, 18px); }
+.hero-initiative { font-size: clamp(13px, 1.8vw, 15px); }
           .hero-subtitle-wrap {
             max-width: 90%;
             gap: clamp(8px, 1.5vw, 16px);
           }
-          .hero-subtitle   { font-size: clamp(12px, 1.8vw, 15px); }
-          .hero-initiative { font-size: clamp(11px, 1.6vw, 13px); }
+          
           .hero-btns {
             max-width: 90%;
             gap: clamp(8px, 1.5vw, 14px);
@@ -206,15 +214,16 @@ export default function HeroBanner() {
             gap: 10px;
           }
           .hero-title-line1,
-          .hero-title-line2 {
-            font-size: clamp(22px, 6.5vw, 30px);
-          }
+.hero-title-line2 {
+  font-size: clamp(28px, 7.5vw, 38px);
+}
+.hero-subtitle   { font-size: 17px; line-height: 1.5; }
+.hero-initiative { font-size: 14px; }
           .hero-subtitle-wrap {
             max-width: 100%;
             gap: 10px;
           }
-          .hero-subtitle   { font-size: 14px; line-height: 1.5; }
-          .hero-initiative { font-size: 12px; }
+         
           .hero-btns {
             flex-direction: column;
             align-items: center;
