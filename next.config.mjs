@@ -21,8 +21,9 @@
 
 const nextConfig = {
   images: {
-    unoptimized: false,
+    unoptimized: true, // required for GitHub Pages static export
   },
+  output: "export",   // required for GitHub Pages
 };
 
 export default nextConfig;
