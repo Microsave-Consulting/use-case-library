@@ -1,41 +1,6 @@
 [
   {
     "FileSystemObjectType": 0,
-    "Id": 173,
-    "ServerRedirectedEmbedUri": null,
-    "ServerRedirectedEmbedUrl": "",
-    "ContentTypeId": "0x010000DF94DA98438C46B58CDDB5C72006BC00399FAEEB3D3CD248A13CA7B5DF598987",
-    "Title": "Vehicle Registration using ThaID/NDID",
-    "OData__ColorTag": null,
-    "ComplianceAssetId": null,
-    "KeyTerms": "Government e-services, Public Service Delivery",
-    "ModeofAccess": [
-      "Online - self"
-    ],
-    "Region": "Asia - Southeast Asia",
-    "Country": [
-      "Thailand"
-    ],
-    "MaturityLevel": "Operational",
-    "AuthenticationAssuranceLevel": "AAL 2 - Multifactor Authentication ",
-    "Description": "Thailand uses ThaID and National Digital ID (NDID) for vehicle registration. Individuals authenticate their identity through facial verification using the ThaID mobile application or NDID federated login. The system securely confirms the user’s identity and routes the authentication result to the Department of Land Transport (DLT) portal. The portal then automatically retrieves the individual’s verified personal data. This enables individuals to avail of services, such as annual vehicle re-registration, vehicle tax payment, initiation of an ownership transfer, and retrieval of registration certificate status, entirely online.",
-    "Source": "https://reserve.dlt.go.th/reserve/v2/",
-    "Sector": "Mobility",
-    "ID": 173,
-    "Modified": "2026-04-01T04:39:04Z",
-    "Created": "2026-04-01T04:39:04Z",
-    "AuthorId": 12,
-    "EditorId": 12,
-    "OData__UIVersionString": "1.0",
-    "Attachments": false,
-    "GUID": "870d5337-f43a-4c05-9c8d-0aef87209668",
-    "ThumbnailUrl": null,
-    "ThumbnailServerRelativeUrl": null,
-    "CoverImageUrl": null,
-    "CoverImageServerRelativeUrl": null
-  },
-  {
-    "FileSystemObjectType": 0,
     "Id": 171,
     "ServerRedirectedEmbedUri": null,
     "ServerRedirectedEmbedUrl": "",
