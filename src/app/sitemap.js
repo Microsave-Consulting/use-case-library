@@ -28,12 +28,12 @@ export default function sitemap() {
       changeFrequency: "daily",
       priority: 0.9,
     },
-    {
-      url: `${SITE_URL}/hackathon`,
-      lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
+    // {
+    //   url: `${SITE_URL}/hackathon`,
+    //   lastModified: now,
+    //   changeFrequency: "monthly",
+    //   priority: 0.7,
+    // },
   ];
 
   const useCaseRoutes = data.map((uc) => {

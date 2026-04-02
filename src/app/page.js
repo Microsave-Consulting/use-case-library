@@ -30,7 +30,7 @@ export const metadata = {
     title: "Digital ID Use Cases & Innovation Platform",
     description:
       "Explore real-world digital identity use cases across countries and sectors. Discover how digital ID powers public services, finance, healthcare, and innovation through regional, continental and national hackathons.",
-    url: "https://yoursite.com",
+    url: "https://www.digitalidinnovations.com",
   },
   twitter: {
     title: "Digital ID Use Cases & Innovation Platform",
@@ -38,7 +38,7 @@ export const metadata = {
       "Explore real-world digital identity use cases across countries and sectors. Discover how digital ID powers public services, finance, healthcare, and innovation through regional, continental and national hackathons.",
   },
   alternates: {
-    canonical: "https://yoursite.com",
+    canonical: "https://www.digitalidinnovations.com",
   },
 };
 

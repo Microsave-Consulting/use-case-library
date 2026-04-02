@@ -64,18 +64,18 @@ export const metadata = {
   authors: [{ name: "MicroSave Consulting" }],
   creator: "MicroSave Consulting",
   publisher: "MicroSave Consulting",
-  metadataBase: new URL(SITE_URL),   // ✅ dynamic, no more yoursite.com
+  metadataBase: new URL(SITE_URL), // ✅ dynamic, no more yoursite.com
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: SITE_URL,                   // ✅ dynamic
+    url: SITE_URL, // ✅ dynamic
     siteName: "Digital ID Use Cases & Innovation Platform",
     title: "Digital ID Use Cases & Innovation Platform",
     description:
       "Explore real-world digital identity use cases across countries and sectors. Discover how digital ID powers public services, finance, healthcare, and innovation through regional, continental and national hackathons.",
     images: [
       {
-        url: "/images/og-image.png",
+        url: "https://www.digitalidinnovations.com/images/og-image.png",
         width: 1200,
         height: 630,
         alt: "Digital ID Use Cases & Innovation Platform",
@@ -87,7 +87,10 @@ export const metadata = {
     title: "Digital ID Use Cases & Innovation Platform",
     description:
       "Explore real-world digital identity use cases across countries and sectors. Discover how digital ID powers public services, finance, healthcare, and innovation through regional, continental and national hackathons.",
-    images: ["/images/og-image.png"],
+    images: ["https://www.digitalidinnovations.com/images/og-image.png"],
+  },
+  alternates: {
+    canonical: "https://www.digitalidinnovations.com",
   },
   robots: {
     index: true,

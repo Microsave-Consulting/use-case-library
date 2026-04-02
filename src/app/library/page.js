@@ -31,7 +31,7 @@ export const metadata = {
       "Digital ID Use Case Library | Digital ID Use Cases & Innovation Platform",
     description:
       "Browse a comprehensive library of digital identity use cases across banking, healthcare, agriculture, government, and education. A global research platform for digital ID innovation.",
-    url: "https://yoursite.com/library",
+    url: "https://www.digitalidinnovations.com/library",
   },
   twitter: {
     title:
@@ -40,7 +40,7 @@ export const metadata = {
       "Browse a comprehensive library of digital identity use cases across banking, healthcare, agriculture, government, and education. A global research platform for digital ID innovation.",
   },
   alternates: {
-    canonical: "https://yoursite.com/library",
+    canonical: "https://www.digitalidinnovations.com/library",
   },
 };
 
