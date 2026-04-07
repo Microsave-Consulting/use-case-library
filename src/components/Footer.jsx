@@ -232,7 +232,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="ftr-bottom">
           <p>
-            © {new Date().getFullYear()} Microsave Consulting All rights
+            © {new Date().getFullYear()} MicroSave Consulting All rights
             reserved.
           </p>
         </div>

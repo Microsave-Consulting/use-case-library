@@ -125,6 +125,33 @@ export default function RootLayout({ children }) {
           href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap"
           rel="stylesheet"
         />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: "Digital ID Use Cases & Innovation Platform",
+              url: "https://www.digitalidinnovations.com",
+              description:
+                "Explore real-world digital identity use cases across countries and sectors.",
+              publisher: {
+                "@type": "Organization",
+                name: "MicroSave Consulting",
+                url: "https://www.microsave.net",
+              },
+              potentialAction: {
+                "@type": "SearchAction",
+                target: {
+                  "@type": "EntryPoint",
+                  urlTemplate:
+                    "https://www.digitalidinnovations.com/library?search={search_term_string}",
+                },
+                "query-input": "required name=search_term_string",
+              },
+            }),
+          }}
+        />
         {/* ✅ canonical removed from here — Next.js handles it per-page via metadata */}
       </head>
       <body
