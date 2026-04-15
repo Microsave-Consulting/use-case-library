@@ -1,9 +1,14 @@
+// src/app/use-cases/[id]/page.jsx
+// Dynamic route component for individual use case detail pages
+// Generates static pages for each use case with SEO metadata
+
 import { readFileSync } from "fs";
 import path from "path";
 import { notFound } from "next/navigation";
 import UseCaseDetailClient from "@/components/UseCaseDetailClient";
 import { SITE_URL } from "@/lib/siteConfig";
 
+// Function to load all use case data from JSON file
 function getData() {
   return JSON.parse(
     readFileSync(
@@ -13,10 +18,14 @@ function getData() {
   );
 }
 
+// Generates static parameters for all use case pages during build time
+// Returns array of objects with id parameter for each use case
 export async function generateStaticParams() {
   return getData().map((uc) => ({ id: String(uc.ID ?? uc.Id) }));
 }
 
+// Generates dynamic metadata for each use case page based on the use case data
+// Returns SEO metadata including title, description, keywords, and social media tags
 export async function generateMetadata({ params }) {
   const { id } = await params;
   const uc = getData().find((item) => String(item.ID ?? item.Id) === id);
@@ -47,6 +56,8 @@ export async function generateMetadata({ params }) {
   };
 }
 
+// Main component for individual use case pages
+// Finds the use case by ID and renders the detail view, or shows 404 if not found
 export default async function UseCasePage({ params }) {
   const { id } = await params;
   const uc = getData().find((item) => String(item.ID ?? item.Id) === id);

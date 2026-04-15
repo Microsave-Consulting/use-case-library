@@ -7,6 +7,7 @@ import ContactModal from "@/components/ContactModal";
 
 const SOCIAL_ICON_PATH = `${BASE_PATH}/social media icons`;
 
+// Social icon component with hover state for footer links
 function SocialIcon({ label, base, href }) {
   const [hovered, setHovered] = useState(false);
   const hoverName = base === "linkedin" ? "linked_hover" : `${base}_hover`;
@@ -29,6 +30,7 @@ function SocialIcon({ label, base, href }) {
   );
 }
 
+// Main footer component with social media links and contact modal trigger
 export default function Footer() {
   const [contactOpen, setContactOpen] = useState(false);
 

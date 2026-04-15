@@ -4,6 +4,8 @@
 import { useEffect, useRef } from "react";
 
 export default function ContactModal({ isOpen, onClose }) {
+  // Contact modal component with accessibility features
+  // Implements focus trapping, keyboard navigation, and focus restoration
   const dialogRef = useRef(null);
   const closeBtnRef = useRef(null);
   const lastActiveElRef = useRef(null);

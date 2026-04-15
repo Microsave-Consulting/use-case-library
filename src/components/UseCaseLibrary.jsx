@@ -26,6 +26,7 @@ const SIDEBAR_WIDTH_CSS = "clamp(200px, 15.2vw, 292px)";
    Uses numeric sidebar width only for JS math; CSS handles
    the actual visual width via SIDEBAR_WIDTH_CSS.
 ───────────────────────────────────────────────────────────── */
+// Calculates number of columns for use case grid based on viewport width and sidebar visibility
 function getColumns(w, sidebarVisible) {
   if (w <= 480) return 1;
   const contentWidth = sidebarVisible ? w - SIDEBAR_WIDTH_PX : w;
@@ -34,13 +35,17 @@ function getColumns(w, sidebarVisible) {
   if (contentWidth >= 400) return 2;
   return 1;
 }
+// Calculates how many use case cards to show in preview mode
 function getPreviewLimit(cols) {
   return cols * 2;
 }
+// Calculates page size for pagination based on number of columns
 function getPageSize(cols) {
   return cols * 4;
 }
 
+// Splits comma-separated string values into trimmed array
+// Used for parsing filter values from URL parameters
 function splitValues(value) {
   if (!value) return [];
   return String(value)
@@ -522,6 +527,8 @@ export default function UseCaseLibrary({
   filterConfig = [],
   staticOptions = {},
 }) {
+  // Main use case library component managing filtering, search, and pagination
+  // Handles URL state synchronization and responsive layout calculations
   const router = useRouter();
   const searchParams = useSearchParams();
 

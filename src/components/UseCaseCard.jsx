@@ -140,6 +140,8 @@ const COUNTRY_CODES = {
 };
 
 function CountryFlag({ country }) {
+  // Component to display country flag based on country name
+  // Maps country names to ISO codes and shows globe emoji as fallback
   const code = COUNTRY_CODES[country?.trim()];
   if (!code)
     return <span style={{ fontSize: "clamp(12px, 0.83vw, 16px)" }}>🌐</span>;
@@ -159,6 +161,8 @@ function CountryFlag({ country }) {
 }
 
 export default function UseCaseCard({ uc, onOpen }) {
+  // Use case card component displaying title, country flag, maturity level, and description
+  // Handles click and keyboard navigation to open detailed view
   const [hovered, setHovered] = useState(false);
 
   const sector = uc.Sector || "—";

@@ -58,6 +58,8 @@ function getData() {
   return { useCases, hackathons };
 }
 
+// Main homepage component that renders the landing page
+// Loads data and passes it to the client-side MapPageClient component
 export default function HomePage() {
   const { useCases, hackathons } = getData();
   return (

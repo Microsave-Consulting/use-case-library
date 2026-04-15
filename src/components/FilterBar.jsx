@@ -6,15 +6,18 @@ import { useState, useRef, useEffect } from "react";
 const FONT =
   '"Albert Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
 
-  function sortWithNaLast(options) {
-    return [...options].sort((a, b) => {
-      if (a === "N/A") return 1;
-      if (b === "N/A") return -1;
-      return 0;
-    });
-  }
+function sortWithNaLast(options) {
+  // Sorts filter options with "N/A" values moved to the end
+  return [...options].sort((a, b) => {
+    if (a === "N/A") return 1;
+    if (b === "N/A") return -1;
+    return 0;
+  });
+}
 
 function resolveOptions(f, staticOptions, filterOptions) {
+  // Resolves filter options from static config or dynamic data
+  // Falls back through multiple strategies: exact ID match, field match, case-insensitive match
   if (!staticOptions || typeof staticOptions !== "object") {
     return sortWithNaLast(filterOptions?.[f.id] || []);
   }
@@ -360,6 +363,8 @@ export default function FilterBar({
   onSelectSector,
   showSectorDropdown = false,
 }) {
+  // Main filter bar component with search input and multi-select filter dropdowns
+  // Handles search queries, filter selections, and sector filtering
   const handleKeyDown = (e) => {
     if (e.key === "Enter") onSearch?.();
   };

@@ -9,6 +9,8 @@ import hackathons from "../../public/data/hackathons_2.json";
 
 const FONT = "'Albert Sans', sans-serif";
 
+// Main header component with responsive navigation and mobile menu
+// Handles navigation links, mobile dropdown, and contact modal
 export default function Header() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -337,41 +339,41 @@ export default function Header() {
               </Link>
 
               <div className="hdr-drop-group relative">
-  <button
-    type="button"
-    aria-haspopup="true"
-    className="hdr-drop-btn"
-  >
-    Hackathons
-    <svg
-      width="0.75em"     
-      height="0.463em"   
-      viewBox="0 0 12 7.41"
-      fill="none"
-      style={{ color: "#334155", flexShrink: 0 }}
-    >
-      <path
-        d="M1 1l5 5.41L11 1"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  </button>
-  <div className="hdr-dropdown">
-    {hackathons.map((h) => (
-      <a
-        key={h.ID}
-        href={h.URL}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        {h.Title}
-      </a>
-    ))}
-  </div>
-</div>
+                <button
+                  type="button"
+                  aria-haspopup="true"
+                  className="hdr-drop-btn"
+                >
+                  Hackathons
+                  <svg
+                    width="0.75em"
+                    height="0.463em"
+                    viewBox="0 0 12 7.41"
+                    fill="none"
+                    style={{ color: "#334155", flexShrink: 0 }}
+                  >
+                    <path
+                      d="M1 1l5 5.41L11 1"
+                      stroke="currentColor"
+                      strokeWidth="1.6"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+                <div className="hdr-dropdown">
+                  {hackathons.map((h) => (
+                    <a
+                      key={h.ID}
+                      href={h.URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {h.Title}
+                    </a>
+                  ))}
+                </div>
+              </div>
               <Link
                 href="/library"
                 className={`hdr-link${isActive("/library") ? " active" : ""}`}

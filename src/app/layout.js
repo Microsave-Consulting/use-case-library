@@ -103,6 +103,8 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+  // Root layout component that wraps all pages with Header and Footer
+  // Sets up global HTML structure, fonts, and structured data for SEO
   return (
     <html lang="en">
       <head>
@@ -174,4 +176,3 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
-

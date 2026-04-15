@@ -44,6 +44,8 @@ export const metadata = {
   },
 };
 
+// Function to load use case data, filter configuration, and static filter options
+// Returns an object with useCases array, filterConfig object, and staticOptions object
 function getData() {
   const useCases = JSON.parse(
     readFileSync(
@@ -66,6 +68,8 @@ function getData() {
   return { useCases, filterConfig, staticOptions };
 }
 
+// Main library page component that renders the use case library
+// Loads data and passes it to the client-side UseCaseLibrary component with Suspense boundary
 export default function LibraryPage() {
   const { useCases, filterConfig, staticOptions } = getData();
 

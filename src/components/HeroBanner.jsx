@@ -5,8 +5,10 @@ import { useRouter } from "next/navigation";
 import { BASE_PATH } from "@/lib/siteConfig";
 
 const FONT =
-  '"Albert Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+  '"Albert Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif";
 
+// Hero banner component with background image and call-to-action
+// Displays the main headline and CTA button for the platform
 export default function HeroBanner() {
   const router = useRouter();
 
