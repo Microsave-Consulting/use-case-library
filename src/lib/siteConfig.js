@@ -16,5 +16,5 @@
 
 // src/lib/siteConfig.js
 
-export const BASE_PATH = "";
-export const SITE_URL = "https://www.digitalidinnovations.com";
+export const BASE_PATH = "/use-case-library";
+export const SITE_URL = "https://www.digitalidinnovations.com/use-case-library";
