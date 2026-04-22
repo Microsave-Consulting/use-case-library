@@ -24,6 +24,8 @@ const nextConfig = {
     unoptimized: true, // required for GitHub Pages static export
   },
   output: "export",   // required for GitHub Pages
+  basePath: "/use-case-library",
+  assetPrefix: "/use-case-library/",
 };
 
 export default nextConfig;
