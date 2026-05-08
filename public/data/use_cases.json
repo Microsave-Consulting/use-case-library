@@ -14,7 +14,7 @@
     ],
     "Region": "Africa - Central Africa",
     "Country": [
-      "Democratic Republic of the Congo"
+      "DRC"
     ],
     "MaturityLevel": "Conceptual",
     "AuthenticationAssuranceLevel": "AAL 1 - Single-factor based authentication",
@@ -22,11 +22,11 @@
     "Source": "Africa Digital ID Hackathon 2025",
     "Sector": "Education",
     "ID": 186,
-    "Modified": "2026-05-08T11:21:13Z",
+    "Modified": "2026-05-08T11:38:40Z",
     "Created": "2026-05-08T11:18:27Z",
     "AuthorId": 12,
     "EditorId": 12,
-    "OData__UIVersionString": "12.0",
+    "OData__UIVersionString": "13.0",
     "Attachments": false,
     "GUID": "c4093e28-579b-4b05-8a4e-c81742082455",
     "ThumbnailUrl": null,
