@@ -43,6 +43,7 @@ const COUNTRY_CODES = {
   "Côte d'Ivoire": "CI",
   Croatia: "HR",
   Denmark: "DK",
+  "Democratic Republic of the Congo": "CD",
   "DR Congo": "CD",
   Ecuador: "EC",
   Egypt: "EG",
