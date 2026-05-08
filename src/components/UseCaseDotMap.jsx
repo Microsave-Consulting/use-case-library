@@ -14,6 +14,18 @@ import { BASE_PATH } from "@/lib/siteConfig";
 
 countries.registerLocale(enLocale);
 
+// GeoJSON name variants that i18n-iso-countries can't resolve automatically
+const GEO_NAME_OVERRIDES = {
+  "Dem. Rep. Congo": "CD",
+  "Congo, Dem. Rep.": "CD",
+  "Congo, the Democratic Republic of the": "CD",
+};
+
+// Countries absent from world-atlas 110m — hardcoded [lng, lat] centroids
+const HARDCODED_CENTROIDS = {
+  SG: [103.8198, 1.3521],
+};
+
 const geoUrl = "https://unpkg.com/world-atlas@2.0.2/countries-110m.json";
 
 const FONT =
@@ -369,7 +381,8 @@ export default function UseCaseDotMap({ items }) {
                         ""
                       ).toUpperCase();
                       if (!iso2 && geoName) {
-                        const r = countries.getAlpha2Code(geoName, "en");
+                        const r = countries.getAlpha2Code(geoName, "en") ||
+                          GEO_NAME_OVERRIDES[geoName];
                         if (r) iso2 = r.toUpperCase();
                       }
                       if (!iso2 || !wanted.has(iso2)) return;
@@ -380,6 +393,13 @@ export default function UseCaseDotMap({ items }) {
                         !Number.isNaN(c[1])
                       ) {
                         centroidsByIso2[iso2] = c;
+                      }
+                    });
+
+                    // Inject hardcoded centroids for countries missing from the GeoJSON
+                    Object.entries(HARDCODED_CENTROIDS).forEach(([iso2, coords]) => {
+                      if (wanted.has(iso2) && !centroidsByIso2[iso2]) {
+                        centroidsByIso2[iso2] = coords;
                       }
                     });
 
@@ -398,7 +418,8 @@ export default function UseCaseDotMap({ items }) {
                             ""
                           ).toUpperCase();
                           if (!iso2 && geoName) {
-                            const r = countries.getAlpha2Code(geoName, "en");
+                            const r = countries.getAlpha2Code(geoName, "en") ||
+                              GEO_NAME_OVERRIDES[geoName];
                             if (r) iso2 = r.toUpperCase();
                           }
                           const value = iso2 ? countsByIso2[iso2] || 0 : 0;
