@@ -23,30 +23,7 @@
     "Attachments": false,
     "GUID": "7ceb541e-418c-4f20-a444-12f88b074bec"
   },
-  {
-    "FileSystemObjectType": 0,
-    "Id": 6,
-    "ServerRedirectedEmbedUri": null,
-    "ServerRedirectedEmbedUrl": "",
-    "ContentTypeId": "0x0100FF04AEB6E91CD949A903773A684966B400D7B3B269F756D248A7EA00847D58F858",
-    "Title": "Africa Digital ID Hackathon 2025",
-    "OData__ColorTag": null,
-    "ComplianceAssetId": null,
-    "Timeline": "May 2025 - Sept 2025",
-    "Status": "Completed",
-    "Description": "Four regional hackathons to identify key use cases across various sectors.",
-    "Region": "Pan-africa",
-    "Partner": "Upanzi Network1",
-    "URL": "https://www.id4africa.com/2025/files/PS5B-S4-DigitalIDHackathon-FINAL.pdf",
-    "ID": 6,
-    "Modified": "2026-04-01T03:37:06Z",
-    "Created": "2026-03-27T06:54:29Z",
-    "AuthorId": 12,
-    "EditorId": 12,
-    "OData__UIVersionString": "16.0",
-    "Attachments": false,
-    "GUID": "b778094d-eb9d-4568-bbcd-cdd3c6a95c59"
-  },
+  
   {
     "FileSystemObjectType": 0,
     "Id": 5,

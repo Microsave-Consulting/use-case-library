@@ -262,9 +262,9 @@ export default function HeroBanner() {
               Curating and building digital ID use cases across countries,
               regions and sectors
             </p>
-            <p className="hero-initiative">
+            {/* <p className="hero-initiative">
               An initiative by MSC (MicroSave Consulting)
-            </p>
+            </p> */}
           </div>
 
           <div className="hero-btns">
