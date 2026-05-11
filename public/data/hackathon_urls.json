@@ -1,6 +1,25 @@
 [
   {
     "FileSystemObjectType": 0,
+    "Id": 4,
+    "ServerRedirectedEmbedUri": null,
+    "ServerRedirectedEmbedUrl": "",
+    "ContentTypeId": "0x0100CB8E161D1615594FB3FA407F70AB5ADA00EF827EB6145FE548B95D1F7A9E221461",
+    "Title": "Africa Digital ID Hackathon 2025",
+    "OData__ColorTag": null,
+    "ComplianceAssetId": null,
+    "URL": "https://www.id4africa.com/2025/files/PS5B-S4-DigitalIDHackathon-FINAL.pdf",
+    "ID": 4,
+    "Modified": "2026-05-11T04:14:51Z",
+    "Created": "2026-05-11T04:14:51Z",
+    "AuthorId": 12,
+    "EditorId": 12,
+    "OData__UIVersionString": "1.0",
+    "Attachments": false,
+    "GUID": "e47a3d8c-35ec-4295-b278-8e503fba1a64"
+  },
+  {
+    "FileSystemObjectType": 0,
     "Id": 3,
     "ServerRedirectedEmbedUri": null,
     "ServerRedirectedEmbedUrl": "",
